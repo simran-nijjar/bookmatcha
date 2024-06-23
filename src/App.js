@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import {BrowserRouter, Route, Routes } from 'react-router-dom';
 import {Login} from "./Pages/Login";
+import {Register} from "./Pages/Register";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
 
         {/*Register*/}
         <li className="nav-item">
-          <a className="nav-link" href="#">Register</a>
+          <a className="nav-link" href="/Register">Register</a>
         </li>
       </ul>
     </div>
@@ -39,6 +40,7 @@ function App() {
 </nav>
 <Routes>
       <Route path="/Login" element={<Login />} />
+      <Route path="/Register" element={<Register />} />
     </Routes>
 </BrowserRouter>
   );

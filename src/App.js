@@ -1,8 +1,12 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import {BrowserRouter, Route, Routes } from 'react-router-dom';
+import {Login} from "./Pages/Login";
 
 function App() {
   return (
+    <BrowserRouter>
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
   <div className="container-fluid">
     <a className="navbar-brand" href="#">My Library</a>
@@ -18,7 +22,7 @@ function App() {
 
         {/*Login*/}
         <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="#">Login</a>
+          <a className="nav-link" aria-current="page" href="/Login">Login</a>
         </li>
 
         {/*Register*/}
@@ -33,6 +37,10 @@ function App() {
     </form>
   </div>
 </nav>
+<Routes>
+      <Route path="/Login" element={<Login />} />
+    </Routes>
+</BrowserRouter>
   );
 }
 

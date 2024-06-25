@@ -1,15 +1,56 @@
-import React, {useState} from 'react'; 
+import React, {Component} from 'react';
+import axios from 'axios';
 
 // This file contains the form the user sees when they login and the login processes
 
-export const Login = (props) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+export class Login extends Component {
 
-    const onLoginClick = () => {
-        console.log(email)
+    constructor(props) {
+        super(props);
+        this.state = { 
+            email:'',
+            password:'',
+            error:''
+        };
     }
 
+    onChange = (e) =>{
+        this.setState({ [e.target.name]: e.target.value });
+    }
+
+    Login =(e) =>{
+        e.preventDefault();
+        this.setState({ [e.target.name]: e.target.value });    
+  
+      const email = this.state.email;
+      const password = this.state.password;
+          
+      axios.post(variables.API_URL+'login',  {
+        "email" : email,
+        "password" : password
+      } )
+      .then( (res) => {
+        console.log(res);
+        if(res['data'].token) { // Successful
+          
+          console.log(res.data.token);
+          localStorage.setItem("token", res.data.token);
+            this.props.ReUserState(true);
+            
+            this.props.props.history.push('/Home');
+          } 
+          if(res['data'].message){// Fail
+            const error  = res.data.message;
+            this.setState({
+              error: error
+            });
+          }
+  
+      })
+      .catch((error) => {console.log(error)} )
+      }
+
+    render (){
     return (
   <div className="container py-5 h-100">
     <div className="row d-flex justify-content-center align-items-center h-100">
@@ -23,14 +64,14 @@ export const Login = (props) => {
 
               {/*Email input*/}
               <div className="form-outline form-white mb-3">
-                <input value={email} type="email" name="email" placeholder='Email' onChange={(ev) => setEmail(ev.target.value)} class="form-control form-control-lg" />
+                <input type="email" name="Email" placeholder='Email' onChange={this.onChange}  className="form-control form-control-lg" />
               </div>
 
               {/*Password input*/}
               <div className="form-outline form-white mb-4">
-                <input value={password} type="password" name="password" placeholder='Password' onChange={(ev) => setPassword(ev.target.value)}  class="form-control form-control-lg" />
+                <input type="password" name="Password" placeholder='Password' onChange={this.onChange} className="form-control form-control-lg" />
               </div>
-              <button className="btn btn-outline-light btn-lg px-5" onClick={onLoginClick} value={'Login'} type="submit">Login</button>
+              <button className="btn btn-outline-light btn-lg px-5" value={'Login'} type="submit">Login</button>
             </div>
             
             <div>
@@ -43,4 +84,5 @@ export const Login = (props) => {
     </div>
   </div>
     )
+}
 }

@@ -24,17 +24,17 @@ export const Register = (props) => {
 
               {/*Name input*/}
               <div className="form-outline form-white mb-3">
-                <input value={name} type="name" name="name" placeholder='Name' onChange={(ev) => setName(ev.target.value)} class="form-control form-control-lg" />
+                <input value={name} type="name" name="name" placeholder='Name' onChange={(ev) => setName(ev.target.value)} className="form-control form-control-lg" />
               </div>
 
               {/*Email input*/}
               <div className="form-outline form-white mb-3">
-                <input value={email} type="email" name="email" placeholder='Email' onChange={(ev) => setEmail(ev.target.value)} class="form-control form-control-lg" />
+                <input value={email} type="email" name="email" placeholder='Email' onChange={(ev) => setEmail(ev.target.value)} className="form-control form-control-lg" />
               </div>
 
               {/*Password input*/}
               <div className="form-outline form-white mb-4">
-                <input value={password} type="password" name="password" placeholder='Password' onChange={(ev) => setPassword(ev.target.value)}  class="form-control form-control-lg" />
+                <input value={password} type="password" name="password" placeholder='Password' onChange={(ev) => setPassword(ev.target.value)}  className="form-control form-control-lg" />
               </div>
               <button className="btn btn-outline-light btn-lg px-5" onClick={onRegisterClick} value={'Register'} type="submit">Register</button>
             </div>

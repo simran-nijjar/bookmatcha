@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+var config = require('../config');
 
 // This file contains the form the user sees when they login and the login processes
 
@@ -25,7 +26,7 @@ export class Login extends Component {
       const email = this.state.email;
       const password = this.state.password;
           
-      axios.post(variables.API_URL+'login',  {
+      axios.post(config.API_URL+'login',  {
         "email" : email,
         "password" : password
       } )

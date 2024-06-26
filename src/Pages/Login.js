@@ -5,7 +5,6 @@ var config = require('../config');
 // This file contains the form the user sees when they login and the login processes
 
 export class Login extends Component {
-
     constructor(props) {
         super(props);
         this.state = { 
@@ -15,13 +14,13 @@ export class Login extends Component {
         };
     }
 
-    onChange = (e) =>{
-        this.setState({ [e.target.name]: e.target.value });
+    onChange = (event) =>{
+        this.setState({ [event.target.name]: event.target.value });
     }
 
-    Login =(e) =>{
-        e.preventDefault();
-        this.setState({ [e.target.name]: e.target.value });    
+    Login = (event) =>{
+      event.preventDefault();
+      this.setState({ [event.target.name]: event.target.value });    
   
       const email = this.state.email;
       const password = this.state.password;
@@ -72,7 +71,7 @@ export class Login extends Component {
               <div className="form-outline form-white mb-4">
                 <input type="password" name="Password" placeholder='Password' onChange={this.onChange} className="form-control form-control-lg" />
               </div>
-              <button className="btn btn-outline-light btn-lg px-5" value={'Login'} type="submit">Login</button>
+              <button className="btn btn-outline-light btn-lg px-5" value={'Login'} type="submit" onClick={this.Login}>Login</button>
             </div>
             
             <div>

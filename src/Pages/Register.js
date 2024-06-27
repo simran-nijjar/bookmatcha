@@ -19,6 +19,12 @@ export class Register extends Component {
       this.setState({ [event.target.name]: event.target.value})
     }
 
+    // Method to check if email is of valid format
+    validateEmail = (Email) => {
+      const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+      return regex.test(String(Email).toLowerCase());
+    }
+
     Register = (event) => {
       event.preventDefault();
       this.setState({ [event.target.name]: event.target.value });    
@@ -26,6 +32,12 @@ export class Register extends Component {
       const Name = this.state.Name;
       const Email = this.state.Email;
       const Password = this.state.Password;
+
+      if (!this.validateEmail(Email)) {
+        console.log('Invalid email format.');
+        this.setState({ Error: 'Invalid email format. Please enter a valid email.' });
+        return;
+      }
           
       axios.post(config.API_URL+'register',  {
         "Name" : Name,
@@ -77,8 +89,14 @@ export class Register extends Component {
 
               {/*Password input*/}
               <div className="form-outline form-white mb-4">
-                <input type="password" value={this.state.Password} name="Password" placeholder='Password' onChange={this.onChange}   className="form-control form-control-lg" />
+                <input type="password" value={this.state.Password} name="Password" placeholder='Password' onChange={this.onChange} className="form-control form-control-lg" />
               </div>
+
+              {/* Error message */}
+              <div style={{ minHeight: '20px' }}>
+                    {this.state.Error && <p style={{ color: 'white' }}>{this.state.Error}</p>}
+                  </div>
+              
               <button className="btn btn-outline-light btn-lg px-5" onClick={this.Register} value={'Register'} type="submit">Register</button>
             </div>
             

@@ -19,10 +19,19 @@ export class Register extends Component {
       this.setState({ [event.target.name]: event.target.value})
     }
 
-    // Method to check if email is of valid format
+    // Check if email is of valid format
     validateEmail = (Email) => {
       const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
       return regex.test(String(Email).toLowerCase());
+    }
+
+    // Check if all fields are filled out
+    validateFields = (Name, Email, Password) => {
+      if (!Name.trim() || !Email.trim() || !Password.trim()) {
+        this.setState({ Error: 'Please fill out all fields.' });
+        return false;
+      }
+      return true;
     }
 
     Register = (event) => {
@@ -32,6 +41,10 @@ export class Register extends Component {
       const Name = this.state.Name;
       const Email = this.state.Email;
       const Password = this.state.Password;
+
+      if (!this.validateFields(Name, Email, Password)) {
+        return;
+      }
 
       if (!this.validateEmail(Email)) {
         console.log('Invalid email format.');

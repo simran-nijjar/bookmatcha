@@ -31,23 +31,26 @@ export class Login extends Component {
       } )
       .then( (res) => {
         console.log(res);
-        if(res['data'].token) { // Successful
-          
-          console.log(res.data.token);
-          localStorage.setItem("token", res.data.token);
+        if (res.status === 200) {
+          if (res.data.message === 'User logged successfully') {
+            // Handle successful login
+            localStorage.setItem("token", res.data.token);
             this.props.ReUserState(true);
-            
             this.props.props.history.push('/Home');
-          } 
-          if(res['data'].message){// Fail
-            const error  = res.data.message;
-            this.setState({
-              error: error
-            });
+          } else {
+            // Handle other responses (if any)
+            this.setState({ Error: res.data.message });
           }
-  
+        } 
       })
-      .catch((error) => {console.log(error)} )
+      .catch((error) => {
+        console.log(error.response); 
+        if (error.response && error.response.status === 400) {
+          this.setState({ Error: 'The email and password you entered does not match our records. Please try again.' });
+        } else {
+          this.setState({ Error: 'Login failed. Please try again later.' });
+        }
+      });
       }
 
     render (){
@@ -70,6 +73,12 @@ export class Login extends Component {
               {/*Password input*/}
               <div className="form-outline form-white mb-4">
                 <input type="Password" name="Password" placeholder='Password' onChange={this.onChange} className="form-control form-control-lg" />
+              
+              {/* Error message */}
+              <div style={{ minHeight: '20px' }}>
+                    {this.state.Error && <p style={{ color: 'white' }}>{this.state.Error}</p>}
+              </div>
+              
               </div>
               <button className="btn btn-outline-light btn-lg px-5" value={'Login'} type="submit" onClick={this.Login}>Login</button>
             </div>

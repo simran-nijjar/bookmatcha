@@ -62,3 +62,23 @@ app.post('/api/register', (request, response) => {
         });
     });
 });
+
+// Endpoint to handle user login
+app.post('/api/login', (request, response) => {
+    const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email =? AND Password =?';
+    const values = [request.body['Email'],request.body['Password']];
+
+    connection.query(query, values, function(err, results, fields) {
+        if (err) {
+            console.error('Error checking for user: ', err);
+            response.status(500).json({ message: 'Error checking for user' });
+            return;
+        }
+        if (!results.length) {
+            response.status(400).json({ message: 'User does not exist' });
+            return;
+        } else {
+                response.send(results);
+        }
+    })
+})

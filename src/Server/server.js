@@ -36,15 +36,29 @@ app.get('/', (request, response)=>{
 
 // Endpoint to handle user registration
 app.post('/api/register', (request, response) => {
-    const query = 'INSERT INTO MyLibraryApp.MyLibraryAppUser (Name, Email, Password) VALUES (?, ?, ?)';
-    const values = [request.body['Name'],request.body['Email'],request.body['Password']];
+    const checkEmailQuery = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email = ?';
 
-    connection.query(query, values, function(err, results, fields) {
+    connection.query(checkEmailQuery, request.body['Email'], (err, results, fields) => {
         if (err) {
-            console.error('Failed to register user:', err);
-            response.status(500).send('Failed to register user');
-        } else {
-            response.status(200).json('User registered successfully');
+            console.error('Error checking email: ', err);
+            response.status(500).json({ message: 'Error checking email' });
+            return;
         }
+        if (results.length > 0) {
+            response.status(400).json({ message: 'Email already exists' });
+            return;
+        }
+
+        const query = 'INSERT INTO MyLibraryApp.MyLibraryAppUser (Name, Email, Password) VALUES (?, ?, ?)';
+        const values = [request.body['Name'],request.body['Email'],request.body['Password']];
+        
+        connection.query(query, values, function (err, result, fields){
+            if (err) {
+                console.error('Failed to register user: ', err);
+                response.status(500).send('Failed to register user');
+            } else {
+                response.status(200).json('User registered successfully');
+            }
+        });
     });
-})
+});

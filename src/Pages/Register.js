@@ -46,23 +46,26 @@ export class Register extends Component {
       } )
       .then( (res) => {
         console.log(res);
-        if(res['data'].token) { // Successful
-          
-          console.log(res.data.token);
-          localStorage.setItem("token", res.data.token);
+        if (res.status === 200) {
+          if (res.data.message === 'User registered successfully') {
+            // Handle successful registration
+            localStorage.setItem("token", res.data.token);
             this.props.ReUserState(true);
-            
             this.props.props.history.push('/Home');
-          } 
-          if(res['data'].message){ // Fail
-            const error  = res.data.message;
-            this.setState({
-              error: error
-            });
+          } else {
+            // Handle other responses (if any)
+            this.setState({ Error: res.data.message });
           }
-  
+        } 
       })
-      .catch((error) => {console.log(error)} )
+      .catch((error) => {
+        console.log(error.response); 
+        if (error.response && error.response.status === 400) {
+          this.setState({ Error: 'Email is already registered. Try a new email or login to an existing account.' });
+        } else {
+          this.setState({ Error: 'Registration failed. Please try again later.' });
+        }
+      });
       }
 
     render (){

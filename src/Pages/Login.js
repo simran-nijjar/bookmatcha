@@ -32,7 +32,7 @@ export class Login extends Component {
       .then( (res) => {
         console.log(res);
         if (res.status === 200) {
-          if (res.data.message === 'User logged successfully') {
+          if (res.data.message === 'User logged in successfully') {
             // Handle successful login
             localStorage.setItem("token", res.data.token);
             this.props.ReUserState(true);

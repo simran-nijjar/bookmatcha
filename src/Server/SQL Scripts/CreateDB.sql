@@ -4,7 +4,7 @@ USE MyLibraryApp;
 CREATE TABLE MyLibraryAppUser(
     Name CHAR(50) NOT NULL,
     Email CHAR(255) NOT NULL UNIQUE,
-    Password CHAR(50) NOT NULL,
+    Password CHAR(100) NOT NULL,
     PRIMARY KEY (Email)
 );
 

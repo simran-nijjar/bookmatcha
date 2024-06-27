@@ -8,9 +8,9 @@ export class Login extends Component {
     constructor(props) {
         super(props);
         this.state = { 
-            email:'',
-            password:'',
-            error:''
+            Email:'',
+            Password:'',
+            Error:''
         };
     }
 
@@ -22,12 +22,12 @@ export class Login extends Component {
       event.preventDefault();
       this.setState({ [event.target.name]: event.target.value });    
   
-      const email = this.state.email;
-      const password = this.state.password;
+      const Email = this.state.Email;
+      const Password = this.state.Password;
           
       axios.post(config.API_URL+'login',  {
-        "email" : email,
-        "password" : password
+        "Email" : Email,
+        "Password" : Password
       } )
       .then( (res) => {
         console.log(res);
@@ -64,12 +64,12 @@ export class Login extends Component {
 
               {/*Email input*/}
               <div className="form-outline form-white mb-3">
-                <input type="email" name="Email" placeholder='Email' onChange={this.onChange}  className="form-control form-control-lg" />
+                <input type="Email" name="Email" placeholder='Email' onChange={this.onChange}  className="form-control form-control-lg" />
               </div>
 
               {/*Password input*/}
               <div className="form-outline form-white mb-4">
-                <input type="password" name="Password" placeholder='Password' onChange={this.onChange} className="form-control form-control-lg" />
+                <input type="Password" name="Password" placeholder='Password' onChange={this.onChange} className="form-control form-control-lg" />
               </div>
               <button className="btn btn-outline-light btn-lg px-5" value={'Login'} type="submit" onClick={this.Login}>Login</button>
             </div>

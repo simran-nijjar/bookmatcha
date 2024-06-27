@@ -8,10 +8,10 @@ export class Register extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        name:'',
-        email:'',
-        password:'',
-        error:''
+        Name:'',
+        Email:'',
+        Password:'',
+        Error:''
       };
     }
 
@@ -23,14 +23,14 @@ export class Register extends Component {
       event.preventDefault();
       this.setState({ [event.target.name]: event.target.value });    
     
-      const name = this.state.name;
-      const email = this.state.email;
-      const password = this.state.password;
+      const Name = this.state.Name;
+      const Email = this.state.Email;
+      const Password = this.state.Password;
           
       axios.post(config.API_URL+'register',  {
-        "name" : name,
-        "email" : email,
-        "password" : password
+        "Name" : Name,
+        "Email" : Email,
+        "Password" : Password
       } )
       .then( (res) => {
         console.log(res);
@@ -67,17 +67,17 @@ export class Register extends Component {
 
               {/*Name input*/}
               <div className="form-outline form-white mb-3">
-                <input type="name" name="name" placeholder='Name' onChange={this.onChange}  className="form-control form-control-lg" />
+                <input type="text" value={this.state.Name} name="Name" placeholder='Name' onChange={this.onChange}  className="form-control form-control-lg" />
               </div>
 
               {/*Email input*/}
               <div className="form-outline form-white mb-3">
-                <input type="email" name="email" placeholder='Email' onChange={this.onChange}  className="form-control form-control-lg" />
+                <input type="email" value={this.state.Email} name="Email" placeholder='Email' onChange={this.onChange}  className="form-control form-control-lg" />
               </div>
 
               {/*Password input*/}
               <div className="form-outline form-white mb-4">
-                <input type="password" name="password" placeholder='Password' onChange={this.onChange}   className="form-control form-control-lg" />
+                <input type="password" value={this.state.Password} name="Password" placeholder='Password' onChange={this.onChange}   className="form-control form-control-lg" />
               </div>
               <button className="btn btn-outline-light btn-lg px-5" onClick={this.Register} value={'Register'} type="submit">Register</button>
             </div>

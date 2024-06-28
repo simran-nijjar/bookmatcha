@@ -60,15 +60,8 @@ export class Register extends Component {
       .then( (res) => {
         console.log(res);
         if (res.status === 200) {
-          if (res.data.message === 'User registered successfully') {
-            // Handle successful registration
-            localStorage.setItem("token", res.data.token);
-            this.props.ReUserState(true);
-            this.props.props.history.push('/Home');
-          } else {
-            // Handle other responses (if any)
-            this.setState({ Error: res.data.message });
-          }
+          // Handle successful registration
+          this.setState({ Error: 'Registered.' });
         } 
       })
       .catch((error) => {

@@ -32,15 +32,8 @@ export class Login extends Component {
       .then( (res) => {
         console.log(res);
         if (res.status === 200) {
-          if (res.data.message === 'User logged in successfully') {
-            // Handle successful login
-            localStorage.setItem("token", res.data.token);
-            this.props.ReUserState(true);
-            this.props.props.history.push('/Home');
-          } else {
-            // Handle other responses (if any)
-            this.setState({ Error: res.data.message });
-          }
+          // Handle successful login
+          this.setState({ Error: 'Logged in.' });
         } 
       })
       .catch((error) => {

@@ -64,8 +64,8 @@ app.post('/api/register', (request, response) => {
                 return;
             }
             // Register user
-            const query = 'INSERT INTO MyLibraryApp.MyLibraryAppUser (Name, Email, Password) VALUES (?, ?, ?)';
-            const values = [request.body['Name'],request.body['Email'],hashedPassword];
+            const query = 'INSERT INTO MyLibraryApp.MyLibraryAppUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
+            const values = [request.body['FirstName'], request.body['LastName'], request.body['Email'],hashedPassword];
         
             connection.query(query, values, function (err, result, fields){
                 if (err) {

@@ -2,7 +2,8 @@ CREATE DATABASE MyLibraryApp;
 USE MyLibraryApp;
 
 CREATE TABLE MyLibraryAppUser(
-    Name CHAR(50) NOT NULL,
+    FirstName CHAR(50) NOT NULL,
+    LastName CHAR(50) NOT NULL,
     Email CHAR(255) NOT NULL UNIQUE,
     Password CHAR(100) NOT NULL,
     PRIMARY KEY (Email)

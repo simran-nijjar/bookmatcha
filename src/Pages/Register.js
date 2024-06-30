@@ -6,20 +6,26 @@ var config = require('../config');
 // This file contains the form the user sees when they register an account
 
 export const Register = () => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const onChange = (event) => {
     const { name, value } = event.target;
-    if (name === 'Name') {
-      setName(value);
+    if (name === 'FirstName') {
+      setFirstName(value);
+    } else if (name === 'LastName') {
+      setLastName(value);
     } else if (name === 'Email') {
       setEmail(value);
     } else if (name === 'Password') {
       setPassword(value);
+    } else if (name === 'ConfirmPassword'){
+      setConfirmPassword(value);
     }
   };
 
@@ -30,9 +36,13 @@ export const Register = () => {
   };
 
   // Check if all fields are filled out
-  const validateFields = (name, email, password) => {
-    if (!name.trim() || !email.trim() || !password.trim()) {
+  const validateFields = () => {
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       setError('Please fill out all fields.');
+      return false;
+    } 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
       return false;
     }
     return true;
@@ -41,7 +51,7 @@ export const Register = () => {
   const register = (event) => {
     event.preventDefault();
 
-    if (!validateFields(name, email, password)) {
+    if (!validateFields()) {
       return;
     }
 
@@ -52,7 +62,8 @@ export const Register = () => {
     }
 
     axios.post(config.API_URL + 'register', {
-      "Name": name,
+      "FirstName": firstName,
+      "LastName": lastName,
       "Email": email,
       "Password": password
     })
@@ -84,9 +95,14 @@ export const Register = () => {
                 <h2 className="fw-bold mb-2 text-uppercase">Register</h2>
                 <p className="text-white-50">Create an account by filling out the fields below.</p>
 
-                {/*Name input*/}
+                {/*FirstName input*/}
                 <div className="form-outline form-white mb-3">
-                  <input type="text" name="Name" placeholder='Name' value={name} onChange={onChange} className="form-control form-control-lg" />
+                  <input type="text" name="FirstName" placeholder='First Name' value={firstName} onChange={onChange} className="form-control form-control-lg" />
+                </div>
+
+                {/*LastName input*/}
+                <div className="form-outline form-white mb-3">
+                  <input type="text" name="LastName" placeholder='Last Name' value={lastName} onChange={onChange} className="form-control form-control-lg" />
                 </div>
 
                 {/*Email input*/}
@@ -95,8 +111,13 @@ export const Register = () => {
                 </div>
 
                 {/*Password input*/}
-                <div className="form-outline form-white mb-4">
+                <div className="form-outline form-white mb-3">
                   <input type="password" name="Password" placeholder='Password' value={password} onChange={onChange} className="form-control form-control-lg" />
+                </div>
+
+                {/*Confirm password input*/}
+                <div className="form-outline form-white mb-4">
+                  <input type="password" name="ConfirmPassword" placeholder='Re-Enter Password' value={confirmPassword} onChange={onChange} className="form-control form-control-lg" />
                 </div>
 
                 {/* Error message */}

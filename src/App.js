@@ -5,6 +5,7 @@ import {BrowserRouter, Route, Routes } from 'react-router-dom';
 import {Login} from "./Pages/Login";
 import {Register} from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
+import { LandingPage } from './Pages/LandingPage';
 
 function App() {
   return (
@@ -17,20 +18,6 @@ function App() {
     </button>
     <div className="collapse navbar-collapse" id="navbarNav">
       <ul className="navbar-nav">
-      {/*My Books*/}
-      <li class="nav-item">
-          <a class="nav-link" href="#">My Books</a>
-        </li>
-
-        {/*Login*/}
-        <li className="nav-item">
-          <a className="nav-link" aria-current="page" href="/Login">Login</a>
-        </li>
-
-        {/*Register*/}
-        <li className="nav-item">
-          <a className="nav-link" href="/Register">Register</a>
-        </li>
       </ul>
     </div>
     <form className="d-flex form-inline my-2 my-lg-0">
@@ -40,6 +27,7 @@ function App() {
   </div>
 </nav>
 <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/Login" element={<Login />} />
       <Route path="/Register" element={<Register />} />
       <Route path="UserAccount" element={<UserAccount />} />

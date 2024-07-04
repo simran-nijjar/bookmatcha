@@ -31,6 +31,7 @@ export const Login = () => {
             console.log(res);
             if (res.status === 200) {
                 // Handle successful login
+                localStorage.setItem('token', res.data.token);
                 setError('Logged in.');
                 navigate("/UserAccount");
             }

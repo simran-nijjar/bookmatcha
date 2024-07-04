@@ -1,13 +1,33 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React from 'react';
-import {BrowserRouter, Route, Routes } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import {Login} from "./Pages/Login";
 import {Register} from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
 import { LandingPage } from './Pages/LandingPage';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    // Clear localStorage and reset isLoggedIn state
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
+
   return (
     <BrowserRouter>
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -28,9 +48,11 @@ function App() {
 </nav>
 <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/Login" element={<Login />} />
+      <Route path="/Login" element={<Login onLogin={handleLogin} />} />
       <Route path="/Register" element={<Register />} />
-      <Route path="UserAccount" element={<UserAccount />} />
+      <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
+      <Route path="/" element={<Navigate to={isLoggedIn ? "/UserAccount" : "/LandingPage"} />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
 </BrowserRouter>
   );

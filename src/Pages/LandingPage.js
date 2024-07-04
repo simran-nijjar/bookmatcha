@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from "react-router-dom";
 
-// This is the first page the user sees when they view the website
+// This is the first page the user sees when they view the website if they are not logged in
 
 export const LandingPage = () => {
     const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 var config = require('../config');
@@ -70,6 +70,7 @@ export const Register = () => {
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
+          localStorage.setItem('token', res.data.token);
           setError('Registered.');
           navigate('/UserAccount'); // Redirect after successful registration
         }

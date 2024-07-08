@@ -32,13 +32,25 @@ function App() {
     <BrowserRouter>
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
   <div className="container-fluid">
-    <a className="navbar-brand" href="#">My Library</a>
+    <a className="navbar-brand" href="/">My Library</a>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
     </button>
     <div className="collapse navbar-collapse" id="navbarNav">
       <ul className="navbar-nav">
       </ul>
+    </div>
+    <div className="navbar-nav ml-auto">
+      {isLoggedIn && (
+        <>
+          <li className="nav-item">
+            <a className="nav-link" to="/UserAccount">My Account</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" href="/" onClick={handleLogout}>Logout</a>
+          </li>
+        </>
+      )}
     </div>
     <form className="d-flex form-inline my-2 my-lg-0">
       <input className="form-control me-sm-2" type="search" placeholder="Search Books" aria-label="Search"/>
@@ -52,7 +64,6 @@ function App() {
       <Route path="/Register" element={<Register />} />
       <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
       <Route path="/" element={<Navigate to={isLoggedIn ? "/UserAccount" : "/LandingPage"} />} />
-      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
 </BrowserRouter>
   );

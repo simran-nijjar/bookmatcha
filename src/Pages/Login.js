@@ -5,7 +5,7 @@ var config = require('../config');
 
 // This file contains the form the user sees when they login and the login processes
 
-export const Login = () => {
+export const Login = ({ onLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -33,6 +33,7 @@ export const Login = () => {
                 // Handle successful login
                 localStorage.setItem('token', res.data.token);
                 setError('Logged in.');
+                onLogin();
                 navigate("/UserAccount");
             }
         })

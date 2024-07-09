@@ -1,20 +1,30 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, {useState, useEffect} from 'react';
-import {BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import {Login} from "./Pages/Login";
 import {Register} from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
 import { LandingPage } from './Pages/LandingPage';
+import { BookResults } from './Pages/BookResults';
+const config = require('./config');
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [results, setResults] = useState([]);
+  const [query, setQuery] = useState('');
+  const [library, setLibrary] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem('token');
+    console.log("isloggedin: ", isLoggedIn);
     if (token) {
       setIsLoggedIn(true);
+    } else{
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -27,6 +37,15 @@ function App() {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
   };
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    navigate("/BookResults");
+  }
+
+  const handleQueryChange = (event) => {
+    setQuery(event.target.value);
+  }
 
   return (
     <BrowserRouter>
@@ -49,13 +68,13 @@ function App() {
           <li className="nav-item">
             <a className="nav-link" href="/" onClick={handleLogout}>Logout</a>
           </li>
+          <form className="d-flex form-inline my-2 my-lg-0" onSubmit={handleSearch}>
+            <input className="form-control me-sm-2" type="search" placeholder="Search Books" aria-label="Search" value={query} onChange={handleQueryChange}/>
+            <button className="btn btn-outline-light" type="submit">Search</button>
+          </form>
         </>
       )}
     </div>
-    <form className="d-flex form-inline my-2 my-lg-0">
-      <input className="form-control me-sm-2" type="search" placeholder="Search Books" aria-label="Search"/>
-      <button className="btn btn-outline-light" type="submit">Search</button>
-    </form>
   </div>
 </nav>
 <Routes>
@@ -64,7 +83,8 @@ function App() {
       <Route path="/Register" element={<Register />} />
       <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
       <Route path="/" element={<Navigate to={isLoggedIn ? "/UserAccount" : "/LandingPage"} />} />
-    </Routes>
+      <Route path="/BookResults" element={BookResults} />
+</Routes>
 </BrowserRouter>
   );
 }

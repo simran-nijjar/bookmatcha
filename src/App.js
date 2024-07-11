@@ -1,7 +1,7 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, {useState, useEffect} from 'react';
-import {BrowserRouter, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import {Login} from "./Pages/Login";
 import {Register} from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
@@ -11,10 +11,7 @@ const config = require('./config');
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [results, setResults] = useState([]);
   const [query, setQuery] = useState('');
-  const [library, setLibrary] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is logged in
@@ -38,11 +35,6 @@ function App() {
     setIsLoggedIn(false);
   };
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    navigate("/BookResults");
-  }
-
   const handleQueryChange = (event) => {
     setQuery(event.target.value);
   }
@@ -51,7 +43,7 @@ function App() {
     <BrowserRouter>
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
   <div className="container-fluid">
-    <a className="navbar-brand" href="/">My Library</a>
+    <a className="navbar-brand">My Library</a>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
     </button>
@@ -63,12 +55,12 @@ function App() {
       {isLoggedIn && (
         <>
           <li className="nav-item">
-            <a className="nav-link" to="/UserAccount">My Account</a>
+            <a className="nav-link" href="/UserAccount">My Account</a>
           </li>
           <li className="nav-item">
             <a className="nav-link" href="/" onClick={handleLogout}>Logout</a>
           </li>
-          <form className="d-flex form-inline my-2 my-lg-0" onSubmit={handleSearch}>
+          <form className="d-flex form-inline my-2 my-lg-0">
             <input className="form-control me-sm-2" type="search" placeholder="Search Books" aria-label="Search" value={query} onChange={handleQueryChange}/>
             <button className="btn btn-outline-light" type="submit">Search</button>
           </form>

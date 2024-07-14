@@ -8,13 +8,14 @@ import { UserAccount } from './Pages/UserAccount';
 import { LandingPage } from './Pages/LandingPage';
 import { BookResults } from './Pages/BookResults';
 import SearchBar from './Components/SearchBar';
-const config = require('./config');
+import { handleQueryChange, handleSearch, handleNextPage, handlePrevPage } from './Components/SearchUtilities';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,44 +34,6 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-  };
-
-  const handleQueryChange = (event) => {
-    setQuery(event.target.value);
-  };
-
-  const fetchResults = async (query, startIndex = 0) => {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${config.API_KEY}`;
-    try {
-      const response = await fetch(url);
-      const result = await response.json();
-      setResults(result.items || []);
-      console.log(result);
-    } catch (error) {
-      console.error('Error fetching from Google Books API', error);
-    }
-  };
-
-  const handleSearch = async (event) => {
-    event.preventDefault();
-    setCurrentPage(1);
-    await fetchResults(query);
-  };
-
-  const handleNextPage = async () => {
-    const nextPage = currentPage + 1;
-    const startIndex = (nextPage - 1) * 10;
-    await fetchResults(query, startIndex);
-    setCurrentPage(nextPage);
-  };
-
-  const handlePrevPage = async () => {
-    if (currentPage > 1) {
-      const prevPage = currentPage - 1;
-      const startIndex = (prevPage - 1) * 10;
-      await fetchResults(query, startIndex);
-      setCurrentPage(prevPage);
-    }
   };
 
   return (
@@ -93,7 +56,7 @@ function App() {
                 <li className="nav-item">
                   <a className="nav-link" href="/" onClick={handleLogout}>Logout</a>
                 </li>
-                <SearchBar query={query} onQueryChange={handleQueryChange} onSearch={handleSearch} />
+                <SearchBar query={query} onQueryChange={(event) => handleQueryChange(event, setQuery)} onSearch={(event) => handleSearch(event, query, setResults, setTotalPages, setCurrentPage)} />
               </>
             )}
           </div>
@@ -105,7 +68,7 @@ function App() {
         <Route path="/Register" element={<Register />} />
         <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
         <Route path="/" element={<Navigate to={isLoggedIn ? "/UserAccount" : "/LandingPage"} />} />
-        <Route path="/BookResults" element={<BookResults results={results} query={query} onNextPage={handleNextPage} onPrevPage={handlePrevPage} currentPage={currentPage} />} />
+        <Route path="/BookResults" element={<BookResults results={results} currentPage={currentPage} totalPages={totalPages} onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} />} />
       </Routes>
     </BrowserRouter>
   );

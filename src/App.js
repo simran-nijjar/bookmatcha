@@ -7,6 +7,7 @@ import { Register } from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
 import { LandingPage } from './Pages/LandingPage';
 import { BookResults } from './Pages/BookResults';
+import { BookDetails } from './Pages/BookDetails';
 import SearchBar from './Components/SearchBar';
 import { handleQueryChange, handleSearch, handleNextPage, handlePrevPage } from './Components/SearchUtilities';
 
@@ -69,6 +70,7 @@ function App() {
         <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
         <Route path="/" element={<Navigate to={isLoggedIn ? "/UserAccount" : "/LandingPage"} />} />
         <Route path="/BookResults" element={<BookResults results={results} currentPage={currentPage} totalPages={totalPages} onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} />} />
+        <Route path="/book/:id" element={<BookDetails />} />
       </Routes>
     </BrowserRouter>
   );

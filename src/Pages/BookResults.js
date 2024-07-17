@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   return (
@@ -15,7 +16,9 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
                   <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
                 )}
                 <div>
-                  <strong>{book.volumeInfo.title}</strong>
+                  <Link to={`/book/${book.id}`} state={{ book }}>
+                    <strong>{book.volumeInfo.title}</strong>
+                  </Link>
                   <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
                 </div>
               </li>

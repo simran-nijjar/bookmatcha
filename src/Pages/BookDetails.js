@@ -1,12 +1,74 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+var config = require('../config');
+
+// This file contains the book details when user clicks a specific book
 
 export function BookDetails() {
   const location = useLocation();
   const book = location.state?.book;
+  const [bookID, setBookID] = useState('');
+  const [writtenReview, setWrittenReview] = useState('');
+  const [rating, setRating] = useState('');
+  const [reviewerID, setReviewerID] = useState('');
+  const [reviewerName, setReviewerName] = useState('');
+  const [error, setError] = useState('');
 
-  if (!book) {
-    return <p>Book not found or data is not available...</p>;
+  useEffect(() => {
+    if (book) {
+      setBookID(book.id);
+    } else if (!book) {
+      return <p>Book not found or data is not available.</p>;
+    }
+  }, [book]);
+
+  const onChange = (event) => {
+    const { name, value } = event.target;
+    if (name === 'WrittenReview') {
+      setWrittenReview(value);
+    } else if (name === 'Rating') { 
+      setRating(value);
+    } else if (name === 'ReviewerID') {
+      setReviewerID(value);
+    } else if (name === 'ReviewerName') {
+      setReviewerName(value);
+    }
+  }
+
+  const validateFields = () => {
+    if(!writtenReview.trim() || !rating.trim()) {
+      setError('Please fill out all fields before saving review.');
+      return false;
+    }
+    return true;
+  }
+
+  const saveReview = (event) => {
+    event.preventDefault();
+
+    if (!validateFields()){
+      return;
+    }
+
+    axios.post(config.API_URL + 'savereview', {
+      "BookID" : bookID,
+      "WrittenReview" : writtenReview,
+      "Rating" : rating,
+      "ReviewerID" : reviewerID,
+      "ReviewerName" : reviewerName
+    })
+    .then((res) => {
+      console.log(res);
+      if (res.status === 200) {
+        console.log('Review saved.');
+      }
+    })
+    .catch((error) => {
+      console.log(error.response);
+      setError('Error saving review. Please try again later.');
+    });
+
   }
 
   return (
@@ -18,6 +80,44 @@ export function BookDetails() {
       <p><strong>{book.volumeInfo.title}</strong></p>
       <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
       <p><strong>Description:</strong> {book.volumeInfo.description}</p>
+      <div>
+      <h2>Reviews</h2>
+      <form>
+
+        {/* Written review */}
+        <p>Write your review here: </p>
+        <textarea id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="4" cols="100"></textarea>
+
+        {/* Rating */}
+        <p>Give a rating: </p>
+        <div className="btn-group btn-group-toggle" onChange={onChange} data-toggle="buttons">
+            <label className={`btn btn-secondary ${rating === '1'}`}>
+              <input type="radio" name="Rating" id="rating1" autoComplete="off" value="1" checked={rating === '1'} /> 1
+            </label>
+            <label className={`btn btn-secondary ${rating === '2'}`}>
+              <input type="radio" name="Rating" id="rating2" autoComplete="off" value="2" checked={rating === '2'} /> 2
+            </label>
+            <label className={`btn btn-secondary ${rating === '3'}`}>
+              <input type="radio" name="Rating" id="rating3" autoComplete="off" value="3" checked={rating === '3'} /> 3
+            </label>
+            <label className={`btn btn-secondary ${rating === '4'}`}>
+              <input type="radio" name="Rating" id="rating4" autoComplete="off" value="4" checked={rating === '4'} /> 4
+            </label>
+            <label className={`btn btn-secondary ${rating === '5'}`}>
+              <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} /> 5
+            </label>
+          </div>
+
+        <button className="btn btn-outline-dark" type="submit" onClick={saveReview}>Save Review</button>
+      </form>
+
+      {/* Error message */}
+      <div style={{ minHeight: '20px' }}>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
+
+      
+      </div>
     </div>
   );
 }

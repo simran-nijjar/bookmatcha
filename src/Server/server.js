@@ -114,3 +114,17 @@ app.post('/api/login', (request, response) => {
         });
     });
 });
+
+app.post('/api/savereview', (request, response) => {
+    const query = 'INSERT INTO MyLibraryApp.BookReview (BookID, WrittenReview, Rating, ReviewerID, ReviewerName) VALUES (?, ?, ?, ?, ?, ?)';
+    const values = [request.body['BookID'], request.body['WrittenReview'], request.body['Rating'], request.body['ReviewerID'], request.body['ReviewerName']];
+
+    connection.query(query, values, function(err, results, fields) {
+        if (err) {
+            console.error("Error inserting review: ", err);
+            response.status(500).send('Error inserting review');
+        } else {
+            response.status(200).send('Review inserted successfully');
+        }
+    })
+})

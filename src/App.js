@@ -64,13 +64,13 @@ function App() {
         </div>
       </nav>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
         <Route path="/Login" element={<Login onLogin={handleLogin} />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
-        <Route path="/" element={<Navigate to={isLoggedIn ? "/UserAccount" : "/LandingPage"} />} />
+        <Route path="/" element={isLoggedIn ? <Navigate to="/UserAccount" /> : <LandingPage />} />
         <Route path="/BookResults" element={<BookResults results={results} currentPage={currentPage} totalPages={totalPages} onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} />} />
         <Route path="/book/:id" element={<BookDetails />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

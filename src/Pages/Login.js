@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from 'jwt-decode';
 var config = require('../config');
 
 // This file contains the form the user sees when they login and the login processes
@@ -20,31 +21,44 @@ export const Login = ({ onLogin }) => {
         }
     };
 
-    const login = (event) => {
+    const login = async (event) => {
         event.preventDefault();
         
-        axios.post(config.API_URL + 'login', {
-            "Email": email,
-            "Password": password
-        })
-        .then((res) => {
-            console.log(res);
+        try {
+            const res = await axios.post(`${config.API_URL}login`, {
+                Email: email, 
+                Password: password
+            });
+    
             if (res.status === 200) {
-                // Handle successful login
-                localStorage.setItem('token', res.data.token);
+                const token = res.data.token;
+                localStorage.setItem('token', token);
+    
+                // Decode the token
+                const decodedToken = jwtDecode(token);
+
+                console.log("decodedToken: ", decodedToken);
+    
+                // Store user info in local storage
+                localStorage.setItem('user', JSON.stringify({
+                    email: decodedToken.email,
+                    firstName: decodedToken.firstName,
+                    lastName: decodedToken.lastName
+                }));
+
+    
                 setError('Logged in.');
                 onLogin();
                 navigate("/UserAccount");
             }
-        })
-        .catch((error) => {
-            console.log(error.response);
+        } catch (error) {
+            console.error(error.response);
             if (error.response && error.response.status === 400) {
                 setError('The email and password you entered do not match our records. Please try again.');
             } else {
                 setError('Login failed. Please try again later.');
             }
-        });
+        }
     };
 
     return (

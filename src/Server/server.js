@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const bcrypt = require("bcrypt")
-const saltRounds = 10
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -11,6 +11,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const mysql = require('mysql');
 const config = require('../config');
+const saltRounds = 10;
+const secretKey = config.jwt_key;
 
 // Connect to database
 const connection = mysql.createConnection({
@@ -80,6 +82,13 @@ app.post('/api/register', (request, response) => {
 });
 });
 
+const generateToken = (user) => {
+    const payload = {
+        email: user.Email
+    };
+    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+};
+
 // Endpoint to handle user login
 app.post('/api/login', (request, response) => {
     const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email =?';
@@ -110,7 +119,8 @@ app.post('/api/login', (request, response) => {
             }
 
             // Passwords match, send success response
-            response.status(200).json({ message: 'Login successful' });
+            const token = generateToken(user);
+            response.status(200).json({ message: 'Login successful', token });
         });
     });
 });
@@ -127,4 +137,4 @@ app.post('/api/savereview', (request, response) => {
             response.status(200).send('Review inserted successfully');
         }
     })
-})
+});

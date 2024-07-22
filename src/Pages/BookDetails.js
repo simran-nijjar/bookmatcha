@@ -16,108 +16,108 @@ export function BookDetails() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (book) {
-      setBookID(book.id);
-    } else if (!book) {
-      return <p>Book not found or data is not available.</p>;
-    }
+      // Retrieve user info from local storage
+      const user = JSON.parse(localStorage.getItem('user'));
+
+      if (book) {
+          setBookID(book.id);
+      } else if (!book) {
+          return <p>Book not found or data is not available.</p>;
+      }
+
+      if (user) {
+          setReviewerID(user.email);
+          setReviewerName(`${user.firstName} ${user.lastName}`);
+          console.log("User ", user);
+      }
   }, [book]);
 
   const onChange = (event) => {
-    const { name, value } = event.target;
-    if (name === 'WrittenReview') {
-      setWrittenReview(value);
-    } else if (name === 'Rating') { 
-      setRating(value);
-    } else if (name === 'ReviewerID') {
-      setReviewerID(value);
-    } else if (name === 'ReviewerName') {
-      setReviewerName(value);
-    }
+      const { name, value } = event.target;
+      if (name === 'WrittenReview') {
+          setWrittenReview(value);
+      } else if (name === 'Rating') { 
+          setRating(value);
+      }
   }
 
   const validateFields = () => {
-    if(!writtenReview.trim() || !rating.trim()) {
-      setError('Please fill out all fields before saving review.');
-      return false;
-    }
-    return true;
+      if (!writtenReview.trim() || !rating.trim()) {
+          setError('Please fill out all fields before saving review.');
+          return false;
+      }
+      return true;
   }
 
   const saveReview = (event) => {
-    event.preventDefault();
+      event.preventDefault();
 
-    if (!validateFields()){
-      return;
-    }
-
-    axios.post(config.API_URL + 'savereview', {
-      "BookID" : bookID,
-      "WrittenReview" : writtenReview,
-      "Rating" : rating,
-      "ReviewerID" : reviewerID,
-      "ReviewerName" : reviewerName
-    })
-    .then((res) => {
-      console.log(res);
-      if (res.status === 200) {
-        console.log('Review saved.');
+      if (!validateFields()) {
+          return;
       }
-    })
-    .catch((error) => {
-      console.log(error.response);
-      setError('Error saving review. Please try again later.');
-    });
 
+      console.log("BookId: ", bookID, " written review: ", writtenReview, " rating: ", rating, " reviewerID: ", reviewerID, "reviewerName: ", reviewerName);
+
+      axios.post(`${config.API_URL}savereview`, {
+          BookID: bookID,
+          WrittenReview: writtenReview,
+          Rating: rating,
+          ReviewerID: reviewerID,
+          ReviewerName: reviewerName
+      })
+      .then((res) => {
+          console.log(res);
+          if (res.status === 200) {
+              console.log('Review saved.');
+          }
+      })
+      .catch((error) => {
+          console.log(error.response);
+          setError('Error saving review. Please try again later.');
+      });
   }
 
   return (
-    <div>
-      <h1>Book Details</h1>
-      {book.volumeInfo.imageLinks?.thumbnail && (
-        <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
-      )}
-      <p><strong>{book.volumeInfo.title}</strong></p>
-      <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
-      <p><strong>Description:</strong> {book.volumeInfo.description}</p>
       <div>
-      <h2>Reviews</h2>
-      <form>
+          <h1>Book Details</h1>
+          {book.volumeInfo.imageLinks?.thumbnail && (
+              <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
+          )}
+          <p><strong>{book.volumeInfo.title}</strong></p>
+          <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
+          <p><strong>Description:</strong> {book.volumeInfo.description}</p>
+          <div>
+              <h2>Reviews</h2>
+              <form>
+                  <p>Write your review here: </p>
+                  <textarea id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="4" cols="100"></textarea>
 
-        {/* Written review */}
-        <p>Write your review here: </p>
-        <textarea id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="4" cols="100"></textarea>
+                  <p>Give a rating: </p>
+                  <div className="btn-group btn-group-toggle" onChange={onChange} data-toggle="buttons">
+                      <label className={`btn btn-secondary ${rating === '1'}`}>
+                          <input type="radio" name="Rating" id="rating1" autoComplete="off" value="1" checked={rating === '1'} /> 1
+                      </label>
+                      <label className={`btn btn-secondary ${rating === '2'}`}>
+                          <input type="radio" name="Rating" id="rating2" autoComplete="off" value="2" checked={rating === '2'} /> 2
+                      </label>
+                      <label className={`btn btn-secondary ${rating === '3'}`}>
+                          <input type="radio" name="Rating" id="rating3" autoComplete="off" value="3" checked={rating === '3'} /> 3
+                      </label>
+                      <label className={`btn btn-secondary ${rating === '4'}`}>
+                          <input type="radio" name="Rating" id="rating4" autoComplete="off" value="4" checked={rating === '4'} /> 4
+                      </label>
+                      <label className={`btn btn-secondary ${rating === '5'}`}>
+                          <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} /> 5
+                      </label>
+                  </div>
 
-        {/* Rating */}
-        <p>Give a rating: </p>
-        <div className="btn-group btn-group-toggle" onChange={onChange} data-toggle="buttons">
-            <label className={`btn btn-secondary ${rating === '1'}`}>
-              <input type="radio" name="Rating" id="rating1" autoComplete="off" value="1" checked={rating === '1'} /> 1
-            </label>
-            <label className={`btn btn-secondary ${rating === '2'}`}>
-              <input type="radio" name="Rating" id="rating2" autoComplete="off" value="2" checked={rating === '2'} /> 2
-            </label>
-            <label className={`btn btn-secondary ${rating === '3'}`}>
-              <input type="radio" name="Rating" id="rating3" autoComplete="off" value="3" checked={rating === '3'} /> 3
-            </label>
-            <label className={`btn btn-secondary ${rating === '4'}`}>
-              <input type="radio" name="Rating" id="rating4" autoComplete="off" value="4" checked={rating === '4'} /> 4
-            </label>
-            <label className={`btn btn-secondary ${rating === '5'}`}>
-              <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} /> 5
-            </label>
+                  <button className="btn btn-outline-dark" type="submit" onClick={saveReview}>Save Review</button>
+              </form>
+
+              <div style={{ minHeight: '20px' }}>
+                  {error && <p style={{ color: 'red' }}>{error}</p>}
+              </div>
           </div>
-
-        <button className="btn btn-outline-dark" type="submit" onClick={saveReview}>Save Review</button>
-      </form>
-
-      {/* Error message */}
-      <div style={{ minHeight: '20px' }}>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
       </div>
-
-      
-      </div>
-    </div>
   );
 }

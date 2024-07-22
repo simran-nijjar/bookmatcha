@@ -28,7 +28,6 @@ export function BookDetails() {
       if (user) {
           setReviewerID(user.email);
           setReviewerName(`${user.firstName} ${user.lastName}`);
-          console.log("User ", user);
       }
   }, [book]);
 
@@ -68,7 +67,8 @@ export function BookDetails() {
       .then((res) => {
           console.log(res);
           if (res.status === 200) {
-              console.log('Review saved.');
+              console.log('Review saved successfully.');
+              setError('Review saved successfully.');
           }
       })
       .catch((error) => {
@@ -95,19 +95,19 @@ export function BookDetails() {
                   <p>Give a rating: </p>
                   <div className="btn-group btn-group-toggle" onChange={onChange} data-toggle="buttons">
                       <label className={`btn btn-secondary ${rating === '1'}`}>
-                          <input type="radio" name="Rating" id="rating1" autoComplete="off" value="1" checked={rating === '1'} /> 1
+                          <input type="radio" name="Rating" id="rating1" autoComplete="off" value="1" checked={rating === '1'} onChange={onChange}/> 1
                       </label>
                       <label className={`btn btn-secondary ${rating === '2'}`}>
-                          <input type="radio" name="Rating" id="rating2" autoComplete="off" value="2" checked={rating === '2'} /> 2
+                          <input type="radio" name="Rating" id="rating2" autoComplete="off" value="2" checked={rating === '2'} onChange={onChange}/> 2
                       </label>
                       <label className={`btn btn-secondary ${rating === '3'}`}>
-                          <input type="radio" name="Rating" id="rating3" autoComplete="off" value="3" checked={rating === '3'} /> 3
+                          <input type="radio" name="Rating" id="rating3" autoComplete="off" value="3" checked={rating === '3'} onChange={onChange}/> 3
                       </label>
                       <label className={`btn btn-secondary ${rating === '4'}`}>
-                          <input type="radio" name="Rating" id="rating4" autoComplete="off" value="4" checked={rating === '4'} /> 4
+                          <input type="radio" name="Rating" id="rating4" autoComplete="off" value="4" checked={rating === '4'} onChange={onChange}/> 4
                       </label>
                       <label className={`btn btn-secondary ${rating === '5'}`}>
-                          <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} /> 5
+                          <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} onChange={onChange}/> 5
                       </label>
                   </div>
 

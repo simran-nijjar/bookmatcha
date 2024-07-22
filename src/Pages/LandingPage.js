@@ -22,7 +22,7 @@ export const LandingPage = () => {
                             <div className="mb-md-5 mt-md-4 pb-5">
                             <h2 className="fw-bold mb-2">Welcome to My Library!</h2>
                             <p className="text-white-50">Login or register to start adding books to your library.</p> <br></br>
-                                <div class="btn-group">
+                                <div className="btn-group">
                             <button className="btn btn-outline-light btn-lg px-5 mb-4" type="submit" onClick={handleLoginClick}>Login</button>
                             <br></br>
                             <button className="btn btn-outline-light btn-lg px-5 mb-4" type="submit" onClick={handleRegisterClick}>Register</button>

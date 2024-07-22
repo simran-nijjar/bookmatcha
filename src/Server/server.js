@@ -125,8 +125,27 @@ app.post('/api/login', (request, response) => {
     });
 });
 
+app.post('/api/insertbook', (request, response) => {
+    const query = 'INSERT INTO MyLibraryApp.Book (Name, BookID, Author) VALUES (?, ?, ?)';
+    const values = [request.body['Name'], request.body['BookID'], request.body['Author']];
+
+    connection.query(query, values, function (err, result, fields) {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                console.log("Book already exists in the database.");
+                response.status(200).send('Book already exists in the database.');
+            } else {
+                console.error("Error inserting book: ", err);
+                response.status(500).send('Error inserting book');
+            }
+        } else {
+            response.status(200).send('Book inserted successfully');
+        }
+    })
+});
+
 app.post('/api/savereview', (request, response) => {
-    const query = 'INSERT INTO MyLibraryApp.BookReview (BookID, WrittenReview, Rating, ReviewerID, ReviewerName) VALUES (?, ?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO MyLibraryApp.BookReview (BookID, WrittenReview, Rating, ReviewerID, ReviewerName) VALUES (?, ?, ?, ?, ?)';
     const values = [request.body['BookID'], request.body['WrittenReview'], request.body['Rating'], request.body['ReviewerID'], request.body['ReviewerName']];
 
     connection.query(query, values, function(err, results, fields) {

@@ -125,6 +125,7 @@ app.post('/api/login', (request, response) => {
     });
 });
 
+// Endpoint to handle inserting book when user clicks on the book
 app.post('/api/insertbook', (request, response) => {
     const query = 'INSERT INTO MyLibraryApp.Book (Name, BookID, Author) VALUES (?, ?, ?)';
     const values = [request.body['Name'], request.body['BookID'], request.body['Author']];
@@ -144,9 +145,10 @@ app.post('/api/insertbook', (request, response) => {
     })
 });
 
+// Endpoint to insert review of a book when a user saves it
 app.post('/api/savereview', (request, response) => {
-    const query = 'INSERT INTO MyLibraryApp.BookReview (BookID, WrittenReview, Rating, ReviewerID, ReviewerName) VALUES (?, ?, ?, ?, ?)';
-    const values = [request.body['BookID'], request.body['WrittenReview'], request.body['Rating'], request.body['ReviewerID'], request.body['ReviewerName']];
+    const query = 'INSERT INTO MyLibraryApp.BookReview (BookID, WrittenReview, Rating, ReviewerID) VALUES (?, ?, ?, ?)';
+    const values = [request.body['BookID'], request.body['WrittenReview'], request.body['Rating'], request.body['ReviewerID']];
 
     connection.query(query, values, function(err, results, fields) {
         if (err) {

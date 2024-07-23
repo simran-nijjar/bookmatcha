@@ -13,13 +13,24 @@ export function BookDetails() {
   const [rating, setRating] = useState('');
   const [reviewerID, setReviewerID] = useState('');
   const [error, setError] = useState('');
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
       // Retrieve user info from local storage
       const user = JSON.parse(localStorage.getItem('user'));
 
       if (book) {
-          setBookID(book.id);
+            setBookID(book.id);
+            // Fetch all reviews for book
+            axios.get(`${config.API_URL}fetchreviews`, {
+                params: {BookID: book.id}
+            })
+            .then((response) => {
+                setReviews(response.data);
+            })
+            .catch((error) => {
+                console.log("Error fetching reviews: ", error.response);
+            })
       } else if (!book) {
           return <p>Book not found or data is not available.</p>;
       }
@@ -67,7 +78,7 @@ export function BookDetails() {
           }
       })
       .catch((error) => {
-          console.log(error.response);
+          console.log("Error saving review: ", error.response);
           setError('Error saving review. Please try again later.');
       });
   }
@@ -82,6 +93,7 @@ export function BookDetails() {
           <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
           <p><strong>Description:</strong> {book.volumeInfo.description}</p>
           <div>
+          <hr></hr>
               <h2>Reviews</h2>
               <form>
                   <p>Write your review here: </p>
@@ -105,14 +117,36 @@ export function BookDetails() {
                           <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} onChange={onChange}/> 5
                       </label>
                   </div>
-
                   <button className="btn btn-outline-dark" type="submit" onClick={saveReview}>Save Review</button>
               </form>
-
               <div style={{ minHeight: '20px' }}>
-                  {error && <p style={{ color: 'red' }}>{error}</p>}
+                  {error && <p style={{ color: 'black' }}>{error}</p>}
+              </div>
+              <hr></hr>
+              <div>
+                <h2>Posted Reviews</h2>
+                <table className="table table-light table-striped">
+                <thead>
+                    <tr>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Date Posted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {reviews.map((review) => (
+                        <tr key={review.BookReviewID}>
+                        <td>{review.RATING}</td>
+                        <td>{review.WrittenReview}</td>
+                        <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString() }</td>
+                        </tr>
+                    ))}
+                </tbody>
+                </table>
               </div>
           </div>
+
+
       </div>
   );
 }

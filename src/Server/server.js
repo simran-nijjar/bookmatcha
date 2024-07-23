@@ -159,3 +159,24 @@ app.post('/api/savereview', (request, response) => {
         }
     })
 });
+
+app.get('/api/fetchreviews', (request, response) => {
+    console.log("Received request to fetch reviews with params: ", request.query);
+
+    // Check if BookID is present in the request query
+    if (!request.query.BookID) {
+        console.error("BookID parameter is missing in the request query");
+        return response.status(400).send('BookID parameter is required');
+    }
+    const query = 'SELECT * FROM MyLibraryApp.BookReview WHERE BookID=?';
+    const values = [request.query.BookID];
+
+    connection.query(query, values, function (err, results, fields){
+        if (err) {
+            console.error("Error fetching reviews: ", err);
+            response.status(500).send('Error fetching reviews');
+        } else {
+            response.send(results);
+        }
+    });
+});

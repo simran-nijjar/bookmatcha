@@ -14,6 +14,7 @@ export function BookDetails() {
   const [reviewerID, setReviewerID] = useState('');
   const [error, setError] = useState('');
   const [reviews, setReviews] = useState([]);
+  const [reviewers, setReviewers] = useState({});
 
   useEffect(() => {
       // Retrieve user info from local storage
@@ -30,6 +31,21 @@ export function BookDetails() {
             })
             .catch((error) => {
                 console.log("Error fetching reviews: ", error.response);
+            })
+
+            //Fetch reviewers
+            axios.get(`${config.API_URL}fetchreviewername`, {
+                params: { BookID : book.id}
+            })
+            .then((response) => {
+                const reviewersMap = {};
+                response.data.forEach((reviewer) =>{
+                    reviewersMap[reviewer.ReviewerID] = `${reviewer.FirstName} ${reviewer.LastName}`;
+                });
+                setReviewers(reviewersMap);
+            })
+            .catch((error) => {
+                console.log("Error fetching reviewers: ", error.response);
             })
       } else if (!book) {
           return <p>Book not found or data is not available.</p>;
@@ -128,14 +144,17 @@ export function BookDetails() {
                 <table className="table table-light table-striped">
                 <thead>
                     <tr>
+                        <th>Reviewer</th>
                         <th>Rating</th>
                         <th>Review</th>
                         <th>Date Posted</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {}
                     {reviews.map((review) => (
                         <tr key={review.BookReviewID}>
+                        <td>{reviewers[review.ReviewerID]}</td>
                         <td>{review.RATING}</td>
                         <td>{review.WrittenReview}</td>
                         <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString() }</td>

@@ -12,7 +12,6 @@ export function BookDetails() {
   const [writtenReview, setWrittenReview] = useState('');
   const [rating, setRating] = useState('');
   const [reviewerID, setReviewerID] = useState('');
-  const [reviewerName, setReviewerName] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -27,7 +26,6 @@ export function BookDetails() {
 
       if (user) {
           setReviewerID(user.email);
-          setReviewerName(`${user.firstName} ${user.lastName}`);
       }
   }, [book]);
 
@@ -59,8 +57,7 @@ export function BookDetails() {
           BookID: bookID,
           WrittenReview: writtenReview,
           Rating: rating,
-          ReviewerID: reviewerID,
-          ReviewerName: reviewerName
+          ReviewerID: reviewerID
       })
       .then((res) => {
           console.log(res);

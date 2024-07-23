@@ -46,7 +46,7 @@ export const Login = ({ onLogin }) => {
                     lastName: decodedToken.lastName
                 }));
 
-    
+                localStorage.setItem('isLoggedIn', 'true');
                 setError('Logged in.');
                 onLogin();
                 navigate("/UserAccount");

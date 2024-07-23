@@ -54,9 +54,7 @@ export function BookDetails() {
       if (!validateFields()) {
           return;
       }
-
-      console.log("BookId: ", bookID, " written review: ", writtenReview, " rating: ", rating, " reviewerID: ", reviewerID, "reviewerName: ", reviewerName);
-
+      
       axios.post(`${config.API_URL}savereview`, {
           BookID: bookID,
           WrittenReview: writtenReview,

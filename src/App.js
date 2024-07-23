@@ -21,9 +21,8 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
     } else {
-      localStorage.removeItem('token');
       setIsLoggedIn(false);
     }
   }, []);

@@ -83,7 +83,8 @@ export const Register = () => {
           firstName: decodedToken.firstName,
           lastName: decodedToken.lastName
         }));
-
+        
+        localStorage.setItem('isLoggedIn', 'true');
         setError('Registered successfully.');
         navigate('/UserAccount'); // Redirect after successful registration
       }

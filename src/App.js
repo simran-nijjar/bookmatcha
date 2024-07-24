@@ -64,7 +64,7 @@ function App() {
       </nav>
       <Routes>
         <Route path="/Login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/Register" element={<Register />} />
+        <Route path="/Register" element={<Register onLogin={handleLogin} />} />
         <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
         <Route path="/" element={isLoggedIn ? <Navigate to="/UserAccount" /> : <LandingPage />} />
         <Route path="/BookResults" element={<BookResults results={results} currentPage={currentPage} totalPages={totalPages} onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} />} />

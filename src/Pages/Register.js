@@ -6,7 +6,7 @@ var config = require('../config');
 
 // This file contains the form the user sees when they register an account
 
-export const Register = () => {
+export const Register = ({ onLogin }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -68,14 +68,13 @@ export const Register = () => {
         Email: email,
         Password: password
       });
-
+      
       if (res.status === 200) {
         const token = res.data.token;
         localStorage.setItem('token', token);
 
         // Decode the token
         const decodedToken = jwtDecode(token);
-        console.log("decodedToken: ", decodedToken);
 
         // Store user info in local storage
         localStorage.setItem('user', JSON.stringify({
@@ -85,7 +84,8 @@ export const Register = () => {
         }));
         
         localStorage.setItem('isLoggedIn', 'true');
-        setError('Registered successfully.');
+        setError('');
+        onLogin();
         navigate('/UserAccount'); // Redirect after successful registration
       }
     } catch (error) {

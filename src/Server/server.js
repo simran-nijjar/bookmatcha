@@ -38,6 +38,13 @@ app.get('/', (request, response)=>{
     response.send('MyLibrary Application Setup Tested!')
 ;})
 
+const generateToken = (user) => {
+    const payload = {
+        email: user.Email
+    };
+    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+};
+
 // Endpoint to handle user registration
 app.post('/api/register', (request, response) => {
     bcrypt.genSalt(saltRounds, (err, salt) => {
@@ -73,21 +80,20 @@ app.post('/api/register', (request, response) => {
                 if (err) {
                     console.error('Failed to register user: ', err);
                     response.status(500).send('Failed to register user');
-                } else {
-                    response.status(200).json('User registered successfully');
+                    return;
                 }
+                const user = {
+                    Email: request.body['Email'],
+                    FirstName: request.body['FirstName'],
+                    LastName: request.body['LastName']
+                };
+                const token = generateToken(user);
+                response.status(200).json({ message: 'User registered successfully', token });
             });
         });
     });
 });
 });
-
-const generateToken = (user) => {
-    const payload = {
-        email: user.Email
-    };
-    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
-};
 
 // Endpoint to handle user login
 app.post('/api/login', (request, response) => {

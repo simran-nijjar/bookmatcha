@@ -4,6 +4,7 @@ import axios from 'axios';
 var config = require('../config');
 
 // This file contains the book details when user clicks a specific book
+// User can also add a review here and view other reviews for the book
 
 export function BookDetails() {
   const location = useLocation();
@@ -22,39 +23,45 @@ export function BookDetails() {
 
       if (book) {
             setBookID(book.id);
-            // Fetch all reviews for book
-            axios.get(`${config.API_URL}fetchreviews`, {
-                params: {BookID: book.id}
-            })
-            .then((response) => {
-                setReviews(response.data);
-            })
-            .catch((error) => {
-                console.log("Error fetching reviews: ", error.response);
-            })
-
-            //Fetch reviewers
-            axios.get(`${config.API_URL}fetchreviewername`, {
-                params: { BookID : book.id}
-            })
-            .then((response) => {
-                const reviewersMap = {};
-                response.data.forEach((reviewer) =>{
-                    reviewersMap[reviewer.ReviewerID] = `${reviewer.FirstName} ${reviewer.LastName}`;
-                });
-                setReviewers(reviewersMap);
-            })
-            .catch((error) => {
-                console.log("Error fetching reviewers: ", error.response);
-            })
+            fetchReviews(book.id);
+            fetchReviewers(book.id);
       } else if (!book) {
           return <p>Book not found or data is not available.</p>;
       }
-
       if (user) {
           setReviewerID(user.email);
       }
   }, [book]);
+  
+  // Method to fetch all reviews for book
+  const fetchReviews = (bookId) => {
+     axios.get(`${config.API_URL}fetchreviews`, {
+        params: {BookID: bookId}
+    })
+    .then((response) => {
+        setReviews(response.data);
+    })
+    .catch((error) => {
+        console.log("Error fetching reviews: ", error.response);
+    })
+  };
+
+  // Method to fetch reviewers
+  const fetchReviewers = (bookId) => {
+    axios.get(`${config.API_URL}fetchreviewername`, {
+        params: { BookID : bookId}
+    })
+    .then((response) => {
+        const reviewersMap = {};
+        response.data.forEach((reviewer) =>{
+            reviewersMap[reviewer.ReviewerID] = `${reviewer.FirstName} ${reviewer.LastName}`;
+        });
+        setReviewers(reviewersMap);
+    })
+    .catch((error) => {
+        console.log("Error fetching reviewers: ", error.response);
+    })
+  };
 
   const onChange = (event) => {
       const { name, value } = event.target;
@@ -65,6 +72,7 @@ export function BookDetails() {
       }
   }
 
+  // Method to validate all fields are filled out
   const validateFields = () => {
       if (!writtenReview.trim() || !rating.trim()) {
           setError('Please fill out all fields before saving review.');
@@ -73,6 +81,7 @@ export function BookDetails() {
       return true;
   }
 
+  // Method to post review to the backend
   const saveReview = (event) => {
       event.preventDefault();
 
@@ -90,7 +99,12 @@ export function BookDetails() {
           console.log(res);
           if (res.status === 200) {
               console.log('Review saved successfully.');
+              // Refresh reviews and clear form
               setError('Review saved successfully.');
+              fetchReviews(bookID);
+              fetchReviewers(bookID);
+              setWrittenReview('');
+              setRating('');
           }
       })
       .catch((error) => {

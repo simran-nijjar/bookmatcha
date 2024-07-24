@@ -166,6 +166,7 @@ app.post('/api/savereview', (request, response) => {
     })
 });
 
+// Endpoint to fetch reviews of a book when a user clicks a book
 app.get('/api/fetchreviews', (request, response) => {
     console.log("Received request to fetch reviews with params: ", request.query);
 
@@ -187,6 +188,7 @@ app.get('/api/fetchreviews', (request, response) => {
     });
 });
 
+// Endpoint to fetch name of reviewer for each review of a book
 app.get('/api/fetchreviewername', (request, response) => {
     console.log("Received request to fetch reviewer names with params: ", request.query);
 
@@ -211,5 +213,38 @@ app.get('/api/fetchreviewername', (request, response) => {
         } else {
             response.send(results);
         }
+    });
+});
+
+app.get('/api/fetchuserreviews', (request, response) => {
+    // Check if ReviewerID is present in the request query
+    if (!request.query.ReviewerID) {
+        console.error("ReviewerID parameter is missing in the request query");
+        return response.status(400).send('ReviewerID parameter is required');
+    }
+
+    const query = `
+        SELECT 
+            BookReview.BookReviewID,
+            BookReview.WrittenReview, 
+            BookReview.RATING, 
+            BookReview.ReviewDate, 
+            Book.Name AS bookTitle, 
+            Book.Author AS bookAuthor
+        FROM BookReview
+        INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
+        INNER JOIN Book on BookReview.BookID = Book.BookID
+        WHERE BookReview.ReviewerID = ?
+    `;
+    const values = [request.query.ReviewerID];
+    console.log("values: ", values);
+
+    connection.query(query, values, function (err, results) {
+        if (err) {
+            console.error("Error fetching reviews ", err);
+            response.status(500).send('Error fetching reviews');
+        } else {
+            response.send(results);
+        } 
     });
 });

@@ -1,13 +1,14 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, Link } from 'react-router-dom';
 import { Login } from "./Pages/Login";
 import { Register } from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
 import { LandingPage } from './Pages/LandingPage';
 import { BookResults } from './Pages/BookResults';
 import { BookDetails } from './Pages/BookDetails';
+import { HomePage } from './Pages/HomePage';
 import SearchBar from './Components/SearchBar';
 import { handleQueryChange, handleSearch, handleNextPage, handlePrevPage } from './Components/SearchUtilities';
 
@@ -40,7 +41,7 @@ function App() {
     <BrowserRouter>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
-          <a className="navbar-brand">My Library</a>
+          <Link className="navbar-brand" to={isLoggedIn ? "/HomePage" : "/"}>My Library</Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -66,8 +67,9 @@ function App() {
         <Route path="/Login" element={<Login onLogin={handleLogin} />} />
         <Route path="/Register" element={<Register onLogin={handleLogin} />} />
         <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
-        <Route path="/" element={isLoggedIn ? <Navigate to="/UserAccount" /> : <LandingPage />} />
+        <Route path="/" element={isLoggedIn ? <Navigate to="/HomePage" /> : <LandingPage />} />
         <Route path="/BookResults" element={<BookResults results={results} currentPage={currentPage} totalPages={totalPages} onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} />} />
+        <Route path="/HomePage" element={<HomePage />} />
         <Route path="/book/:id" element={<BookDetails />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

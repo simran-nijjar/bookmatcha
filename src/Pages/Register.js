@@ -86,7 +86,7 @@ export const Register = ({ onLogin }) => {
         localStorage.setItem('isLoggedIn', 'true');
         setError('');
         onLogin();
-        navigate('/UserAccount'); // Redirect after successful registration
+        navigate('/HomePage');
       }
     } catch (error) {
       console.log(error.response);

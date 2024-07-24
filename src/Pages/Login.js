@@ -49,7 +49,7 @@ export const Login = ({ onLogin }) => {
                 localStorage.setItem('isLoggedIn', 'true');
                 setError('Logged in.');
                 onLogin();
-                navigate("/UserAccount");
+                navigate("/HomePage");
             }
         } catch (error) {
             console.error(error.response);

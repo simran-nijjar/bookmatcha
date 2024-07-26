@@ -31,6 +31,21 @@ export const HomePage = () => {
         });
     };
 
+    const handleDelete = (reviewID) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this review?");
+        if (confirmDelete) {
+            axios.delete(`${config.API_URL}deletereview/${reviewID}`)
+            .then((response) => {
+                console.log("Review deleted: ", response.data);
+                const savedUser = JSON.parse(localStorage.getItem('user'));
+                fetchUserReviews(savedUser.email);
+            })
+            .catch((error) => {
+                console.log("Error deleting review: ", error.response);
+            });
+        }
+    };
+    
     return (
         <div>
           <h1>Welcome to Your Library</h1>
@@ -47,6 +62,7 @@ export const HomePage = () => {
                     <th>Rating</th>
                     <th>Review</th>
                     <th>Date Posted</th>
+                    <th>Actions</th> 
                   </tr>
                 </thead>
                 <tbody>
@@ -57,6 +73,9 @@ export const HomePage = () => {
                       <td>{review.RATING}</td>
                       <td>{review.WrittenReview}</td>
                       <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString()}</td>
+                      <td>
+                        <button onClick={() => handleDelete(review.BookReviewID)}>Delete</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -65,4 +84,4 @@ export const HomePage = () => {
           )}
         </div>
     );
-}
+};

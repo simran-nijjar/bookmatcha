@@ -285,7 +285,7 @@ app.put('/api/updatefirstname', (request, response) => {
     }
     if (!Email) {
         console.error("Email parameter is missing in the request body");
-        return response.status(400).send('Email are required');
+        return response.status(400).send('Email is required');
     }
 
     // Define SQL query and values
@@ -312,13 +312,13 @@ app.put('/api/updatelastname', (request, response) => {
     const { LastName, Email } = request.body;
     
     // Validate data
-    if (!FirstName) {
-        console.error("FirstName parameter is missing in the request body");
-        return response.status(400).send('FirstName are required');
+    if (!LastName) {
+        console.error("LastName parameter is missing in the request body");
+        return response.status(400).send('LastName is required');
     }
     if (!Email) {
         console.error("Email parameter is missing in the request body");
-        return response.status(400).send('Email are required');
+        return response.status(400).send('Email is required');
     }
 
     // Define SQL query and values
@@ -337,3 +337,24 @@ app.put('/api/updatelastname', (request, response) => {
         }
     });
 });
+
+app.delete('/api/deletereview/:id', (req, res) => {
+    const reviewID = req.params.id;
+
+    // Query to delete the review
+    const query = 'DELETE FROM MyLibraryApp.BookReview WHERE BookReviewID = ?';
+
+    connection.query(query, [reviewID], (err, result) => {
+        if (err) {
+            console.error('Error deleting review: ', err);
+            return res.status(500).send('Error deleting review');
+        }  
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send('Review not found');
+        }
+
+        res.status(200).send('Review deleted successfully');
+    });
+});
+

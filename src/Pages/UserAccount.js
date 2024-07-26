@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 var config = require('../config');
 
+// On this page the user can update their first and last name
+
 export const UserAccount = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);

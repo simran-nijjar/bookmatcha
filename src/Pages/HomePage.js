@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 var config = require('../config');
 
+// This page is the first page the user sees when they login or register
+// Here the user can see all of the books they have reviewed
+
 export const HomePage = () => {
     const [reviews, setReviews] = useState([]);
     
@@ -35,7 +38,7 @@ export const HomePage = () => {
             <p>No books in your library yet. Start reviewing books to add them to your library!</p>
           ) : (
             <div>
-              <h2>Your Reviewed Books</h2>
+              <h3>Your Reviewed Books</h3>
               <table className="table table-light table-striped">
                 <thead>
                   <tr>

@@ -216,6 +216,7 @@ app.get('/api/fetchreviewername', (request, response) => {
     });
 });
 
+// Endpoint to fetch reviews posted by a user
 app.get('/api/fetchuserreviews', (request, response) => {
     // Check if ReviewerID is present in the request query
     if (!request.query.ReviewerID) {
@@ -246,5 +247,93 @@ app.get('/api/fetchuserreviews', (request, response) => {
         } else {
             response.send(results);
         } 
+    });
+});
+
+// Endpoint to fetch user information
+app.get('/api/fetchuserinfo', (request, response) => {
+    if (!request.query.Email) {
+        console.error("Email parameter is missing in the request query");
+        return response.status(400).send('Email parameter is required');
+    }
+
+    const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email = ?';
+    const values = [request.query.Email];
+
+    connection.query(query, values, function(err, result) {
+        if (err) {
+            console.error("Error fetching user info: ", err);
+            response.status(500).send("Error fetching user info");
+        } 
+        
+        if (result.length > 0) {
+            response.send(result[0]); 
+        } else {
+            response.status(404).send("User not found");
+        }
+    })
+});
+
+app.put('/api/updatefirstname', (request, response) => {
+    // Extract data from request body
+    const { FirstName, Email } = request.body;
+    
+    // Validate data
+    if (!FirstName) {
+        console.error("FirstName parameter is missing in the request body");
+        return response.status(400).send('FirstName are required');
+    }
+    if (!Email) {
+        console.error("Email parameter is missing in the request body");
+        return response.status(400).send('Email are required');
+    }
+
+    // Define SQL query and values
+    const query = 'UPDATE MyLibraryApp.MyLibraryAppUser SET FirstName=? WHERE Email=?';
+    const values = [FirstName, Email];
+    console.log("FirstName, Email: ", FirstName, Email);
+
+    // Execute the query
+    connection.query(query, values, function (err, result) {
+        if (err) {
+            console.error("Error updating user's first name: ", err);
+            response.status(500).send("Error updating user's first name");
+        } else if (result.affectedRows > 0) {
+            response.json("Updated user's first name successfully");
+        } else {
+            console.log("result.affectedRows: ", result.affectedRows);
+            response.status(404).send("User not found");
+        }
+    });
+});
+
+app.put('/api/updatelastname', (request, response) => {
+    // Extract data from request body
+    const { LastName, Email } = request.body;
+    
+    // Validate data
+    if (!FirstName) {
+        console.error("FirstName parameter is missing in the request body");
+        return response.status(400).send('FirstName are required');
+    }
+    if (!Email) {
+        console.error("Email parameter is missing in the request body");
+        return response.status(400).send('Email are required');
+    }
+
+    // Define SQL query and values
+    const query = 'UPDATE MyLibraryApp.MyLibraryAppUser SET LastName=? WHERE Email=?';
+    const values = [LastName, Email];
+    
+    // Execute the query
+    connection.query(query, values, function (err, result) {
+        if (err) {
+            console.error("Error updating user's last name: ", err);
+            response.status(500).send("Error updating user's last name");
+        } else if (result.affectedRows > 0) {
+            response.json("Updated user's last name successfully");
+        } else {
+            response.status(404).send("User not found");
+        }
     });
 });

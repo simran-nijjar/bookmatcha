@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PasswordChecklist from "react-password-checklist"
 var config = require('../config');
 
 // On this page the user can update their first and last name
@@ -118,12 +119,17 @@ export const UserAccount = () => {
                 return false;
             }
         }
-    }
+    };
+
+    const validateNewPassword = () => {
+        const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/
+        return regex.test(String(newPassword));
+      }; 
 
     const handleUpdatePassword = async () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
 
-        if (savedUser && await validateCurrentPassword()) {
+        if (savedUser && await validateCurrentPassword() && validateNewPassword()) {
             axios.put(`${config.API_URL}updatepassword`, {
                 NewPassword: newPassword,
                 Email: savedUser.email
@@ -136,7 +142,7 @@ export const UserAccount = () => {
                 setUpdateStatus('Error updating password.');
             });
         }
-    }
+    };
 
     if (loading) {
         return <h1>Loading...</h1>;
@@ -210,6 +216,12 @@ export const UserAccount = () => {
                                             onChange={handleNewPasswordChange}
                                             className="form-control form-control-lg"
                                         />
+                                        <PasswordChecklist
+				                            rules={["minLength","specialChar","number","capital"]}
+				                            minLength={8}
+				                            value={newPassword}
+				                            onChange={(onChange) => {}}
+			                            />
                                         <button
                                             className="btn btn-outline-light btn-lg px-5 mt-3"
                                             type="button"

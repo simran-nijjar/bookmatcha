@@ -40,7 +40,7 @@ export const Register = ({ onLogin }) => {
   const validatePassword = () => {
     const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/
     return regex.test(String(password));
-  }
+  };
 
   // Check if all fields are filled out
   const validateFields = () => {

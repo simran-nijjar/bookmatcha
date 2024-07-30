@@ -10,6 +10,8 @@ export const UserAccount = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [updateStatus, setUpdateStatus] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
 
     useEffect(() => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
@@ -49,6 +51,14 @@ export const UserAccount = () => {
         setLastName(event.target.value);
     };
 
+    const handleCurrentPasswordChange = (event) => {
+        setCurrentPassword(event.target.value);
+    };
+
+    const handleNewPasswordChange = (event) => {
+        setNewPassword(event.target.value);
+    };
+
     const handleUpdateFirstName = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         
@@ -84,6 +94,49 @@ export const UserAccount = () => {
             });
         }
     };
+
+    const validateCurrentPassword = async () => {
+        const savedUser = JSON.parse(localStorage.getItem('user'));
+
+        if (savedUser) {
+            try {
+                const res = await axios.post(`${config.API_URL}validatepassword`, {
+                    Email: savedUser.email,
+                    Password: currentPassword
+                });
+
+                if (res.status === 200) {
+                    return true;
+                }
+            } catch (error) {
+                console.error(error.response);
+                if (error.response && error.response.status === 400) {
+                    setUpdateStatus('The current password you entered does not match our records. Please try again.');
+                } else {
+                    setUpdateStatus('Updating passwords failed. Please try again later.');
+                }
+                return false;
+            }
+        }
+    }
+
+    const handleUpdatePassword = async () => {
+        const savedUser = JSON.parse(localStorage.getItem('user'));
+
+        if (savedUser && await validateCurrentPassword()) {
+            axios.put(`${config.API_URL}updatepassword`, {
+                NewPassword: newPassword,
+                Email: savedUser.email
+            })
+            .then((response) => {
+                setUpdateStatus('Password updated successfully!');
+            })
+            .catch((error) => {
+                console.log("Error updating password: ", error);
+                setUpdateStatus('Error updating password.');
+            });
+        }
+    }
 
     if (loading) {
         return <h1>Loading...</h1>;
@@ -131,11 +184,38 @@ export const UserAccount = () => {
                                             className="form-control form-control-lg"
                                         />
                                         <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3"
+                                            className="btn btn-outline-light btn-lg px-5 mt-3 mb-5"
                                             type="button"
                                             onClick={handleUpdateLastName}
                                         >
                                             Update Last Name
+                                        </button>
+                                    </div>
+
+                                    <div className="form-outline form-white mb-3">
+                                        <label>Current Password</label>
+                                        <input
+                                            type="text"
+                                            name="CurrentPassword"
+                                            value={currentPassword}
+                                            onChange={handleCurrentPasswordChange}
+                                            className="form-control form-control-lg"
+                                        />
+                                        
+                                        <label>New Password</label>
+                                        <input
+                                            type="text"
+                                            name="NewPassword"
+                                            value={newPassword}
+                                            onChange={handleNewPasswordChange}
+                                            className="form-control form-control-lg"
+                                        />
+                                        <button
+                                            className="btn btn-outline-light btn-lg px-5 mt-3"
+                                            type="button"
+                                            onClick={handleUpdatePassword}
+                                        >
+                                            Update Password
                                         </button>
                                     </div>
 

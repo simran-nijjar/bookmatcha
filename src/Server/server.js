@@ -358,3 +358,81 @@ app.delete('/api/deletereview/:id', (req, res) => {
     });
 });
 
+app.post('/api/validatepassword', (request, response) => {
+    const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email =?';
+    const values = [request.body['Email'],request.body['Password']];
+
+    connection.query(query, values, function(err, results, fields) {
+        if (err) {
+            console.error('Error checking for user: ', err);
+            response.status(500).json({ message: 'Error checking for user' });
+            return;
+        }
+        console.log('Results:', results);
+        if (results.length == 0) {
+            response.status(400).json({ message: 'User does not exist' });
+            return;
+        } 
+        // Compared hashed password with user input password
+        const user = results[0];
+        bcrypt.compare(request.body['Password'], user.Password, function(err, isMatch) {
+            if (err) {
+                console.error('Error comparing passwords: ', err);
+                response.status(500).json({ message: 'Error comparing passwords' });
+                return;
+            }
+            if (!isMatch) {
+                response.status(400).json({ message: 'Current password is not correct' });
+                return;
+            }
+            response.status(200).json({ message: 'Password is valid'});
+        });
+    });
+    
+});
+
+app.put('/api/updatepassword', (request, response) => {
+    const { NewPassword, Email } = request.body;
+    
+    // Validate data
+    if (!NewPassword) {
+        console.error("NewPassword parameter is missing in the request body");
+        return response.status(400).send('NewPassword is required');
+    }
+    if (!Email) {
+        console.error("Email parameter is missing in the request body");
+        return response.status(400).send('Email is required');
+    }
+
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (err) {
+            console.error('Error generating salt: ', err);
+            response.status(500).json({ message: 'Error generating salt' });
+            return;
+        }
+
+        // Hash the password
+        bcrypt.hash(NewPassword, salt, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password: ', err);
+                response.status(500).json({ message: 'Error hashing password' });
+                return;
+            }
+
+            const query = 'UPDATE MyLibraryApp.MyLibraryAppUser SET Password=? WHERE Email =?';
+            values = [hashedPassword, Email];
+
+            connection.query(query, values, function(err, result) {
+                if (err) {
+                    console.error("Error updating user's last name: ", err);
+                    response.status(500).send("Error updating user's last name");
+                } else if (result.affectedRows > 0) {
+                    response.json("Updated user's last name successfully");
+                } else {
+                    response.status(404).send("User not found");
+                }
+            })
+        })
+    })
+});
+

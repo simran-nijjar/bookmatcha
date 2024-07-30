@@ -20,7 +20,8 @@ export function BookDetails() {
   useEffect(() => {
       // Retrieve user info from local storage
       const user = JSON.parse(localStorage.getItem('user'));
-
+    
+      // If book is found then set the bookID
       if (book) {
             setBookID(book.id);
             fetchReviews(book.id);
@@ -46,7 +47,7 @@ export function BookDetails() {
     })
   };
 
-  // Method to fetch reviewers
+  // Method to fetch reviewers for book
   const fetchReviewers = (bookId) => {
     axios.get(`${config.API_URL}fetchreviewername`, {
         params: { BookID : bookId}
@@ -72,7 +73,7 @@ export function BookDetails() {
       }
   }
 
-  // Method to validate all fields are filled out
+  // Method to validate all review fields are filled out
   const validateFields = () => {
       if (!writtenReview.trim() || !rating.trim()) {
           setError('Please fill out all fields before saving review.');
@@ -89,6 +90,7 @@ export function BookDetails() {
           return;
       }
       
+      // Post bookreview to the backend
       axios.post(`${config.API_URL}savereview`, {
           BookID: bookID,
           WrittenReview: writtenReview,
@@ -127,8 +129,11 @@ export function BookDetails() {
               <h2>Reviews</h2>
               <form>
                   <p>Write your review here: </p>
-                  <textarea id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="4" cols="100"></textarea>
 
+                  {/* Written review input */}
+                  <textarea id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="4" cols="100"></textarea>
+                
+                    {/* Rating input */}
                   <p>Give a rating: </p>
                   <div className="btn-group btn-group-toggle" onChange={onChange} data-toggle="buttons">
                       <label className={`btn btn-secondary ${rating === '1'}`}>
@@ -147,14 +152,20 @@ export function BookDetails() {
                           <input type="radio" name="Rating" id="rating5" autoComplete="off" value="5" checked={rating === '5'} onChange={onChange}/> 5
                       </label>
                   </div>
+
+                  {/* Save review button */}
                   <button className="btn btn-outline-dark" type="submit" onClick={saveReview}>Save Review</button>
               </form>
+
+              {/* Update message */}
               <div style={{ minHeight: '20px' }}>
                   {error && <p style={{ color: 'black' }}>{error}</p>}
               </div>
               <hr></hr>
               <div>
                 <h2>Posted Reviews</h2>
+
+                {/* Posted reviews table */}
                 <table className="table table-light table-striped">
                 <thead>
                     <tr>

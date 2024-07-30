@@ -15,13 +15,16 @@ export const UserAccount = () => {
     const [newPassword, setNewPassword] = useState('');
 
     useEffect(() => {
+        // Get user information from local storage
         const savedUser = JSON.parse(localStorage.getItem('user'));
         
         if (savedUser) {
+            // Get user information from the backend
             axios.get(`${config.API_URL}fetchuserinfo`, {
                 params: { Email: savedUser.email }
             })
             .then((response) => {
+                // Set the user information if user is found in backend
                 if (response.data) {
                     const user = response.data;
                     setUserInfo(user);
@@ -60,6 +63,7 @@ export const UserAccount = () => {
         setNewPassword(event.target.value);
     };
 
+    // Method to handle first name update
     const handleUpdateFirstName = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         
@@ -78,6 +82,7 @@ export const UserAccount = () => {
         }
     };
 
+    // Method to handle last name update
     const handleUpdateLastName = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         
@@ -96,6 +101,7 @@ export const UserAccount = () => {
         }
     };
 
+    // Method to check if the user's current password is correct
     const validateCurrentPassword = async () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
 
@@ -121,14 +127,18 @@ export const UserAccount = () => {
         }
     };
 
+    // Check if password meets requirements
+    //Length 8-100, at least one number, one special character, and one capital letter
     const validateNewPassword = () => {
         const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/
         return regex.test(String(newPassword));
-      }; 
+    }; 
 
+    // Method to update password
     const handleUpdatePassword = async () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
 
+        // If current password is correct and new password meets requirements 
         if (savedUser && await validateCurrentPassword() && validateNewPassword()) {
             axios.put(`${config.API_URL}updatepassword`, {
                 NewPassword: newPassword,
@@ -162,6 +172,7 @@ export const UserAccount = () => {
                                     <h2 className="fw-bold mb-2 text-uppercase">Update Profile</h2>
                                     <p>Here you can change your basic information.</p>
 
+                                    {/*First name input*/}
                                     <div className="form-outline form-white mb-3">
                                         <label>First Name</label>
                                         <input
@@ -179,7 +190,8 @@ export const UserAccount = () => {
                                             Update First Name
                                         </button>
                                     </div>
-
+                                    
+                                    {/*Last name input*/}
                                     <div className="form-outline form-white mb-3">
                                         <label>Last Name</label>
                                         <input
@@ -198,6 +210,7 @@ export const UserAccount = () => {
                                         </button>
                                     </div>
 
+                                    {/*Current password input*/}
                                     <div className="form-outline form-white mb-3">
                                         <label>Current Password</label>
                                         <input
@@ -208,6 +221,7 @@ export const UserAccount = () => {
                                             className="form-control form-control-lg"
                                         />
                                         
+                                        {/*New password input*/}
                                         <label>New Password</label>
                                         <input
                                             type="text"

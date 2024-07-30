@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export default function SearchBar({ query, onQueryChange, onSearch }) {
     const navigate = useNavigate();
 
+    // Navigates to book results page
     const handleSearch = async (event) => {
         await onSearch(event);
         navigate('/BookResults');

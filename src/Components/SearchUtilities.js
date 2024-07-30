@@ -2,6 +2,7 @@ const config = require('../config');
 
 // This file contains methods used to search for books
 
+// Each page will show 20 results
 const maxResults = 20;
 
 export const handleQueryChange = (event, setQuery) => {

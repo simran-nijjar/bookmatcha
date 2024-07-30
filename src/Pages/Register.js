@@ -37,6 +37,8 @@ export const Register = ({ onLogin }) => {
     return regex.test(String(email).toLowerCase());
   };
 
+  // Check if password meets the requirements
+  // Length 8-100, must include at least one number, one special character, and one capital letter
   const validatePassword = () => {
     const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/
     return regex.test(String(password));
@@ -59,6 +61,7 @@ export const Register = ({ onLogin }) => {
     return true;
   };
 
+  // Method to handle register 
   const register = async (event) => {
     event.preventDefault();
 
@@ -71,6 +74,7 @@ export const Register = ({ onLogin }) => {
       return;
     }
 
+    // If all fields are valid, insert into backend
     try {
       const res = await axios.post(`${config.API_URL}register`, {
         FirstName: firstName,
@@ -79,6 +83,7 @@ export const Register = ({ onLogin }) => {
         Password: password
       });
       
+      // Upon successful registration, store user into token
       if (res.status === 200) {
         const token = res.data.token;
         localStorage.setItem('token', token);
@@ -93,6 +98,7 @@ export const Register = ({ onLogin }) => {
           lastName: decodedToken.lastName
         }));
         
+        // Navigate to home page
         localStorage.setItem('isLoggedIn', 'true');
         setError('');
         onLogin();
@@ -155,11 +161,12 @@ export const Register = ({ onLogin }) => {
                   {error && <p style={{ color: 'white' }}>{error}</p>}
                 </div>
 
+                {/* Register button */}
                 <button className="btn btn-outline-light btn-lg px-5" onClick={register} type="submit">Register</button>
               </div>
 
               <div>
-                <p className="mb-0">Already have an account? <a href="/Login" className="text-blue-50">Login</a></p>
+                <p className="mb-0">Already have an account? <a href="/Login" className="text-white">Login</a></p>
               </div>
             </div>
           </div>

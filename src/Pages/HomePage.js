@@ -18,6 +18,7 @@ export const HomePage = () => {
         }
     }, []);
 
+    // Fetch all reviews the user has posted
     const fetchUserReviews = (reviewerID) => {
         axios.get(`${config.API_URL}fetchuserreviews`, {
             params: {ReviewerID: reviewerID}
@@ -31,12 +32,15 @@ export const HomePage = () => {
         });
     };
 
+    // Method to handle deleting a user's review
     const handleDelete = (reviewID) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this review?");
+        // Delete from backend
         if (confirmDelete) {
             axios.delete(`${config.API_URL}deletereview/${reviewID}`)
             .then((response) => {
                 console.log("Review deleted: ", response.data);
+                // Refresh user's reviews when deleted
                 const savedUser = JSON.parse(localStorage.getItem('user'));
                 fetchUserReviews(savedUser.email);
             })
@@ -54,6 +58,8 @@ export const HomePage = () => {
           ) : (
             <div>
               <h3>Your Reviewed Books</h3>
+
+              {/* User reviews table */}
               <table className="table table-light table-striped">
                 <thead>
                   <tr>

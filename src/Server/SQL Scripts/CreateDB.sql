@@ -13,6 +13,7 @@ CREATE TABLE Book (
     Name CHAR(100) NOT NULL,
     BookID CHAR(50) NOT NULL UNIQUE,
     Author CHAR(100) NOT NULL,
+    ImageLink TEXT(500)
     PRIMARY KEY (BookID)
 );
 

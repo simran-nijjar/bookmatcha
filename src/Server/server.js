@@ -38,6 +38,7 @@ app.get('/', (request, response)=>{
     response.send('MyLibrary Application Setup Tested!')
 ;})
 
+// Method to generate token for user
 const generateToken = (user) => {
     const payload = {
         email: user.Email
@@ -274,6 +275,8 @@ app.get('/api/fetchuserinfo', (request, response) => {
     })
 });
 
+
+// Endpoint to update first name
 app.put('/api/updatefirstname', (request, response) => {
     // Extract data from request body
     const { FirstName, Email } = request.body;
@@ -307,6 +310,7 @@ app.put('/api/updatefirstname', (request, response) => {
     });
 });
 
+// Endpoint to update last name
 app.put('/api/updatelastname', (request, response) => {
     // Extract data from request body
     const { LastName, Email } = request.body;
@@ -338,6 +342,7 @@ app.put('/api/updatelastname', (request, response) => {
     });
 });
 
+// Endpoint to delete review
 app.delete('/api/deletereview/:id', (req, res) => {
     const reviewID = req.params.id;
 
@@ -358,6 +363,7 @@ app.delete('/api/deletereview/:id', (req, res) => {
     });
 });
 
+// Endpoint to confirm password matches the backend
 app.post('/api/validatepassword', (request, response) => {
     const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
@@ -391,6 +397,7 @@ app.post('/api/validatepassword', (request, response) => {
     
 });
 
+// Endpoint to update user's password
 app.put('/api/updatepassword', (request, response) => {
     const { NewPassword, Email } = request.body;
     

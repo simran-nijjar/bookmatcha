@@ -21,15 +21,18 @@ export const Login = ({ onLogin }) => {
         }
     };
 
+    // Method to handle login
     const login = async (event) => {
         event.preventDefault();
         
+        // Validate user input in backend
         try {
             const res = await axios.post(`${config.API_URL}login`, {
                 Email: email, 
                 Password: password
             });
-    
+            
+            // Upon successful log, store user info in token
             if (res.status === 200) {
                 const token = res.data.token;
                 localStorage.setItem('token', token);
@@ -45,7 +48,8 @@ export const Login = ({ onLogin }) => {
                     firstName: decodedToken.firstName,
                     lastName: decodedToken.lastName
                 }));
-
+                
+                // Navigate to home page
                 localStorage.setItem('isLoggedIn', 'true');
                 setError('Logged in.');
                 onLogin();
@@ -79,15 +83,18 @@ export const Login = ({ onLogin }) => {
                                 {/*Password input*/}
                                 <div className="form-outline form-white mb-4">
                                     <input type="Password" name="Password" placeholder='Password' onChange={onChange} className="form-control form-control-lg" />
+                                
                                 {/* Error message */}
                                 <div style={{ minHeight: '20px' }}>
                                     {error && <p style={{ color: 'white' }}>{error}</p>}
                                 </div>
+
+                                {/* Logib button */}
                                 </div>
                                 <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={login}>Login</button>
                             </div>
                             <div>
-                                <p className="mb-0">Don't have an account? <a href="/Register" className="text-blue-50">Register</a></p>
+                                <p className="mb-0">Don't have an account? <a href="/Register" className="text-white">Register</a></p>
                             </div>
                         </div>
                     </div>

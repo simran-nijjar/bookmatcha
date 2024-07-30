@@ -2,6 +2,7 @@ import React, { useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import PasswordChecklist from "react-password-checklist"
 var config = require('../config');
 
 // This file contains the form the user sees when they register an account
@@ -36,6 +37,11 @@ export const Register = ({ onLogin }) => {
     return regex.test(String(email).toLowerCase());
   };
 
+  const validatePassword = () => {
+    const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/
+    return regex.test(String(password));
+  }
+
   // Check if all fields are filled out
   const validateFields = () => {
     if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
@@ -44,6 +50,10 @@ export const Register = ({ onLogin }) => {
     }
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
+      return false;
+    }
+    if (!validatePassword()){
+      setError('Password does not meet requirements');
       return false;
     }
     return true;
@@ -131,6 +141,13 @@ export const Register = ({ onLogin }) => {
                 {/* Confirm password input */}
                 <div className="form-outline form-white mb-4">
                   <input type="password" name="ConfirmPassword" placeholder='Re-Enter Password' value={confirmPassword} onChange={onChange} className="form-control form-control-lg" />
+                  <PasswordChecklist
+				              rules={["minLength","specialChar","number","capital","match"]}
+				              minLength={8}
+				              value={password}
+				              valueAgain={confirmPassword}
+				              onChange={(onChange) => {}}
+			            />
                 </div>
 
                 {/* Error message */}

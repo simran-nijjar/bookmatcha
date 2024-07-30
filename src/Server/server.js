@@ -230,6 +230,7 @@ app.get('/api/fetchuserreviews', (request, response) => {
             BookReview.BookReviewID,
             BookReview.WrittenReview, 
             BookReview.RATING, 
+            BookReview.BookID,
             BookReview.ReviewDate, 
             Book.Name AS bookTitle, 
             Book.Author AS bookAuthor

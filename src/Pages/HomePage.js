@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 var config = require('../config');
 
 // This page is the first page the user sees when they login or register
@@ -74,7 +75,11 @@ export const HomePage = () => {
                 <tbody>
                   {reviews.map((review) => (
                     <tr key={review.BookReviewID}>
-                      <td>{review.bookTitle}</td>
+                      <td>
+                        <Link to={`/book/${review.BookID}`}>
+                          {review.bookTitle}
+                        </Link>
+                      </td>
                       <td>{review.bookAuthor}</td>
                       <td>{review.RATING}</td>
                       <td>{review.WrittenReview}</td>

@@ -16,6 +16,7 @@
     "jwt-decode": "^4.0.0",
     "mysql": "^2.18.1",
     "react": "^18.3.1",
+    "react-burger-menu": "^3.0.9",
     "react-dom": "^18.3.1",
     "react-paginate": "^8.2.0",
     "react-password-checklist": "^1.6.0",

@@ -14,7 +14,9 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
       const response = await axios.post(`${config.API_URL}insertbook`, {
         Name: book.volumeInfo.title,
         BookID: book.id,
-        Author: book.volumeInfo.authors?.join(', ')
+        Author: book.volumeInfo.authors?.join(', '),
+        ImageLink: book.volumeInfo.imageLinks.smallThumbnail,
+        Categories: book.categories
       });
       
       // Successful book insertion will navigate to the book details page

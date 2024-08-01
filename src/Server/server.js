@@ -134,8 +134,8 @@ app.post('/api/login', (request, response) => {
 
 // Endpoint to handle inserting book when user clicks on the book
 app.post('/api/insertbook', (request, response) => {
-    const query = 'INSERT INTO MyLibraryApp.Book (Name, BookID, Author) VALUES (?, ?, ?)';
-    const values = [request.body['Name'], request.body['BookID'], request.body['Author']];
+    const query = 'INSERT INTO MyLibraryApp.Book (Name, BookID, Author, ImageLink, Categories) VALUES (?, ?, ?, ?, ?)';
+    const values = [request.body['Name'], request.body['BookID'], request.body['Author'], request.body['ImageLink'], request.body['Categories']];
 
     connection.query(query, values, function (err, result, fields) {
         if (err) {
@@ -240,7 +240,6 @@ app.get('/api/fetchuserreviews', (request, response) => {
         WHERE BookReview.ReviewerID = ?
     `;
     const values = [request.query.ReviewerID];
-    console.log("values: ", values);
 
     connection.query(query, values, function (err, results) {
         if (err) {
@@ -441,6 +440,27 @@ app.put('/api/updatepassword', (request, response) => {
                 }
             })
         })
+    })
+});
+
+app.get('/api/fetchusersbooks', (request, response) => {
+    if (!request.query.ReviewerID) {
+        console.error("ReviewerID parameter is missing in the request query");
+        return response.status(400).send('ReviewerID parameter is required');
+    }
+
+    const query = `SELECT Book.BookID, Book.Name, Book.Author FROM BOOK
+                   INNER JOIN BookReview ON BookReview.BookID = Book.BookID
+                   WHERE BookReview.ReviewerID=?`;
+    const values = [request.query.ReviewerID];
+
+    connection.query(query, values,  function(err, results) {
+        if (err) {
+            console.error("Error fetching books ", err);
+            response.status(500).send('Error fetching books');
+        } else {
+            response.send(results);
+        }
     })
 });
 

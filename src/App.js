@@ -9,6 +9,7 @@ import { LandingPage } from './Pages/LandingPage';
 import { BookResults } from './Pages/BookResults';
 import { BookDetails } from './Pages/BookDetails';
 import { HomePage } from './Pages/HomePage';
+import { BookRecommendations } from './Pages/BookRecommendations';
 import SearchBar from './Components/SearchBar';
 import { handleQueryChange, handleSearch, handleNextPage, handlePrevPage } from './Components/SearchUtilities';
 
@@ -51,6 +52,9 @@ function App() {
           <div className="navbar-nav ml-auto">
             {isLoggedIn && (
               <>
+              <li className="nav-item">
+                  <a className="nav-link" href="/BookRecommendations">Recommendations</a>
+                </li>
                 <li className="nav-item">
                   <a className="nav-link" href="/UserAccount">My Account</a>
                 </li>
@@ -70,6 +74,7 @@ function App() {
         <Route path="/" element={isLoggedIn ? <Navigate to="/HomePage" /> : <LandingPage />} />
         <Route path="/BookResults" element={<BookResults results={results} currentPage={currentPage} totalPages={totalPages} onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} />} />
         <Route path="/HomePage" element={<HomePage />} />
+        <Route path="/BookRecommendations" element={<BookRecommendations />} />
         <Route path="/book/:id" element={<BookDetails />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

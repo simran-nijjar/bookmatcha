@@ -449,9 +449,9 @@ app.get('/api/fetchusersbooks', (request, response) => {
         return response.status(400).send('ReviewerID parameter is required');
     }
 
-    const query = `SELECT Book.BookID, Book.Name, Book.Author FROM BOOK
+    const query = `SELECT Book.BookID, Book.Name, Book.Author, BookReview.RATING FROM BOOK
                    INNER JOIN BookReview ON BookReview.BookID = Book.BookID
-                   WHERE BookReview.ReviewerID=?`;
+                   WHERE BookReview.ReviewerID=? AND BookReview.RATING >= 3`;
     const values = [request.query.ReviewerID];
 
     connection.query(query, values,  function(err, results) {

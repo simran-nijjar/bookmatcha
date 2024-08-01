@@ -464,3 +464,26 @@ app.get('/api/fetchusersbooks', (request, response) => {
     })
 });
 
+app.get('/api/getuserrecommendedbooks', (request, response) => {
+    if (!request.query.ReviewerID) {
+        console.error("ReviewerID parameter is missing in the request query");
+        return response.status(400).send('ReviewerID parameter is required');
+    }
+
+    const query = `SELECT DISTINCT b.BookID, b.Name, b.Author, br.RATING
+                   FROM Book b
+                   INNER JOIN BookReview br ON b.BookID = br.BookID
+                   WHERE br.RATING >= 3
+                   AND br.ReviewerID !=?`;
+    const values = [request.query.ReviewerID];
+    
+    connection.query(query, values, function(err, results){
+        if (err) {
+            console.error("Error fetching books ", err);
+            response.status(500).send("Error fetching books");
+        } else {
+            response.send(results);
+        }
+    })
+})
+

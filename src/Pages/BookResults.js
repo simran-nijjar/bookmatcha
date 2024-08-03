@@ -21,7 +21,6 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
       
       // Successful book insertion will navigate to the book details page
       if (response.status === 200) {
-        console.log('Book inserted successfully or already exists in the database');
         navigate(`/book/${book.id}`, { state: { book } });
       }
     } catch (error) {

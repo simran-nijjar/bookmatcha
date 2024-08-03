@@ -15,7 +15,6 @@ export const HomePage = () => {
         
         if (savedUser) {
           fetchUserReviews(savedUser.email);
-          console.log("savedUser: ", savedUser);
         }
     }, []);
 
@@ -25,7 +24,6 @@ export const HomePage = () => {
             params: {ReviewerID: reviewerID}
         })
         .then((response) => {
-            console.log("Fetched user reviews: ", response.data); 
             setReviews(response.data);
         })
         .catch((error) => {
@@ -40,7 +38,6 @@ export const HomePage = () => {
         if (confirmDelete) {
             axios.delete(`${config.API_URL}deletereview/${reviewID}`)
             .then((response) => {
-                console.log("Review deleted: ", response.data);
                 // Refresh user's reviews when deleted
                 const savedUser = JSON.parse(localStorage.getItem('user'));
                 fetchUserReviews(savedUser.email);

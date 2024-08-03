@@ -39,8 +39,6 @@ export const Login = ({ onLogin }) => {
     
                 // Decode the token
                 const decodedToken = jwtDecode(token);
-
-                console.log("decodedToken: ", decodedToken);
     
                 // Store user info in local storage
                 localStorage.setItem('user', JSON.stringify({

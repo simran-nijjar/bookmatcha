@@ -112,9 +112,7 @@ export function BookDetails() {
         ReviewerID: reviewerID
       })
       .then((res) => {
-        console.log(res);
         if (res.status === 200) {
-          console.log('Review saved successfully.');
           setError('Review saved successfully.');
           fetchReviews(bookID);
           fetchReviewers(bookID);

@@ -17,6 +17,7 @@ export function BookDetails() {
     const [error, setError] = useState('');
     const [reviews, setReviews] = useState([]);
     const [reviewers, setReviewers] = useState({});
+    const [averageRating, setAverageRating] = useState(null);
   
     // Fetch book details from the Google Books API
     const fetchBookDetails = useCallback(async (bookId) => {
@@ -39,6 +40,11 @@ export function BookDetails() {
       })
       .then((response) => {
         setReviews(response.data);
+        if (response.data.length > 0) {
+          setAverageRating(response.data[0].averageRating);
+        } else {
+          setAverageRating(null);
+        }
       })
       .catch((error) => {
         console.log("Error fetching reviews:", error.response);
@@ -142,6 +148,7 @@ export function BookDetails() {
       <p><strong>{book.volumeInfo?.title || 'No Title Available'}</strong></p>
       <p><strong>By:</strong> {book.volumeInfo?.authors?.join(', ') || 'Unknown'}</p>
       <p><strong>Description:</strong> {book.volumeInfo?.description || 'No Description Available'}</p>
+      <p><strong>Average Rating:</strong> {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}</p>
       <div>
         <hr />
         <h2 className="title">Reviews</h2>

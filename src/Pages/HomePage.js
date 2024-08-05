@@ -26,6 +26,7 @@ export const HomePage = () => {
             params: {ReviewerID: reviewerID}
         })
         .then((response) => {
+            console.log(response.data);
             setReviews(response.data);
         })
         .catch((error) => {
@@ -65,7 +66,8 @@ export const HomePage = () => {
                   <tr>
                     <th>Title</th>
                     <th>Author</th>
-                    <th>Rating</th>
+                    <th>Average Rating</th>
+                    <th>Your Rating</th>
                     <th>Review</th>
                     <th>Date Posted</th>
                     <th>Actions</th> 
@@ -80,6 +82,7 @@ export const HomePage = () => {
                         </Link>
                       </td>
                       <td>{review.bookAuthor}</td>
+                      <td>{review.averageRating}</td>
                       <td>{review.RATING}</td>
                       <td>{review.WrittenReview}</td>
                       <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString()}</td>

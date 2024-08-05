@@ -14,7 +14,8 @@ CREATE TABLE Book (
     BookID CHAR(50) NOT NULL UNIQUE,
     Author CHAR(100) NOT NULL,
     ImageLink TEXT(500),
-    Categories CHAR(100)
+    Categories CHAR(100),
+    AverageRating INT, 
     PRIMARY KEY (BookID)
 );
 
@@ -26,6 +27,7 @@ CREATE TABLE BookReview (
     ReviewerID CHAR(255) NOT NULL,
     ReviewDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (BookReviewID),
+    UNIQUE KEY UniqueReview (BookID, ReviewerID),
     FOREIGN KEY (BookID) REFERENCES Book(BookID) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (ReviewerID) REFERENCES MyLibraryAppUser(Email) ON UPDATE CASCADE ON DELETE CASCADE
 );

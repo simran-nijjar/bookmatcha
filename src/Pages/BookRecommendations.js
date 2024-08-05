@@ -70,6 +70,16 @@ export const BookRecommendations = () => {
                 }));
 
             setRecommendedBooks(filteredBooks);
+
+            const bookIDs = filteredBooks.map(book => book.BookID);
+            const averageRatings = await fetchAverageRatings(bookIDs);
+
+            const recommendedBooksWithRatings = filteredBooks.map(book => {
+                const rating = averageRatings.find(r => r.BookID === book.BookID);
+                return { ...book, averageRating: rating ? rating.averageRating: 'No rating'}
+            });
+
+            setRecommendedBooks(recommendedBooksWithRatings);
         } catch (error) {
             console.error('Error in recommendation logic:', error);
             setError('Error fetching recommendations.');
@@ -101,6 +111,19 @@ export const BookRecommendations = () => {
         }
     };
 
+    const fetchAverageRatings = async (bookIDs) => {
+        try {
+            const response = await axios.get(`${config.API_URL}fetchaverageratings`, {
+                params: { BookIDs: bookIDs.join(',') }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching average ratings:', error);
+            setError('Error fetching average ratings.');
+            return [];
+        }
+    };
+
     return (
         <div>
             <h1 className="title">Book Recommendations</h1>
@@ -116,6 +139,7 @@ export const BookRecommendations = () => {
                             <tr>
                                 <th>Title</th>
                                 <th>Author</th>
+                                <th>Average Rating</th>
                                 <th>Genre</th>
                             </tr>
                         </thead>
@@ -128,6 +152,7 @@ export const BookRecommendations = () => {
                                         </Link>
                                     </td>
                                     <td>{book.Author}</td>
+                                    <td>{book.averageRating}</td>
                                     <td>{book.Genre}</td>
                                 </tr>
                             ))}

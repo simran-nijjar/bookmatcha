@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,12 @@ var config = require('../config');
 
 export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   const navigate = useNavigate();
+  const [averageRatings, setAverageRatings] = useState({});
+
+  useEffect(() => {
+    const bookIDs = results.map(book => book.id);
+    fetchAverageRatings(bookIDs);
+  }, [results]);
 
   // When a book is selected, it will be inserted into the backend if it's not already inserted 
   const insertBook = async (book) => {
@@ -26,6 +32,21 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
       }
     } catch (error) {
       console.error('Error inserting book:', error);
+    }
+  };
+
+  const fetchAverageRatings = async (bookIDs) => {
+    try {
+      const response = await axios.get(`${config.API_URL}fetchaverageratings`, {
+        params: {BookIDs: bookIDs.join(",")}
+      });
+      const ratings = response.data.reduce((acc, item) => {
+      acc[item.BookID] = item.averageRating;
+      return acc;
+    }, {});
+    setAverageRatings(ratings);
+    } catch (error) {
+      console.error('Error fetching ratings:', error);
     }
   };
 
@@ -48,6 +69,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
                     <strong>{book.volumeInfo.title}</strong>
                   </button>
                   <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
+                  <p><strong>Average Rating:</strong> {averageRatings[book.id] || 'No ratings'}</p>
                 </div>
               </li>
             ))}

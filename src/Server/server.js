@@ -154,17 +154,35 @@ app.post('/api/insertbook', (request, response) => {
 
 // Endpoint to insert review of a book when a user saves it
 app.post('/api/savereview', (request, response) => {
-    const query = 'INSERT INTO MyLibraryApp.BookReview (BookID, WrittenReview, Rating, ReviewerID) VALUES (?, ?, ?, ?)';
-    const values = [request.body['BookID'], request.body['WrittenReview'], request.body['Rating'], request.body['ReviewerID']];
+    const { BookID, WrittenReview, Rating, ReviewerID } = request.body;
+    const checkReviewQuery = 'SELECT * FROM BookReview WHERE BookID=? AND ReviewerID=?';
+    const checkReviewValues = [BookID, ReviewerID];
 
-    connection.query(query, values, function(err, results, fields) {
+    connection.query(checkReviewQuery, checkReviewValues, function (err, result, fields) {
         if (err) {
-            console.error("Error inserting review: ", err);
-            response.status(500).send('Error inserting review');
-        } else {
-            response.status(200).send('Review inserted successfully');
+            console.error("Error checking for review: ", err);
+            response.status(500).send("Error checking for review");
         }
-    })
+
+        let query;
+        let values;
+        let isUpdating = result.length > 0;
+
+        if (isUpdating) {
+            query = 'UPDATE BookReview SET WrittenReview = ?, Rating = ? WHERE BookID = ? AND ReviewerID = ?';
+            values = [WrittenReview, Rating, BookID, ReviewerID];
+        } else {
+            query = 'INSERT INTO BookReview (BookID, WrittenReview, Rating, ReviewerID) VALUES (?, ?, ?, ?)';
+            values = [BookID, WrittenReview, Rating, ReviewerID];
+        }
+
+        connection.query(query, values, (err, results) => {
+            if (err) {
+                console.error("Error inserting/updating review: ", err);
+                return response.status(500).send('Error inserting/updating review');
+            }
+        });
+    });
 });
 
 // Endpoint to fetch reviews of a book when a user clicks a book
@@ -176,7 +194,27 @@ app.get('/api/fetchreviews', (request, response) => {
         console.error("BookID parameter is missing in the request query");
         return response.status(400).send('BookID parameter is required');
     }
-    const query = 'SELECT * FROM MyLibraryApp.BookReview WHERE BookID=?';
+    const query = `
+        SELECT 
+            BookReview.BookReviewID,
+            BookReview.WrittenReview, 
+            BookReview.RATING, 
+            BookReview.BookID,
+            BookReview.ReviewDate, 
+            Book.Name AS bookTitle, 
+            Book.Author AS bookAuthor,
+            AvgRatings.averageRating
+        FROM BookReview
+        INNER JOIN Book ON BookReview.BookID = Book.BookID
+        INNER JOIN (
+            SELECT 
+                BookID,
+                AVG(RATING) AS averageRating
+                FROM BookReview
+                GROUP BY BookID
+            ) AS AvgRatings ON BookReview.BookID = AvgRatings.BookID
+            WHERE BookReview.BookID = ?;`
+    ;
     const values = [request.query.BookID];
 
     connection.query(query, values, function (err, results, fields){
@@ -233,11 +271,19 @@ app.get('/api/fetchuserreviews', (request, response) => {
             BookReview.BookID,
             BookReview.ReviewDate, 
             Book.Name AS bookTitle, 
-            Book.Author AS bookAuthor
-        FROM BookReview
-        INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
-        INNER JOIN Book on BookReview.BookID = Book.BookID
-        WHERE BookReview.ReviewerID = ?
+            Book.Author AS bookAuthor,
+            AvgRatings.averageRating
+            FROM BookReview
+            INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
+            INNER JOIN Book ON BookReview.BookID = Book.BookID
+            INNER JOIN (
+            SELECT 
+                BookID,
+                AVG(RATING) AS averageRating
+                FROM BookReview
+                GROUP BY BookID
+            ) AS AvgRatings ON BookReview.BookID = AvgRatings.BookID
+            WHERE BookReview.ReviewerID=?;
     `;
     const values = [request.query.ReviewerID];
 
@@ -481,6 +527,24 @@ app.get('/api/getuserrecommendedbooks', (request, response) => {
         if (err) {
             console.error("Error fetching books ", err);
             response.status(500).send("Error fetching books");
+        } else {
+            response.send(results);
+        }
+    })
+});
+
+app.get('/api/fetchaverageratings', (request, response) => {
+    const bookIDs = request.query.BookIDs.split(",");
+
+    if (bookIDs.length === 0) {
+        response.status(400).json({ message: 'No BookIDs provided' });
+    }
+
+    const query = 'SELECT BookID, AVG(RATING) AS averageRating FROM BookReview WHERE BookID IN (?) GROUP BY BookID';
+    connection.query(query, [bookIDs], (err, results) => {
+        if (err) {
+            console.error("Error fetching average rating ", err);
+            response.status(500).send("Error fetching average rating");
         } else {
             response.send(results);
         }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import '../styles.css'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 var config = require('../config');
@@ -102,28 +103,27 @@ export const BookRecommendations = () => {
 
     return (
         <div>
-            <h1>Book Recommendations</h1>
+            <h1 className="title">Book Recommendations</h1>
             {error ? (
-                <p>{error}</p>
+                <p className="subtitle">{error}</p>
             ) : recommendedBooks.length === 0 ? (
-                <p>Add more books to your library to get book recommendations.</p>
+                <p className="subtitle">Add more books to your library to get book recommendations.</p>
             ) : (
                 <div>
-                    <p>Here are some recommendations based off of what is in your library.</p>
-                    <h3>Your Recommended Books</h3>
-                    <table className="table table-light table-striped">
-                        <thead>
+                    <p className="subtitle">Here are some books we've brewed for you.</p>
+                    <table className="table table-striped table-custom">
+                        <thead className="text-custom">
                             <tr>
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Genre</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="text-custom">
                             {recommendedBooks.map((book) => (
                                 <tr key={book.BookID}>
                                     <td>
-                                        <Link to={`/book/${book.BookID}`}>
+                                        <Link to={`/book/${book.BookID}`} className="link-custom">
                                             {book.Title}
                                         </Link>
                                     </td>
@@ -134,8 +134,8 @@ export const BookRecommendations = () => {
                         </tbody>
                     </table>
                     <div>
-                        <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-                        <button onClick={handleNextPage}>Next</button>
+                        <button className="btn button-custom" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                        <button className="btn button-custom" onClick={handleNextPage}>Next</button>
                     </div>
                 </div>
             )}

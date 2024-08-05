@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import '../styles.css'
 import axios from 'axios';
 import PasswordChecklist from "react-password-checklist"
 var config = require('../config');
@@ -160,14 +161,14 @@ export const UserAccount = () => {
 
     return (
         <div>
-            <h1>Hello {userInfo ? userInfo.FirstName : 'Guest'}!</h1>
-            <h3>Here you can make changes to your MyLibrary account</h3>
+            <h1 className="title">Hello {userInfo ? userInfo.FirstName : 'Guest'}!</h1>
+            <h3 className="subtitle">Here you can make changes to your bookmatcha account</h3>
 
             <div className="container py-5 h-100">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                         <div className="card bg-dark text-white">
-                            <div className="card-body p-5 text-center">
+                            <div className="card-body p-5 text-center theme-custom">
                                 <div className="mb-md-5 mt-md-4 pb-5">
                                     <h2 className="fw-bold mb-2 text-uppercase">Update Profile</h2>
                                     <p>Here you can change your basic information.</p>
@@ -180,10 +181,10 @@ export const UserAccount = () => {
                                             name="FirstName"
                                             value={firstName}
                                             onChange={handleFirstNameChange}
-                                            className="form-control form-control-lg"
+                                            className="form-control form-control-lg text-custom"
                                         />
                                         <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3"
+                                            className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
                                             type="button"
                                             onClick={handleUpdateFirstName}
                                         >
@@ -199,10 +200,10 @@ export const UserAccount = () => {
                                             name="LastName"
                                             value={lastName}
                                             onChange={handleLastNameChange}
-                                            className="form-control form-control-lg"
+                                            className="form-control form-control-lg text-custom"
                                         />
                                         <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 mb-5"
+                                            className="btn btn-outline-light btn-lg px-5 mt-3 mb-5 theme-custom"
                                             type="button"
                                             onClick={handleUpdateLastName}
                                         >
@@ -218,7 +219,7 @@ export const UserAccount = () => {
                                             name="CurrentPassword"
                                             value={currentPassword}
                                             onChange={handleCurrentPasswordChange}
-                                            className="form-control form-control-lg"
+                                            className="form-control form-control-lg text-custom"
                                         />
                                         
                                         {/*New password input*/}
@@ -228,7 +229,7 @@ export const UserAccount = () => {
                                             name="NewPassword"
                                             value={newPassword}
                                             onChange={handleNewPasswordChange}
-                                            className="form-control form-control-lg"
+                                            className="form-control form-control-lg text-custom"
                                         />
                                         <PasswordChecklist
 				                            rules={["minLength","specialChar","number","capital"]}
@@ -237,7 +238,7 @@ export const UserAccount = () => {
 				                            onChange={(onChange) => {}}
 			                            />
                                         <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3"
+                                            className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
                                             type="button"
                                             onClick={handleUpdatePassword}
                                         >

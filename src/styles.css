@@ -1,0 +1,72 @@
+.theme-custom {
+    background-color: #44624a;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 1000;
+    color: #f1ebe1
+}
+
+body {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #44624a;
+    background-color: #c0cfb2;
+}
+
+.table-custom {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    background-color: #c0cfb2;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    color: #44624a
+}
+
+.button-custom {
+    background-color: white;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 500;
+    color: #44624a;
+}
+
+.title {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 1000;
+    font-size: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #44624a;
+    text-align: center;
+}
+
+.subtitle {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 1000;
+    font-size: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #44624a;
+    text-align: center;
+}
+
+.link-custom {
+    color: #44624a
+}
+
+.link-custom:hover {
+    color: #364d3a;
+}
+
+.text-custom {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 1000;
+    color: #44624a;
+}
+
+.book-text-custom {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 1000;
+    color: #44624a;
+}

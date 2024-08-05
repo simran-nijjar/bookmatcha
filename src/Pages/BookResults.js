@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 var config = require('../config');
@@ -30,7 +31,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   return (
     <div>
-      <h1>Book Results</h1>
+      <h1 className="title">Book Results</h1>
       {results.length === 0 ? (
         <p>No results found</p>
       ) : (
@@ -43,7 +44,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
                   <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
                 )}
                 <div>
-                  <button onClick={() => insertBook(book)}>
+                  <button className="btn button-custom" onClick={() => insertBook(book)}>
                     <strong>{book.volumeInfo.title}</strong>
                   </button>
                   <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
@@ -54,8 +55,8 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
           {/* Previous and next page buttons */}
           <div>
-            <button onClick={onPrevPage} disabled={currentPage === 1}>Previous</button>
-            <button onClick={onNextPage}>Next</button>
+            <button className="btn button-custom" onClick={() =>onPrevPage} disabled={currentPage === 1}>Previous</button>
+            <button className="btn button-custom" onClick={onNextPage}>Next</button>
           </div>
         </>
       )}

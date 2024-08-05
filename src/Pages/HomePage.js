@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import '../styles.css'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
 var config = require('../config');
 
 // This page is the first page the user sees when they login or register
@@ -50,18 +52,18 @@ export const HomePage = () => {
     
     return (
         <div>
-          <h1>Welcome to Your Library</h1>
+          <h1 className="title">Welcome to your books</h1>
           {reviews.length === 0 ? (
-            <p>No books in your library yet. Start reviewing books to add them to your library!</p>
+            <p className="subtitle">No books yet. Start reviewing books!</p>
           ) : (
             <div>
-              <h3>Your Reviewed Books</h3>
+              <h3 className="subtitle">Here are your reviews</h3>
 
               {/* User reviews table */}
-              <table className="table table-light table-striped">
-                <thead>
+              <table className="table body table-striped table-custom">
+                <thead className="text-custom">
                   <tr>
-                    <th>Book Title</th>
+                    <th>Title</th>
                     <th>Author</th>
                     <th>Rating</th>
                     <th>Review</th>
@@ -69,11 +71,11 @@ export const HomePage = () => {
                     <th>Actions</th> 
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-custom">
                   {reviews.map((review) => (
                     <tr key={review.BookReviewID}>
                       <td>
-                        <Link to={`/book/${review.BookID}`}>
+                        <Link to={`/book/${review.BookID}`} className="link-custom">
                           {review.bookTitle}
                         </Link>
                       </td>
@@ -81,8 +83,8 @@ export const HomePage = () => {
                       <td>{review.RATING}</td>
                       <td>{review.WrittenReview}</td>
                       <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString()}</td>
-                      <td>
-                        <button onClick={() => handleDelete(review.BookReviewID)}>Delete</button>
+                      <td className="centered">
+                        <DeleteIcon onClick={() => handleDelete(review.BookReviewID)} style={{ cursor: 'pointer' }}></DeleteIcon>
                       </td>
                     </tr>
                   ))}

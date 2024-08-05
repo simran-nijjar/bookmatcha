@@ -1,6 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min'; // Ensure Bootstrap JS is included
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Routes, Navigate, Link } from 'react-router-dom';
 import { Login } from "./Pages/Login";
@@ -12,6 +12,7 @@ import { BookDetails } from './Pages/BookDetails';
 import { HomePage } from './Pages/HomePage';
 import { BookRecommendations } from './Pages/BookRecommendations';
 import SearchBar from './Components/SearchBar';
+import './styles.css'
 import { handleQueryChange, handleSearch, handleNextPage, handlePrevPage } from './Components/SearchUtilities';
 
 function App() {
@@ -41,31 +42,31 @@ function App() {
 
   return (
     <BrowserRouter>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg theme-custom">
         <div className="container-fluid">
-          <Link className="navbar-brand" to={isLoggedIn ? "/HomePage" : "/"}>My Library</Link>
+          <Link className="navbar-brand theme-custom" to={isLoggedIn ? "/HomePage" : "/"}>bookmatcha</Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav">
+          <div className="collapse navbar-collapse theme-custom" id="navbarNav">
+            <ul className="navbar-nav theme-custom">
               {isLoggedIn && (
                 <>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/BookRecommendations">Recommendations</Link>
+                    <Link className="nav-link theme-custom" to="/BookRecommendations">Recommendations</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/UserAccount">My Account</Link>
+                    <Link className="nav-link theme-custom" to="/UserAccount">My Account</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/" onClick={handleLogout}>Logout</Link>
+                    <Link className="nav-link theme-custom" to="/" onClick={handleLogout}>Logout</Link>
                   </li>
                 </>
               )}
             </ul>
             {isLoggedIn && (
               <div className="ms-auto">
-                <SearchBar 
+                <SearchBar className="theme-custom"
                   query={query}
                   onQueryChange={(event) => handleQueryChange(event, setQuery)}
                   onSearch={(event) => handleSearch(event, query, setResults, setTotalPages, setCurrentPage)} 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import '../styles.css'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 var config = require('../config');
@@ -112,6 +113,7 @@ export function BookDetails() {
         ReviewerID: reviewerID
       })
       .then((res) => {
+        console.log(res);
         if (res.status === 200) {
           setError('Review saved successfully.');
           fetchReviews(bookID);
@@ -133,7 +135,7 @@ export function BookDetails() {
 
   return (
     <div>
-      <h1>Book Details</h1>
+      <h1 className="title">Book Details</h1>
       {book.volumeInfo?.imageLinks?.thumbnail && (
         <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
       )}
@@ -142,12 +144,12 @@ export function BookDetails() {
       <p><strong>Description:</strong> {book.volumeInfo?.description || 'No Description Available'}</p>
       <div>
         <hr />
-        <h2>Reviews</h2>
+        <h2 className="title">Reviews</h2>
         <form>
-          <p>Write your review here:</p>
+          <p className="subtitle">Write your review here:</p>
 
           {/* Written review input */}
-          <textarea id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="4" cols="100"></textarea>
+          <textarea className="text-custom" style={{display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%', maxWidth: '600px'}} id="reviewTextBox" name="WrittenReview" value={writtenReview} onChange={onChange} rows="8" cols="100"></textarea>
           
           {/* Rating input */}
           <p>Give a rating:</p>
@@ -160,7 +162,7 @@ export function BookDetails() {
           </div>
 
           {/* Save review button */}
-          <button className="btn btn-outline-dark" type="submit" onClick={saveReview}>Save Review</button>
+          <button className="btn button-custom" type="submit" onClick={saveReview}>Save Review</button>
         </form>
 
         {/* Update message */}
@@ -171,9 +173,9 @@ export function BookDetails() {
         <div>
 
         {/* Posted reviews table */}
-          <h2>Posted Reviews</h2>
-          <table className="table table-light table-striped">
-            <thead>
+          <h2 className="title">Posted Reviews</h2>
+          <table className="table table-striped table-custom">
+            <thead className="text-custom">
               <tr>
                 <th>Reviewer</th>
                 <th>Rating</th>
@@ -181,7 +183,7 @@ export function BookDetails() {
                 <th>Date Posted</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-custom">
               {reviews.map((review) => (
                 <tr key={review.BookReviewID}>
                   <td>{reviewers[review.ReviewerID]}</td>

@@ -203,9 +203,13 @@ app.get('/api/fetchreviews', (request, response) => {
             BookReview.ReviewDate, 
             Book.Name AS bookTitle, 
             Book.Author AS bookAuthor,
-            AvgRatings.averageRating
+            AvgRatings.averageRating,
+            BookReview.ReviewerID,
+            MyLibraryAppUser.FirstName,
+            MyLibraryAppUser.LastName
         FROM BookReview
         INNER JOIN Book ON BookReview.BookID = Book.BookID
+        INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
         INNER JOIN (
             SELECT 
                 BookID,
@@ -221,34 +225,6 @@ app.get('/api/fetchreviews', (request, response) => {
         if (err) {
             console.error("Error fetching reviews: ", err);
             response.status(500).send('Error fetching reviews');
-        } else {
-            response.send(results);
-        }
-    });
-});
-
-// Endpoint to fetch name of reviewer for each review of a book
-app.get('/api/fetchreviewername', (request, response) => {
-    console.log("Received request to fetch reviewer names with params: ", request.query);
-
-    // Check if BookID is present in the request query
-    if (!request.query.BookID) {
-        console.error("BookID parameter is missing in the request query");
-        return response.status(400).send('BookID parameter is required');
-    }
-
-    const query = `
-        SELECT BookReview.ReviewerID, MyLibraryAppUser.FirstName, MyLibraryAppUser.LastName
-        FROM BookReview
-        INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
-        WHERE BookReview.BookID = ?
-    `;
-    const values = [request.query.BookID];
-
-    connection.query(query, values, function (err, results) {
-        if (err) {
-            console.error("Error fetching reviewer names: ", err);
-            response.status(500).send('Error fetching reviewer names');
         } else {
             response.send(results);
         }

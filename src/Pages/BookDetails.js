@@ -16,7 +16,6 @@ export function BookDetails() {
     const [reviewerID, setReviewerID] = useState('');
     const [error, setError] = useState('');
     const [reviews, setReviews] = useState([]);
-    const [reviewers, setReviewers] = useState({});
     const [averageRating, setAverageRating] = useState(null);
   
     // Fetch book details from the Google Books API
@@ -26,7 +25,6 @@ export function BookDetails() {
         setBook(response.data);
         setBookID(response.data.id);
         fetchReviews(response.data.id);
-        fetchReviewers(response.data.id);
       } catch (error) {
         console.error('Error fetching book details:', error);
         setError('Failed to load book details.');
@@ -51,23 +49,6 @@ export function BookDetails() {
       });
     };
   
-    // Fetch reviewers for the specified book
-    const fetchReviewers = (bookId) => {
-      axios.get(`${config.API_URL}fetchreviewername`, {
-        params: { BookID: bookId }
-      })
-      .then((response) => {
-        const reviewersMap = {};
-        response.data.forEach((reviewer) => {
-          reviewersMap[reviewer.ReviewerID] = `${reviewer.FirstName} ${reviewer.LastName}`;
-        });
-        setReviewers(reviewersMap);
-      })
-      .catch((error) => {
-        console.log("Error fetching reviewers:", error.response);
-      });
-    };
-  
     useEffect(() => {
       const user = JSON.parse(localStorage.getItem('user'));
   
@@ -77,7 +58,6 @@ export function BookDetails() {
       } else if (book) {
         setBookID(book.id);
         fetchReviews(book.id);
-        fetchReviewers(book.id);
       }
   
       if (user) {
@@ -123,7 +103,6 @@ export function BookDetails() {
         if (res.status === 200) {
           setError('Review saved successfully.');
           fetchReviews(bookID);
-          fetchReviewers(bookID);
           setWrittenReview('');
           setRating('');
         }
@@ -193,7 +172,7 @@ export function BookDetails() {
             <tbody className="text-custom">
               {reviews.map((review) => (
                 <tr key={review.BookReviewID}>
-                  <td>{reviewers[review.ReviewerID]}</td>
+                  <td>{review.FirstName + ' ' + review.LastName}</td>
                   <td>{review.RATING}</td>
                   <td>{review.WrittenReview}</td>
                   <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString()}</td>

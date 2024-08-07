@@ -11,9 +11,10 @@ export const UserAccount = () => {
     const [loading, setLoading] = useState(true);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [updateStatus, setUpdateStatus] = useState('');
+    const [nameUpdateStatus, setNameUpdateStatus] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [passwordUpdateStatus, setPasswordUpdateStatus] = useState('');
 
     useEffect(() => {
         // Get user information from local storage
@@ -74,11 +75,11 @@ export const UserAccount = () => {
                 Email: savedUser.email
             })
             .then((response) => {
-                setUpdateStatus('FirstName updated successfully!');
+                setNameUpdateStatus('FirstName updated successfully!');
             })
             .catch((error) => {
                 console.log("Error updating first name: ", error);
-                setUpdateStatus('Error updating first name.');
+                setNameUpdateStatus('Error updating first name.');
             });
         }
     };
@@ -93,11 +94,11 @@ export const UserAccount = () => {
                 Email: savedUser.email
             })
             .then((response) => {
-                setUpdateStatus('LastName updated successfully!');
+                setNameUpdateStatus('LastName updated successfully!');
             })
             .catch((error) => {
                 console.log("Error updating last name: ", error);
-                setUpdateStatus('Error updating last name.');
+                setNameUpdateStatus('Error updating last name.');
             });
         }
     };
@@ -119,9 +120,9 @@ export const UserAccount = () => {
             } catch (error) {
                 console.error(error.response);
                 if (error.response && error.response.status === 400) {
-                    setUpdateStatus('The current password you entered does not match our records. Please try again.');
+                    setPasswordUpdateStatus('The current password you entered does not match our records. Please try again.');
                 } else {
-                    setUpdateStatus('Updating passwords failed. Please try again later.');
+                    setPasswordUpdateStatus('Updating passwords failed. Please try again later.');
                 }
                 return false;
             }
@@ -146,11 +147,11 @@ export const UserAccount = () => {
                 Email: savedUser.email
             })
             .then((response) => {
-                setUpdateStatus('Password updated successfully!');
+                setPasswordUpdateStatus('Password updated successfully!');
             })
             .catch((error) => {
                 console.log("Error updating password: ", error);
-                setUpdateStatus('Error updating password.');
+                setPasswordUpdateStatus('Error updating password.');
             });
         }
     };
@@ -165,94 +166,108 @@ export const UserAccount = () => {
             <h3 className="subtitle">Here you can make changes to your bookmatcha account</h3>
 
             <div className="container py-5 h-100">
-                <div className="row d-flex justify-content-center align-items-center h-100">
-                    <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                        <div className="card bg-dark text-white">
-                            <div className="card-body p-5 text-center theme-custom">
-                                <div className="mb-md-5 mt-md-4 pb-5">
-                                    <h2 className="fw-bold mb-2 text-uppercase">Update Profile</h2>
-                                    <p>Here you can change your basic information.</p>
+    <div className="row d-flex h-100">
+        {/* Name Section */}
+        <div className="col-md-6 d-flex align-items-stretch">
+            <div className="card bg-dark text-white w-100 d-flex flex-column">
+                <div className="card-body p-5 text-center theme-custom flex-grow-1">
+                    <div className="mb-md-5 mt-md-4 pb-5">
+                        <h2 className="fw-bold mb-2 text-uppercase">Update Name</h2>
+                        <p>Here you can change your first and last name.</p>
 
-                                    {/*First name input*/}
-                                    <div className="form-outline form-white mb-3">
-                                        <label>First Name</label>
-                                        <input
-                                            type="text"
-                                            name="FirstName"
-                                            value={firstName}
-                                            onChange={handleFirstNameChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
-                                        <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
-                                            type="button"
-                                            onClick={handleUpdateFirstName}
-                                        >
-                                            Update First Name
-                                        </button>
-                                    </div>
-                                    
-                                    {/*Last name input*/}
-                                    <div className="form-outline form-white mb-3">
-                                        <label>Last Name</label>
-                                        <input
-                                            type="text"
-                                            name="LastName"
-                                            value={lastName}
-                                            onChange={handleLastNameChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
-                                        <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 mb-5 theme-custom"
-                                            type="button"
-                                            onClick={handleUpdateLastName}
-                                        >
-                                            Update Last Name
-                                        </button>
-                                    </div>
-
-                                    {/*Current password input*/}
-                                    <div className="form-outline form-white mb-3">
-                                        <label>Current Password</label>
-                                        <input
-                                            type="text"
-                                            name="CurrentPassword"
-                                            value={currentPassword}
-                                            onChange={handleCurrentPasswordChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
-                                        
-                                        {/*New password input*/}
-                                        <label>New Password</label>
-                                        <input
-                                            type="text"
-                                            name="NewPassword"
-                                            value={newPassword}
-                                            onChange={handleNewPasswordChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
-                                        <PasswordChecklist
-				                            rules={["minLength","specialChar","number","capital"]}
-				                            minLength={8}
-				                            value={newPassword}
-				                            onChange={(onChange) => {}}
-			                            />
-                                        <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
-                                            type="button"
-                                            onClick={handleUpdatePassword}
-                                        >
-                                            Update Password
-                                        </button>
-                                    </div>
-
-                                    {updateStatus && <p>{updateStatus}</p>}
-                                </div>
-                            </div>
+                        {/* First name input */}
+                        <div className="form-outline form-white mb-3">
+                            <label>First Name</label>
+                            <input
+                                type="text"
+                                name="FirstName"
+                                value={firstName}
+                                onChange={handleFirstNameChange}
+                                className="form-control form-control-lg text-custom"
+                            />
+                            <button
+                                className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
+                                type="button"
+                                onClick={handleUpdateFirstName}
+                            >
+                                Update First Name
+                            </button>
                         </div>
+                        
+                        {/* Last name input */}
+                        <div className="form-outline form-white mb-3">
+                            <label>Last Name</label>
+                            <input
+                                type="text"
+                                name="LastName"
+                                value={lastName}
+                                onChange={handleLastNameChange}
+                                className="form-control form-control-lg text-custom"
+                            />
+                            <button
+                                className="btn btn-outline-light btn-lg px-5 mt-3 mb-5 theme-custom"
+                                type="button"
+                                onClick={handleUpdateLastName}
+                            >
+                                Update Last Name
+                            </button>
+                        </div>
+                        {nameUpdateStatus && <p>{nameUpdateStatus}</p>}
                     </div>
                 </div>
             </div>
         </div>
+
+        {/* Password Section */}
+        <div className="col-md-6 d-flex align-items-stretch">
+            <div className="card bg-dark text-white w-100 d-flex flex-column">
+                <div className="card-body p-5 text-center theme-custom flex-grow-1">
+                    <div className="mb-md-5 mt-md-4 pb-5">
+                        <h2 className="fw-bold mb-2 text-uppercase">Update Password</h2>
+                        <p>Here you can change your password.</p>
+
+                        {/* Current password input */}
+                        <div className="form-outline form-white mb-3">
+                            <label>Current Password</label>
+                            <input
+                                type="text"
+                                name="CurrentPassword"
+                                value={currentPassword}
+                                onChange={handleCurrentPasswordChange}
+                                className="form-control form-control-lg text-custom"
+                            />
+                            
+                            {/* New password input */}
+                            <label>New Password</label>
+                            <input
+                                type="text"
+                                name="NewPassword"
+                                value={newPassword}
+                                onChange={handleNewPasswordChange}
+                                className="form-control form-control-lg text-custom"
+                            />
+                            <PasswordChecklist
+                                rules={["minLength","specialChar","number","capital"]}
+                                minLength={8}
+                                value={newPassword}
+                                onChange={(onChange) => {}}
+                            />
+                            <button
+                                className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
+                                type="button"
+                                onClick={handleUpdatePassword}
+                            >
+                                Update Password
+                            </button>
+                        </div>
+
+                        {passwordUpdateStatus && <p>{passwordUpdateStatus}</p>}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
     );
 };

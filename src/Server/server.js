@@ -155,33 +155,31 @@ app.post('/api/insertbook', (request, response) => {
 // Endpoint to insert review of a book when a user saves it
 app.post('/api/savereview', (request, response) => {
     const { BookID, WrittenReview, Rating, ReviewerID } = request.body;
-    const checkReviewQuery = 'SELECT * FROM BookReview WHERE BookID=? AND ReviewerID=?';
-    const checkReviewValues = [BookID, ReviewerID];
+    const query = 'INSERT INTO BookReview (BookID, WrittenReview, Rating, ReviewerID) VALUES (?, ?, ?, ?)';
+    const values = [BookID, WrittenReview, Rating, ReviewerID];
 
-    connection.query(checkReviewQuery, checkReviewValues, function (err, result, fields) {
+    connection.query(query, values, (err, results) => {
         if (err) {
-            console.error("Error checking for review: ", err);
-            response.status(500).send("Error checking for review");
-        }
-
-        let query;
-        let values;
-        let isUpdating = result.length > 0;
-
-        if (isUpdating) {
-            query = 'UPDATE BookReview SET WrittenReview = ?, Rating = ? WHERE BookID = ? AND ReviewerID = ?';
-            values = [WrittenReview, Rating, BookID, ReviewerID];
+            console.error("Error inserting review: ", err);
+            response.status(500).send('Error inserting review');
         } else {
-            query = 'INSERT INTO BookReview (BookID, WrittenReview, Rating, ReviewerID) VALUES (?, ?, ?, ?)';
-            values = [BookID, WrittenReview, Rating, ReviewerID];
+            response.status(200).send('Review inserted successfully');
         }
+    });
+});
 
-        connection.query(query, values, (err, results) => {
-            if (err) {
-                console.error("Error inserting/updating review: ", err);
-                return response.status(500).send('Error inserting/updating review');
-            }
-        });
+app.put('/api/updatereview', (request, response) => {
+    const { BookID, WrittenReview, Rating, ReviewerID } = request.body;
+    const query = 'UPDATE BookReview SET WrittenReview = ?, Rating = ? WHERE BookID = ? AND ReviewerID = ?';
+    const values = [WrittenReview, Rating, BookID, ReviewerID];
+
+    connection.query(query, values, (err, results) => {
+        if (err) {
+            console.error("Error updating review: ", err);
+            response.status(500).send('Error updating review');
+        } else {
+            response.status(200).send('Review updated successfully');
+        }
     });
 });
 
@@ -523,6 +521,33 @@ app.get('/api/fetchaverageratings', (request, response) => {
             response.status(500).send("Error fetching average rating");
         } else {
             response.send(results);
+        }
+    })
+});
+
+app.get('/api/fetchuserexistingreview', (request, response) => {
+    // Extract data from request body
+    const { BookID, ReviewerID } = request.query;
+    
+    // Validate data
+    if (!BookID) {
+         console.error("BookID parameter is missing in the request body");
+         return response.status(400).send('BookID is required');
+    }
+     if (!ReviewerID) {
+         console.error("ReviewerID parameter is missing in the request body");
+         return response.status(400).send('ReviewerID is required');
+    }
+
+    const query = 'SELECT * FROM BookReview WHERE BookID=? AND ReviewerID=?';
+    const values = [BookID, ReviewerID];
+
+    connection.query(query, values, function (err, result){
+        if (err) {
+            console.error("Error fetching review ", err);
+            response.status(500).send("Error fetching review");
+        } else {
+            response.send(result);
         }
     })
 })

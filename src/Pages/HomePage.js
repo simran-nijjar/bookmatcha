@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 var config = require('../config');
 
 // This page is the first page the user sees when they login or register
@@ -10,6 +13,7 @@ var config = require('../config');
 
 export const HomePage = () => {
     const [reviews, setReviews] = useState([]);
+    const navigate = useNavigate();
     
     useEffect(() => {
         // Retrieve user info from local storage
@@ -50,6 +54,10 @@ export const HomePage = () => {
             });
         }
     };
+
+    const handleEdit = (bookID) => {
+      navigate(`/book/${bookID}`);
+    }
     
     return (
         <div>
@@ -86,8 +94,9 @@ export const HomePage = () => {
                       <td>{review.RATING}</td>
                       <td>{review.WrittenReview}</td>
                       <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString()}</td>
-                      <td className="centered">
-                        <DeleteIcon onClick={() => handleDelete(review.BookReviewID)} style={{ cursor: 'pointer' }}></DeleteIcon>
+                      <td>
+                        <Tooltip title="Delete"><DeleteIcon onClick={() => handleDelete(review.BookReviewID)} style={{ cursor: 'pointer' }}></DeleteIcon></Tooltip>
+                        <Tooltip title="Edit"><EditIcon onClick={() => handleEdit(review.BookID)} style={{ cursor: 'pointer' }}></EditIcon></Tooltip>
                       </td>
                     </tr>
                   ))}

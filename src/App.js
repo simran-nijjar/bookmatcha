@@ -7,9 +7,10 @@ import { Login } from "./Pages/Login";
 import { Register } from "./Pages/Register";
 import { UserAccount } from './Pages/UserAccount';
 import { LandingPage } from './Pages/LandingPage';
+import { HomePage } from './Pages/HomePage';
 import { BookResults } from './Pages/BookResults';
 import { BookDetails } from './Pages/BookDetails';
-import { HomePage } from './Pages/HomePage';
+import { UserBooks } from './Pages/UserBooks';
 import { BookRecommendations } from './Pages/BookRecommendations';
 import SearchBar from './Components/SearchBar';
 import './styles.css'
@@ -56,6 +57,9 @@ function App() {
                     <Link className="nav-link theme-custom" to="/BookRecommendations">Recommendations</Link>
                   </li>
                   <li className="nav-item">
+                    <Link className="nav-link theme-custom" to="/UserBooks">My Books</Link>
+                  </li>
+                  <li className="nav-item">
                     <Link className="nav-link theme-custom" to="/UserAccount">My Account</Link>
                   </li>
                   <li className="nav-item">
@@ -88,6 +92,7 @@ function App() {
           onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} 
           onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} 
         />} />
+        <Route path="/UserBooks" element={<UserBooks />} />
         <Route path="/HomePage" element={<HomePage />} />
         <Route path="/BookRecommendations" element={<BookRecommendations />} />
         <Route path="/book/:id" element={<BookDetails />} />

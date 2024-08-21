@@ -557,12 +557,14 @@ app.get('/api/fetchtopuserratedbooks', (request, response) => {
                     Book.BookID,
                     Book.Name,
                     Book.Author,
+                    Book.ImageLink,
                     AVG(BookReview.RATING) AS AvgRating
                     FROM Book
                     INNER JOIN BookReview ON BookReview.BookID = Book.BooKID
                     GROUP BY Book.BookID
                     HAVING AVG(BookReview.RATING) >= 4
-                    ORDER BY AvgRating DESC`
+                    ORDER BY AvgRating DESC
+                    LIMIT 5`
                 ;
     connection.query(query, function (err, result) {
         if (err) {

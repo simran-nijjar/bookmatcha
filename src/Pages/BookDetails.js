@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 var config = require('../config');
 
+// This file contains the details of each book when a user selects it
+// Here the user can write a review, update their review, and look at reviews posted by other users
+
 export function BookDetails() {
     const { id } = useParams(); // Extract book ID from URL parameters
     const [book, setBook] = useState(null);

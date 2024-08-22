@@ -170,7 +170,7 @@ export const UserAccount = () => {
         {/* Name Section */}
         <div className="col-md-6 d-flex align-items-stretch">
             <div className="card bg-dark text-white w-100 d-flex flex-column">
-                <div className="card-body p-5 text-center theme-custom flex-grow-1">
+                <div className="card-body p-3 text-center theme-custom flex-grow-1">
                     <div className="mb-md-5 mt-md-4 pb-5">
                         <h2 className="fw-bold mb-2 text-uppercase">Update Name</h2>
                         <p>Here you can change your first and last name.</p>
@@ -221,7 +221,7 @@ export const UserAccount = () => {
         {/* Password Section */}
         <div className="col-md-6 d-flex align-items-stretch">
             <div className="card bg-dark text-white w-100 d-flex flex-column">
-                <div className="card-body p-5 text-center theme-custom flex-grow-1">
+                <div className="card-body p-3 text-center theme-custom flex-grow-1">
                     <div className="mb-md-5 mt-md-4 pb-5">
                         <h2 className="fw-bold mb-2 text-uppercase">Update Password</h2>
                         <p>Here you can change your password.</p>

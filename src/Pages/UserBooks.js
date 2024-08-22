@@ -94,8 +94,8 @@ export const UserBooks = () => {
                       <td>{review.WrittenReview}</td>
                       <td>{new Date(review.ReviewDate).toDateString() + ' ' + new Date(review.ReviewDate).toLocaleTimeString()}</td>
                       <td>
-                        <Tooltip title="Delete"><DeleteIcon onClick={() => handleDelete(review.BookReviewID)} style={{ cursor: 'pointer' }}></DeleteIcon></Tooltip>
                         <Tooltip title="Edit"><EditIcon onClick={() => handleEdit(review.BookID)} style={{ cursor: 'pointer' }}></EditIcon></Tooltip>
+                        <Tooltip title="Delete"><DeleteIcon onClick={() => handleDelete(review.BookReviewID)} style={{ cursor: 'pointer' }}></DeleteIcon></Tooltip>
                       </td>
                     </tr>
                   ))}

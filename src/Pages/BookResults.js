@@ -52,7 +52,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   return (
     <div>
-      <h1 className="title">Book Results</h1>
+      <h1 className="title">Search Results</h1>
       {results.length === 0 ? (
         <p>No results found</p>
       ) : (
@@ -60,12 +60,12 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
         {/* Display book thumbnail, title, and author */}
           <ul>
             {results.map((book, index) => (
-              <li key={index} style={{ listStyleType: 'none', margin: '20px 0', border: '1px solid' }}>
+              <li key={index} style={{ listStyleType: 'none', margin: '20px 0', border: '1px solid', display: 'flex', gap: '10px' }}>
                 {book.volumeInfo.imageLinks?.thumbnail && (
                   <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
                 )}
                 <div>
-                  <button className="btn button-custom" onClick={() => insertBook(book)}>
+                  <button className="btn theme-custom" onClick={() => insertBook(book)}>
                     <strong>{book.volumeInfo.title}</strong>
                   </button>
                   <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ')}</p>
@@ -76,9 +76,9 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
           </ul>
 
           {/* Previous and next page buttons */}
-          <div>
-            <button className="btn button-custom" onClick={() =>onPrevPage} disabled={currentPage === 1}>Previous</button>
-            <button className="btn button-custom" onClick={onNextPage}>Next</button>
+          <div style={{display: 'flex', justifyContent: 'center', gap: '10px'}}>
+            <button className="btn theme-custom" onClick={() =>onPrevPage} disabled={currentPage === 1}>Previous</button>
+            <button className="btn theme-custom" onClick={onNextPage}>Next</button>
           </div>
         </>
       )}

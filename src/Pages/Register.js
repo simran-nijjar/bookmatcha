@@ -120,34 +120,34 @@ export const Register = ({ onLogin }) => {
       <div className="row d-flex justify-content-center align-items-center h-100">
         <div className="col-12 col-md-8 col-lg-6 col-xl-5">
           <div className="card bg-dark text-white">
-            <div className="card-body p-5 text-center theme-custom">
-              <div className="mb-md-5 mt-md-4 pb-5">
+            <div className="card-body p-3 text-center theme-custom">
+              <div className="mb-3">
                 <h2 className="fw-bold mb-2 text-uppercase">Register</h2>
                 <p className="text-white-50">Create an account by filling out the fields below.</p>
 
                 {/* FirstName input */}
                 <div className="form-outline form-white mb-3">
-                  <input type="text" name="FirstName" placeholder='First Name' value={firstName} onChange={onChange} className="form-control form-control-lg text-custom" />
+                  <input type="text" name="FirstName" placeholder='First Name' value={firstName} onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                 </div>
 
                 {/* LastName input */}
                 <div className="form-outline form-white mb-3">
-                  <input type="text" name="LastName" placeholder='Last Name' value={lastName} onChange={onChange} className="form-control form-control-lg text-custom" />
+                  <input type="text" name="LastName" placeholder='Last Name' value={lastName} onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                 </div>
 
                 {/* Email input */}
                 <div className="form-outline form-white mb-3">
-                  <input type="email" name="Email" placeholder='Email' value={email} onChange={onChange} className="form-control form-control-lg text-custom" />
+                  <input type="email" name="Email" placeholder='Email' value={email} onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                 </div>
 
                 {/* Password input */}
                 <div className="form-outline form-white mb-3">
-                  <input type="password" name="Password" placeholder='Password' value={password} onChange={onChange} className="form-control form-control-lg text-custom" />
+                  <input type="password" name="Password" placeholder='Password' value={password} onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                 </div>
 
                 {/* Confirm password input */}
                 <div className="form-outline form-white mb-4">
-                  <input type="password" name="ConfirmPassword" placeholder='Re-Enter Password' value={confirmPassword} onChange={onChange} className="form-control form-control-lg text-custom" />
+                  <input type="password" name="ConfirmPassword" placeholder='Re-Enter Password' value={confirmPassword} onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                   <PasswordChecklist
 				              rules={["minLength","specialChar","number","capital","match"]}
 				              minLength={8}

@@ -17,24 +17,31 @@ This is the form the user has to fill out to login.
 This is the form the user has to fill out to register.
 ![Register](Images/register.png)
 
-### Homepage (Empty Library)
-When the user successfully logs in or registers, they will see this page if do not have any books in their library.
-![Homepage (Empty Library)](Images/homepageemptylibrary.png)
+### Homepage 
+When the user successfully logs in or registers, they will see this page once they enter bookmatcha.
+Here they will see the top rated books by bookmatcha users.
+![Homepage](Images/homepage.png)
 
-### Homepage (Non-Empty Library)
-When the user successfully logs in, they will see this page if they have books in their library.
-![Homepage (Non-Empty Library)](Images/homepagenonemptylibrary.png)
+### User's Books (Empty Library)
+When the user has not reviewed/rated any books yet this what they will see.
+![Empty User's Books](Images/emptyuserbooks.png)
+
+### User's Books (Non-Empty Library)
+When the user has reviewed/rated books they can view their books here.
+From this table, users can edit or delete their reviews/ratings here.
+![Non-empty User's Books](Images/homepagenonemptylibrary.png)
 
 ### User Account
 The user can change their first name, last name, or password on this page.
 ![User Account](Images/useraccount.png)
 
-### Book Results
+### Search Results
 When a user searches for a book, this is how the results will be displayed to them.
-![Book Results](Images/bookresults.png)
+The books are queried and shown for them using Google Books API.
+![Search Results](Images/searchresults.png)
 
 ### Book Details
-When a user selects a book, these are the details of the book given. This page is also where a user can write their own review and rating and look at reviews and ratings written by other users.
+When a user selects a book, these are the details of the book given. The details are fetched from Google Books This page is also where a user can write their own review and rating and look at reviews and ratings written by other users. If the user has already reviewed the book, they can edit their review and rating here.
 ![Book Details 1](Images/bookdetails1.png)
 
 ![Book Details 2](Images/bookdetails2.png)

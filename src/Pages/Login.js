@@ -69,19 +69,19 @@ export const Login = ({ onLogin }) => {
             <div className="row d-flex justify-content-center align-items-center h-100">
                 <div className="col-12 col-md-8 col-lg-6 col-xl-5">
                     <div className="card bg-dark text-white">
-                        <div className="card-body p-5 text-center theme-custom">
-                            <div className="mb-md-5 mt-md-4 pb-5">
+                        <div className="card-body p-3 text-center theme-custom">
+                            <div className="mb-3">
                                 <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
                                 <p className="text-white-50">Welcome back to bookmatcha!</p>
 
                                 {/*Email input*/}
                                 <div className="form-outline form-white mb-3">
-                                    <input type="Email" name="Email" placeholder='Email' onChange={onChange} className="form-control form-control-lg text-custom" />
+                                    <input type="Email" name="Email" placeholder='Email' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                                 </div>
 
                                 {/*Password input*/}
                                 <div className="form-outline form-white mb-4">
-                                    <input type="Password" name="Password" placeholder='Password' onChange={onChange} className="form-control form-control-lg text-custom" />
+                                    <input type="Password" name="Password" placeholder='Password' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }} />
                                 
                                 {/* Error message */}
                                 <div style={{ minHeight: '20px' }}>

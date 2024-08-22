@@ -1,7 +1,7 @@
-# My Library App
+# bookmatcha
 
-My Library App is a full-stack library application created using React for the front-end and Node.js and Express.js for the back-end, integrated with a MySQL database.
-The library is made using books using the Google Books API. Users can search for books, write reviews and give ratings to books, and view reviews written by other users. 
+bookmatcha is a library application created using React for the front-end and Node.js and Express.js for the back-end, integrated with a MySQL database.
+The library is made using books using the Google Books API. Users can search for books, write, edit, and delete reviews and give ratings to books, and view reviews written by other users. Users can get book recommendations based on what they have reviewed/rated.
 User authentication was developed using JWT tokens and session state using localStorage. Books are added to a user's library when they give a review and rating for a book.
 
 ### Landing Page
@@ -26,10 +26,19 @@ Here they will see the top rated books by bookmatcha users.
 When the user has not reviewed/rated any books yet this what they will see.
 ![Empty User's Books](Images/emptyuserbooks.png)
 
-### User's Books (Non-Empty Library)
+### User's Books (Non-empty Library)
 When the user has reviewed/rated books they can view their books here.
 From this table, users can edit or delete their reviews/ratings here.
 ![Non-empty User's Books](Images/nonemptyuserbooks.png)
+
+### Book Recommendations
+### Non-empty 
+If the user has reviewed/rated at least one book, then they can view books that are recommended to them.
+Books are recommended based on books the user has given a rating of greater than or equal to three.
+![Empty Book Recommendations](Images/nonemptybookrecommendations.png)
+### Empty
+![Non-empty Book Recommendations](Images/emptybookrecommendations.png)
+
 
 ### User Account
 The user can change their first name, last name, or password on this page.

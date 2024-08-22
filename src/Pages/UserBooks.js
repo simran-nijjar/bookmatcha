@@ -30,7 +30,6 @@ export const UserBooks = () => {
             params: {ReviewerID: reviewerID}
         })
         .then((response) => {
-            console.log(response.data);
             setReviews(response.data);
         })
         .catch((error) => {

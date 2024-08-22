@@ -61,7 +61,7 @@ app.post('/api/register', (request, response) => {
                 response.status(500).json({ message: 'Error hashing password' });
                 return;
             }
-            const checkEmailQuery = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email = ?';
+            const checkEmailQuery = 'SELECT * FROM MyLibraryAppUser WHERE Email = ?';
 
         connection.query(checkEmailQuery, request.body['Email'], (err, results, fields) => {
             if (err) {
@@ -74,7 +74,7 @@ app.post('/api/register', (request, response) => {
                 return;
             }
             // Register user
-            const query = 'INSERT INTO MyLibraryApp.MyLibraryAppUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
+            const query = 'INSERT INTO MyLibraryAppUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
             const values = [request.body['FirstName'], request.body['LastName'], request.body['Email'],hashedPassword];
         
             connection.query(query, values, function (err, result, fields){
@@ -98,7 +98,7 @@ app.post('/api/register', (request, response) => {
 
 // Endpoint to handle user login
 app.post('/api/login', (request, response) => {
-    const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email =?';
+    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
 
     connection.query(query, values, function(err, results, fields) {
@@ -134,7 +134,7 @@ app.post('/api/login', (request, response) => {
 
 // Endpoint to handle inserting book when user clicks on the book
 app.post('/api/insertbook', (request, response) => {
-    const query = 'INSERT INTO MyLibraryApp.Book (Name, BookID, Author, ImageLink, Categories) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Categories) VALUES (?, ?, ?, ?, ?)';
     const values = [request.body['Name'], request.body['BookID'], request.body['Author'], request.body['ImageLink'], request.body['Categories']];
 
     connection.query(query, values, function (err, result, fields) {
@@ -278,7 +278,7 @@ app.get('/api/fetchuserinfo', (request, response) => {
         return response.status(400).send('Email parameter is required');
     }
 
-    const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email = ?';
+    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email = ?';
     const values = [request.query.Email];
 
     connection.query(query, values, function(err, result) {
@@ -312,7 +312,7 @@ app.put('/api/updatefirstname', (request, response) => {
     }
 
     // Define SQL query and values
-    const query = 'UPDATE MyLibraryApp.MyLibraryAppUser SET FirstName=? WHERE Email=?';
+    const query = 'UPDATE MyLibraryAppUser SET FirstName=? WHERE Email=?';
     const values = [FirstName, Email];
     console.log("FirstName, Email: ", FirstName, Email);
 
@@ -346,7 +346,7 @@ app.put('/api/updatelastname', (request, response) => {
     }
 
     // Define SQL query and values
-    const query = 'UPDATE MyLibraryApp.MyLibraryAppUser SET LastName=? WHERE Email=?';
+    const query = 'UPDATE MyLibraryAppUser SET LastName=? WHERE Email=?';
     const values = [LastName, Email];
     
     // Execute the query
@@ -367,7 +367,7 @@ app.delete('/api/deletereview/:id', (req, res) => {
     const reviewID = req.params.id;
 
     // Query to delete the review
-    const query = 'DELETE FROM MyLibraryApp.BookReview WHERE BookReviewID = ?';
+    const query = 'DELETE FROM BookReview WHERE BookReviewID = ?';
 
     connection.query(query, [reviewID], (err, result) => {
         if (err) {
@@ -385,7 +385,7 @@ app.delete('/api/deletereview/:id', (req, res) => {
 
 // Endpoint to confirm password matches the backend
 app.post('/api/validatepassword', (request, response) => {
-    const query = 'SELECT * FROM MyLibraryApp.MyLibraryAppUser WHERE Email =?';
+    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
 
     connection.query(query, values, function(err, results, fields) {
@@ -446,7 +446,7 @@ app.put('/api/updatepassword', (request, response) => {
                 return;
             }
 
-            const query = 'UPDATE MyLibraryApp.MyLibraryAppUser SET Password=? WHERE Email =?';
+            const query = 'UPDATE MyLibraryAppUser SET Password=? WHERE Email =?';
             values = [hashedPassword, Email];
 
             connection.query(query, values, function(err, result) {
@@ -463,6 +463,7 @@ app.put('/api/updatepassword', (request, response) => {
     })
 });
 
+// Endpoint to get user's reviewed books
 app.get('/api/fetchusersbooks', (request, response) => {
     if (!request.query.ReviewerID) {
         console.error("ReviewerID parameter is missing in the request query");
@@ -484,6 +485,7 @@ app.get('/api/fetchusersbooks', (request, response) => {
     })
 });
 
+// Endpoint to recommend books based on books user has rated greater than or equal to 3
 app.get('/api/getuserrecommendedbooks', (request, response) => {
     if (!request.query.ReviewerID) {
         console.error("ReviewerID parameter is missing in the request query");
@@ -507,6 +509,7 @@ app.get('/api/getuserrecommendedbooks', (request, response) => {
     })
 });
 
+// Endpoint to get the average ratings for a book
 app.get('/api/fetchaverageratings', (request, response) => {
     const bookIDs = request.query.BookIDs.split(",");
 
@@ -525,6 +528,7 @@ app.get('/api/fetchaverageratings', (request, response) => {
     })
 });
 
+// Endpoiint to get user's reviews
 app.get('/api/fetchuserexistingreview', (request, response) => {
     // Extract data from request body
     const { BookID, ReviewerID } = request.query;
@@ -552,6 +556,7 @@ app.get('/api/fetchuserexistingreview', (request, response) => {
     })
 });
 
+// Endpoint to fetch the top rated books on bookmatcha
 app.get('/api/fetchtopuserratedbooks', (request, response) => {
     const query = `SELECT 
                     Book.BookID,

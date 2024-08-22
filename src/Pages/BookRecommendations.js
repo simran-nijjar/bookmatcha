@@ -66,7 +66,7 @@ export const BookRecommendations = () => {
                     BookID: book.id,
                     Title: book.volumeInfo.title,
                     Author: book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown',
-                    Genre: book.volumeInfo.categories ? book.volumeInfo.categories.join(', ') : 'Unknown'
+                    ImageLink: book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.smallThumbnail
                 }));
 
             setRecommendedBooks(filteredBooks);
@@ -137,15 +137,26 @@ export const BookRecommendations = () => {
                     <table className="table table-striped table-custom">
                         <thead className="text-custom">
                             <tr>
+                                <th>Cover</th>
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Average Rating</th>
-                                <th>Genre</th>
                             </tr>
                         </thead>
                         <tbody className="text-custom">
                             {recommendedBooks.map((book) => (
                                 <tr key={book.BookID}>
+                                    <td>
+                {book.ImageLink ? (
+                    <img 
+                        src={book.ImageLink} 
+                        alt={`${book.Title} cover`}
+                        style={{ maxWidth: '100px', maxHeight: '150px', objectFit: 'cover' }}
+                    />
+                ) : (
+                    <div className="text-custom">No Image Available</div>
+                )}
+            </td>
                                     <td>
                                         <Link to={`/book/${book.BookID}`} className="link-custom">
                                             {book.Title}
@@ -153,7 +164,6 @@ export const BookRecommendations = () => {
                                     </td>
                                     <td>{book.Author}</td>
                                     <td>{book.averageRating}</td>
-                                    <td>{book.Genre}</td>
                                 </tr>
                             ))}
                         </tbody>

@@ -27,7 +27,8 @@ export const HomePage = () => {
 
 return (
         <div>
-            <h1 className="title">Top Rated Books by Bookmatcha Users</h1>
+            <h1 className="title">Top Rated Books by bookmatcha Users</h1>
+            <p className="subtitle">These are the top books users have been sipping on.</p>
             {topBooks.map(book => (
                 <MDBRow key={book.BookID} className="justify-content-center mb-4">
                     <MDBCol md='12'>

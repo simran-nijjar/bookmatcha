@@ -65,7 +65,7 @@ export const UserBooks = () => {
             <p className="subtitle">No books yet. Start reviewing books!</p>
           ) : (
             <div>
-              <h3 className="subtitle">Here are your reviews</h3>
+              <h3 className="subtitle">Here are the books you've brewed.</h3>
 
               {/* User reviews table */}
               <table className="table body table-striped table-custom">

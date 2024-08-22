@@ -141,7 +141,7 @@ export const BookRecommendations = () => {
                 <p className="subtitle">Add more books to your library to get book recommendations.</p>
             ) : (
                 <div>
-                    <p className="subtitle">Here are some books we've brewed for you.</p>
+                    <p className="subtitle">Here are some books we've matcha-ed for you.</p>
                     <table className="table table-striped table-custom">
                         <thead className="text-custom">
                             <tr>

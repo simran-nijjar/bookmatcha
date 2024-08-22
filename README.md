@@ -22,14 +22,13 @@ When the user successfully logs in or registers, they will see this page once th
 Here they will see the top rated books by bookmatcha users.
 ![Homepage](Images/homepage.png)
 
-### User's Books (Empty Library)
-When the user has not reviewed/rated any books yet this what they will see.
-![Empty User's Books](Images/emptyuserbooks.png)
-
-### User's Books (Non-empty Library)
+### User's Books 
+### Non-empty
 When the user has reviewed/rated books they can view their books here.
 From this table, users can edit or delete their reviews/ratings here.
 ![Non-empty User's Books](Images/nonemptyuserbooks.png)
+### Empty
+![Empty User's Books](Images/emptyuserbooks.png)
 
 ### Book Recommendations
 ### Non-empty 
@@ -38,7 +37,6 @@ Books are recommended based on books the user has given a rating of greater than
 ![Empty Book Recommendations](Images/nonemptybookrecommendations.png)
 ### Empty
 ![Non-empty Book Recommendations](Images/emptybookrecommendations.png)
-
 
 ### User Account
 The user can change their first name, last name, or password on this page.

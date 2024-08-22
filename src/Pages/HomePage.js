@@ -5,9 +5,13 @@ import '../styles.css';
 import { Link } from 'react-router-dom';
 var config = require('../config');
 
+// This file contains the details the user sees when they first login/register into bookmatcha
+// The homepage displays the top rated books
+
 export const HomePage = () => {
     const [topBooks, setTopBooks] = useState([]);
 
+    // Fetch the top books rated on bookmatcha
     const fetchTopBooks = async () => {
         try {
             const response = await axios.get(`${config.API_URL}fetchtopuserratedbooks`);

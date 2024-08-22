@@ -29,6 +29,7 @@ export const BookRecommendations = () => {
         }
     }, [usersBooks, currentPage]);
 
+    // Fetch books that the user has reviewed and rated
     const fetchUsersBooks = async (reviewerID) => {
         try {
             const response = await axios.get(`${config.API_URL}fetchusersbooks`, {
@@ -41,6 +42,7 @@ export const BookRecommendations = () => {
         }
     };
 
+    // Extract authors from the books
     const extractAuthors = () => {
         const authors = new Set();
         const savedBookIDs = new Set();
@@ -55,9 +57,11 @@ export const BookRecommendations = () => {
         return { authors: Array.from(authors), savedBookIDs: Array.from(savedBookIDs) };
     };
 
+    // Use the user's books to recommend them books
     const getRecommendations = async () => {
         try {
             const { authors, savedBookIDs } = extractAuthors();
+            // Get books from Google Books that are authored by books the user has read
             const googleBooks = await fetchBooksFromGoogle(authors, (currentPage - 1) * maxResults);
 
             const filteredBooks = googleBooks
@@ -70,7 +74,8 @@ export const BookRecommendations = () => {
                 }));
 
             setRecommendedBooks(filteredBooks);
-
+            
+            // Get average rating for each book based on bookmatcha users
             const bookIDs = filteredBooks.map(book => book.BookID);
             const averageRatings = await fetchAverageRatings(bookIDs);
 
@@ -86,6 +91,8 @@ export const BookRecommendations = () => {
         }
     };
 
+
+    // Fetch books from Google Books
     const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
         const authorQuery = authors.map(author => `inauthor:${author}`).join(' OR ');
         const query = `${authorQuery}`;
@@ -111,6 +118,7 @@ export const BookRecommendations = () => {
         }
     };
 
+    // Fetch average ratings for each book on bookmatch
     const fetchAverageRatings = async (bookIDs) => {
         try {
             const response = await axios.get(`${config.API_URL}fetchaverageratings`, {
@@ -168,9 +176,9 @@ export const BookRecommendations = () => {
                             ))}
                         </tbody>
                     </table>
-                    <div>
-                        <button className="btn button-custom" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-                        <button className="btn button-custom" onClick={handleNextPage}>Next</button>
+                    <div style={{display: 'flex', justifyContent: 'center', gap: '10px'}}>
+                        <button className="btn theme-custom" onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                        <button className="btn theme-custom" onClick={handleNextPage}>Next</button>
                     </div>
                 </div>
             )}

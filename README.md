@@ -29,7 +29,7 @@ When the user has not reviewed/rated any books yet this what they will see.
 ### User's Books (Non-Empty Library)
 When the user has reviewed/rated books they can view their books here.
 From this table, users can edit or delete their reviews/ratings here.
-![Non-empty User's Books](Images/homepagenonemptylibrary.png)
+![Non-empty User's Books](Images/nonemptyuserbooks.png)
 
 ### User Account
 The user can change their first name, last name, or password on this page.

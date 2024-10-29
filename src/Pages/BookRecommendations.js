@@ -138,7 +138,7 @@ export const BookRecommendations = () => {
             {error ? (
                 <p className="subtitle">{error}</p>
             ) : recommendedBooks.length === 0 ? (
-                <p className="subtitle">Add more books to your library to get book recommendations.</p>
+                <p className="subtitle">Search and add more books to your library to get book recommendations.</p>
             ) : (
                 <div>
                     <p className="subtitle">Here are some books we've matcha-ed for you.</p>

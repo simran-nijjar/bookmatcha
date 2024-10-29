@@ -62,7 +62,7 @@ export const UserBooks = () => {
         <div>
           <h1 className="title">Welcome to your books</h1>
           {reviews.length === 0 ? (
-            <p className="subtitle">No books yet. Start reviewing books!</p>
+            <p className="subtitle">No books yet. Start searching and reviewing books!</p>
           ) : (
             <div>
               <h3 className="subtitle">Here are the books you've brewed.</h3>

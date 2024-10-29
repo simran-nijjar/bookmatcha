@@ -29,12 +29,12 @@ return (
         <div>
             <h1 className="title">Top Rated Books by bookmatcha Users</h1>
             <p className="subtitle">These are the top books users have been sipping on.</p>
+            <MDBRow className="justify-content-center mb-4">
             {topBooks.map(book => (
-                <MDBRow key={book.BookID} className="justify-content-center mb-4">
-                    <MDBCol md='12'>
-                        <MDBCard className="card-custom" style={{ maxWidth: '540px' }}>
+                <MDBCol key={book.BookID} md = '4' lg = '4' className="justify-content-center mb-4">
+                    <MDBCard className="card-custom" style={{ maxWidth: '540px' }}>
                             <MDBRow className='g-0'>
-                                <MDBCol md='8' lg='6' xl='4' >
+                                <MDBCol md='12' lg='6' xl='4' >
                                     <MDBCardImage
                                         src={book.ImageLink}
                                         alt={book.Name}
@@ -58,9 +58,9 @@ return (
                                 </MDBCol>
                             </MDBRow>
                         </MDBCard>
-                    </MDBCol>
-                </MDBRow>
+                </MDBCol>
             ))}
+            </MDBRow>
         </div>
     );
 };

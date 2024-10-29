@@ -162,7 +162,9 @@ export function BookDetails() {
                 <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
             )}
             <p><strong>By:</strong> {book.volumeInfo?.authors?.join(', ') || 'Unknown'}</p>
-            <p><strong>Description:</strong> {book.volumeInfo?.description || 'No Description Available'}</p>
+            <p><strong>Description:</strong></p>
+            <div dangerouslySetInnerHTML= { {__html: book.volumeInfo?.description} || 'No Description Available'}>
+            </div>
             <p><strong>Average Rating:</strong> {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}</p>
             <p><strong>Total Reviews:</strong> {reviews.length}</p>
             <div>

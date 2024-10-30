@@ -158,12 +158,14 @@ export function BookDetails() {
     return (
         <div>
             <h1 className="title">{book.volumeInfo?.title || 'No Title Available'}</h1>
+            <div style={{ textAlign: 'center' }}>
             {book.volumeInfo?.imageLinks?.thumbnail && (
                 <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
             )}
-            <p><strong>By:</strong> {book.volumeInfo?.authors?.join(', ') || 'Unknown'}</p>
-            <p><strong>Description:</strong></p>
-            <div dangerouslySetInnerHTML= { {__html: book.volumeInfo?.description} || 'No Description Available'}>
+            </div>
+            <p style={{ textAlign: 'center' }}><strong>By:</strong> {book.volumeInfo?.authors?.join(', ') || 'Unknown'}</p>
+            <p style={{ textAlign: 'center' }}><strong>Description:</strong></p>
+            <div style={{ textAlign: 'center' }} dangerouslySetInnerHTML= { {__html: book.volumeInfo?.description} || 'No Description Available'}>
             </div>
             <p><strong>Average Rating:</strong> {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}</p>
             <p><strong>Total Reviews:</strong> {reviews.length}</p>

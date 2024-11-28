@@ -167,6 +167,13 @@ export function BookDetails() {
             <p style={{ textAlign: 'center' }}><strong>Description:</strong></p>
             <div style={{ textAlign: 'center' }} dangerouslySetInnerHTML= { {__html: book.volumeInfo?.description} || 'No Description Available'}>
             </div>
+            <p><strong>Genre:</strong>{book.volumeInfo?.categories?.[0]
+            ? book.volumeInfo.categories[0].split('/')[1]: 'Unknown'}</p>
+            <p><strong>Sub-genre:</strong>{book.volumeInfo?.categories?.[0]
+            ? book.volumeInfo.categories
+            .map(category => category.split('/')[2])
+            .filter(Boolean)
+            .join(',') : 'Unknown'}</p>
             <p><strong>Average Rating:</strong> {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}</p>
             <p><strong>Total Reviews:</strong> {reviews.length}</p>
             <div>

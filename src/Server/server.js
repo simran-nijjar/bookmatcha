@@ -2,8 +2,9 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto')
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -12,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const mysql = require('mysql');
 const config = require('../config');
 const saltRounds = 10;
-const secretKey = config.jwt_key;
+const secretKey = crypto.randomBytes(64).toString('hex');
 
 // Connect to database
 const connection = mysql.createConnection({

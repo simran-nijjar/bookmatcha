@@ -135,9 +135,10 @@ app.post('/api/login', (request, response) => {
 
 // Endpoint to handle inserting book when user clicks on the book
 app.post('/api/insertbook', (request, response) => {
-    const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Categories) VALUES (?, ?, ?, ?, ?)';
-    const values = [request.body['Name'], request.body['BookID'], request.body['Author'], request.body['ImageLink'], request.body['Categories']];
-
+    console.log(request.body);
+    const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Genre, Sub_Genre) VALUES (?, ?, ?, ?, ?, ?)';
+    const values = [request.body['Name'], request.body['BookID'], request.body['Author'], request.body['ImageLink'], request.body['Genre'], request.body['Sub_Genre']];
+    console.log("Genre: ", request.body['Genre'], " ",  "Sub_Genre: ", request.body['Sub_Genre']);
     connection.query(query, values, function (err, result, fields) {
         if (err) {
             if (err.code === 'ER_DUP_ENTRY') {

@@ -14,7 +14,8 @@ CREATE TABLE Book (
     BookID CHAR(50) NOT NULL UNIQUE,
     Author CHAR(100) NOT NULL,
     ImageLink TEXT(500),
-    Categories CHAR(100),
+    Genre CHAR(100),
+    Sub_Genre CHAR(100),
     AverageRating INT, 
     PRIMARY KEY (BookID)
 );

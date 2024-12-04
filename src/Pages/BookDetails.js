@@ -24,6 +24,7 @@ export function BookDetails() {
         try {
             const response = await axios.get(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
             setBook(response.data);
+            console.log(response.data);
             setBookID(response.data.id);
             fetchReviews(response.data.id);
         } catch (error) {

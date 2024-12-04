@@ -36,7 +36,7 @@ app.listen(config.port, () => {
 
 
 app.get('/', (request, response)=>{
-    response.send('MyLibrary Application Setup Tested!')
+    response.send('Bookmatcha Application Setup Tested!')
 ;})
 
 // Method to generate token for user
@@ -62,7 +62,7 @@ app.post('/api/register', (request, response) => {
                 response.status(500).json({ message: 'Error hashing password' });
                 return;
             }
-            const checkEmailQuery = 'SELECT * FROM MyLibraryAppUser WHERE Email = ?';
+            const checkEmailQuery = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
 
         connection.query(checkEmailQuery, request.body['Email'], (err, results, fields) => {
             if (err) {
@@ -75,7 +75,7 @@ app.post('/api/register', (request, response) => {
                 return;
             }
             // Register user
-            const query = 'INSERT INTO MyLibraryAppUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
+            const query = 'INSERT INTO BookmatchaUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
             const values = [request.body['FirstName'], request.body['LastName'], request.body['Email'],hashedPassword];
         
             connection.query(query, values, function (err, result, fields){
@@ -99,7 +99,7 @@ app.post('/api/register', (request, response) => {
 
 // Endpoint to handle user login
 app.post('/api/login', (request, response) => {
-    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email =?';
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
 
     connection.query(query, values, function(err, results, fields) {
@@ -205,11 +205,11 @@ app.get('/api/fetchreviews', (request, response) => {
             Book.Author AS bookAuthor,
             AvgRatings.averageRating,
             BookReview.ReviewerID,
-            MyLibraryAppUser.FirstName,
-            MyLibraryAppUser.LastName
+            BookmatchaUser.FirstName,
+            BookmatchaUser.LastName
         FROM BookReview
         INNER JOIN Book ON BookReview.BookID = Book.BookID
-        INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
+        INNER JOIN BookmatchaUser ON BookReview.ReviewerID = BookmatchaUser.Email
         INNER JOIN (
             SELECT 
                 BookID,
@@ -250,7 +250,7 @@ app.get('/api/fetchuserreviews', (request, response) => {
             Book.Author AS bookAuthor,
             AvgRatings.averageRating
             FROM BookReview
-            INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
+            INNER JOIN BookmatchaUser ON BookReview.ReviewerID = BookmatchaUser.Email
             INNER JOIN Book ON BookReview.BookID = Book.BookID
             INNER JOIN (
             SELECT 
@@ -280,7 +280,7 @@ app.get('/api/fetchuserinfo', (request, response) => {
         return response.status(400).send('Email parameter is required');
     }
 
-    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email = ?';
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
     const values = [request.query.Email];
 
     connection.query(query, values, function(err, result) {
@@ -314,7 +314,7 @@ app.put('/api/updatefirstname', (request, response) => {
     }
 
     // Define SQL query and values
-    const query = 'UPDATE MyLibraryAppUser SET FirstName=? WHERE Email=?';
+    const query = 'UPDATE BookmatchaUser SET FirstName=? WHERE Email=?';
     const values = [FirstName, Email];
     console.log("FirstName, Email: ", FirstName, Email);
 
@@ -348,7 +348,7 @@ app.put('/api/updatelastname', (request, response) => {
     }
 
     // Define SQL query and values
-    const query = 'UPDATE MyLibraryAppUser SET LastName=? WHERE Email=?';
+    const query = 'UPDATE BookmatchaUser SET LastName=? WHERE Email=?';
     const values = [LastName, Email];
     
     // Execute the query
@@ -387,7 +387,7 @@ app.delete('/api/deletereview/:id', (req, res) => {
 
 // Endpoint to confirm password matches the backend
 app.post('/api/validatepassword', (request, response) => {
-    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email =?';
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
 
     connection.query(query, values, function(err, results, fields) {
@@ -448,7 +448,7 @@ app.put('/api/updatepassword', (request, response) => {
                 return;
             }
 
-            const query = 'UPDATE MyLibraryAppUser SET Password=? WHERE Email =?';
+            const query = 'UPDATE BookmatchaUser SET Password=? WHERE Email =?';
             values = [hashedPassword, Email];
 
             connection.query(query, values, function(err, result) {

@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import PasswordChecklist from "react-password-checklist"
-var config = require('../config');
 
 // This file contains the form the user sees when they register an account
 
@@ -77,7 +76,7 @@ export const Register = ({ onLogin }) => {
 
     // If all fields are valid, insert into backend
     try {
-      const res = await axios.post(`${config.API_URL}register`, {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}register`, {
         FirstName: firstName,
         LastName: lastName,
         Email: email,

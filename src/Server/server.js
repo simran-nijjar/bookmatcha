@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -11,26 +12,25 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const mysql = require('mysql');
-const config = require('../config');
 const saltRounds = 10;
 const secretKey = crypto.randomBytes(64).toString('hex');
 
 // Connect to database
 const connection = mysql.createConnection({
-    host: config.host,
-    user: config.user,
-    password: config.password,
-    database: config.database
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 });
 
 // Connect to port
-app.listen(config.port, () => {
+app.listen(process.env.PORT, () => {
     connection.connect(function(err){
         if(err){
             console.log(err);
             throw err;
         }
-        console.log('Listening on port ' + config.port);
+        console.log('Listening on port ' + process.env.PORT);
     });
 });
 

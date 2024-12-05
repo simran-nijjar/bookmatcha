@@ -3,7 +3,6 @@ import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from 'jwt-decode';
-var config = require('../config');
 
 // This file contains the form the user sees when they login and the login processes
 
@@ -28,7 +27,7 @@ export const Login = ({ onLogin }) => {
         
         // Validate user input in backend
         try {
-            const res = await axios.post(`${config.API_URL}login`, {
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}login`, {
                 Email: email, 
                 Password: password
             });

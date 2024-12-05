@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-var config = require('../config');
 
 // This page is the first page the user sees when they login or register
 // Here the user can see all of the books they have reviewed
@@ -26,7 +25,7 @@ export const UserBooks = () => {
 
     // Fetch all reviews the user has posted
     const fetchUserReviews = (reviewerID) => {
-        axios.get(`${config.API_URL}fetchuserreviews`, {
+        axios.get(`${process.env.REACT_APP_API_URL}fetchuserreviews`, {
             params: {ReviewerID: reviewerID}
         })
         .then((response) => {
@@ -42,7 +41,7 @@ export const UserBooks = () => {
         const confirmDelete = window.confirm("Are you sure you want to delete this review?");
         // Delete from backend
         if (confirmDelete) {
-            axios.delete(`${config.API_URL}deletereview/${reviewID}`)
+            axios.delete(`${process.env.REACT_APP_API_URL}deletereview/${reviewID}`)
             .then((response) => {
                 // Refresh user's reviews when deleted
                 const savedUser = JSON.parse(localStorage.getItem('user'));

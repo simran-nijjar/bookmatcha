@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import '../styles.css';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-var config = require('../config');
 
 // This file contains the details of each book when a user selects it
 // Here the user can write a review, update their review, and look at reviews posted by other users
@@ -35,7 +34,7 @@ export function BookDetails() {
 
     // Fetch all reviews for the specified book
     const fetchReviews = (bookId) => {
-        axios.get(`${config.API_URL}fetchreviews`, {
+        axios.get(`${process.env.REACT_APP_API_URL}fetchreviews`, {
             params: { BookID: bookId }
         })
         .then((response) => {
@@ -53,7 +52,7 @@ export function BookDetails() {
 
     // Fetch the existing review for the logged-in user
     const fetchExistingReview = (bookId, reviewerId) => {
-        axios.get(`${config.API_URL}fetchuserexistingreview`, {
+        axios.get(`${process.env.REACT_APP_API_URL}fetchuserexistingreview`, {
             params: { BookID: bookId, ReviewerID: reviewerId }
         })
         .then((response) => {
@@ -110,7 +109,7 @@ export function BookDetails() {
           return;
       }
       try {
-          const result = await axios.post(`${config.API_URL}savereview`, {
+          const result = await axios.post(`${process.env.REACT_APP_API_URL}savereview`, {
               BookID: bookID,
               WrittenReview: writtenReview,
               Rating: rating,
@@ -134,7 +133,7 @@ export function BookDetails() {
         return;
     }
     try {
-        const result = await axios.put(`${config.API_URL}updatereview`, {
+        const result = await axios.put(`${process.env.REACT_APP_API_URL}updatereview`, {
             BookID: bookID,
             WrittenReview: writtenReview,
             Rating: rating,

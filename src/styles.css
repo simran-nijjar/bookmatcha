@@ -21,7 +21,8 @@ body {
     margin-left: auto;
     margin-right: auto;
     width: 80%;
-    color: #44624a
+    color: #44624a;
+    --bs-table-bg: #c0cfb2;
 }
 
 .button-custom {

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import PasswordChecklist from "react-password-checklist"
-var config = require('../config');
 
 // On this page the user can update their first and last name
 
@@ -22,7 +21,7 @@ export const UserAccount = () => {
         
         if (savedUser) {
             // Get user information from the backend
-            axios.get(`${config.API_URL}fetchuserinfo`, {
+            axios.get(`${process.env.REACT_APP_API_URL}fetchuserinfo`, {
                 params: { Email: savedUser.email }
             })
             .then((response) => {
@@ -70,7 +69,7 @@ export const UserAccount = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         
         if (savedUser) {
-            axios.put(`${config.API_URL}updatefirstname`, {
+            axios.put(`${process.env.REACT_APP_API_URL}updatefirstname`, {
                 FirstName: firstName,
                 Email: savedUser.email
             })
@@ -89,7 +88,7 @@ export const UserAccount = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         
         if (savedUser) {
-            axios.put(`${config.API_URL}updatelastname`, {
+            axios.put(`${process.env.REACT_APP_API_URL}updatelastname`, {
                 LastName: lastName,
                 Email: savedUser.email
             })
@@ -109,7 +108,7 @@ export const UserAccount = () => {
 
         if (savedUser) {
             try {
-                const res = await axios.post(`${config.API_URL}validatepassword`, {
+                const res = await axios.post(`${process.env.REACT_APP_API_URL}validatepassword`, {
                     Email: savedUser.email,
                     Password: currentPassword
                 });
@@ -142,7 +141,7 @@ export const UserAccount = () => {
 
         // If current password is correct and new password meets requirements 
         if (savedUser && await validateCurrentPassword() && validateNewPassword()) {
-            axios.put(`${config.API_URL}updatepassword`, {
+            axios.put(`${process.env.REACT_APP_API_URL}updatepassword`, {
                 NewPassword: newPassword,
                 Email: savedUser.email
             })

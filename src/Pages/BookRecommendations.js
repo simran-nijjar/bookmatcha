@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-var config = require('../config');
 
 // This file contains the book recommendations page which recommends user books based on what they have in their library
 
@@ -32,7 +31,7 @@ export const BookRecommendations = () => {
     // Fetch books that the user has reviewed and rated
     const fetchUsersBooks = async (reviewerID) => {
         try {
-            const response = await axios.get(`${config.API_URL}fetchusersbooks`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}fetchusersbooks`, {
                 params: { ReviewerID: reviewerID }
             });
             setUsersBooks(response.data);
@@ -96,7 +95,7 @@ export const BookRecommendations = () => {
     const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
         const authorQuery = authors.map(author => `inauthor:${author}`).join(' OR ');
         const query = `${authorQuery}`;
-        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${config.API_KEY}&maxResults=${maxResults}`;
+        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.REACT_APP_API_KEY}&maxResults=${maxResults}`;
 
         try {
             const response = await fetch(url);
@@ -121,7 +120,7 @@ export const BookRecommendations = () => {
     // Fetch average ratings for each book on bookmatch
     const fetchAverageRatings = async (bookIDs) => {
         try {
-            const response = await axios.get(`${config.API_URL}fetchaverageratings`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}fetchaverageratings`, {
                 params: { BookIDs: bookIDs.join(',') }
             });
             return response.data;

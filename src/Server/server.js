@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -11,32 +12,31 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const mysql = require('mysql');
-const config = require('../config');
 const saltRounds = 10;
 const secretKey = crypto.randomBytes(64).toString('hex');
 
 // Connect to database
 const connection = mysql.createConnection({
-    host: config.host,
-    user: config.user,
-    password: config.password,
-    database: config.database
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 });
 
 // Connect to port
-app.listen(config.port, () => {
+app.listen(process.env.PORT, () => {
     connection.connect(function(err){
         if(err){
             console.log(err);
             throw err;
         }
-        console.log('Listening on port ' + config.port);
+        console.log('Listening on port ' + process.env.PORT);
     });
 });
 
 
 app.get('/', (request, response)=>{
-    response.send('MyLibrary Application Setup Tested!')
+    response.send('Bookmatcha Application Setup Tested!')
 ;})
 
 // Method to generate token for user
@@ -62,7 +62,7 @@ app.post('/api/register', (request, response) => {
                 response.status(500).json({ message: 'Error hashing password' });
                 return;
             }
-            const checkEmailQuery = 'SELECT * FROM MyLibraryAppUser WHERE Email = ?';
+            const checkEmailQuery = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
 
         connection.query(checkEmailQuery, request.body['Email'], (err, results, fields) => {
             if (err) {
@@ -75,7 +75,7 @@ app.post('/api/register', (request, response) => {
                 return;
             }
             // Register user
-            const query = 'INSERT INTO MyLibraryAppUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
+            const query = 'INSERT INTO BookmatchaUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
             const values = [request.body['FirstName'], request.body['LastName'], request.body['Email'],hashedPassword];
         
             connection.query(query, values, function (err, result, fields){
@@ -99,7 +99,7 @@ app.post('/api/register', (request, response) => {
 
 // Endpoint to handle user login
 app.post('/api/login', (request, response) => {
-    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email =?';
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
 
     connection.query(query, values, function(err, results, fields) {
@@ -135,9 +135,10 @@ app.post('/api/login', (request, response) => {
 
 // Endpoint to handle inserting book when user clicks on the book
 app.post('/api/insertbook', (request, response) => {
-    const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Categories) VALUES (?, ?, ?, ?, ?)';
-    const values = [request.body['Name'], request.body['BookID'], request.body['Author'], request.body['ImageLink'], request.body['Categories']];
-
+    console.log(request.body);
+    const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Genre, Sub_Genre) VALUES (?, ?, ?, ?, ?, ?)';
+    const values = [request.body['Name'], request.body['BookID'], request.body['Author'], request.body['ImageLink'], request.body['Genre'], request.body['Sub_Genre']];
+    console.log("Genre: ", request.body['Genre'], " ",  "Sub_Genre: ", request.body['Sub_Genre']);
     connection.query(query, values, function (err, result, fields) {
         if (err) {
             if (err.code === 'ER_DUP_ENTRY') {
@@ -204,11 +205,11 @@ app.get('/api/fetchreviews', (request, response) => {
             Book.Author AS bookAuthor,
             AvgRatings.averageRating,
             BookReview.ReviewerID,
-            MyLibraryAppUser.FirstName,
-            MyLibraryAppUser.LastName
+            BookmatchaUser.FirstName,
+            BookmatchaUser.LastName
         FROM BookReview
         INNER JOIN Book ON BookReview.BookID = Book.BookID
-        INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
+        INNER JOIN BookmatchaUser ON BookReview.ReviewerID = BookmatchaUser.Email
         INNER JOIN (
             SELECT 
                 BookID,
@@ -249,7 +250,7 @@ app.get('/api/fetchuserreviews', (request, response) => {
             Book.Author AS bookAuthor,
             AvgRatings.averageRating
             FROM BookReview
-            INNER JOIN MyLibraryAppUser ON BookReview.ReviewerID = MyLibraryAppUser.Email
+            INNER JOIN BookmatchaUser ON BookReview.ReviewerID = BookmatchaUser.Email
             INNER JOIN Book ON BookReview.BookID = Book.BookID
             INNER JOIN (
             SELECT 
@@ -279,7 +280,7 @@ app.get('/api/fetchuserinfo', (request, response) => {
         return response.status(400).send('Email parameter is required');
     }
 
-    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email = ?';
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
     const values = [request.query.Email];
 
     connection.query(query, values, function(err, result) {
@@ -313,7 +314,7 @@ app.put('/api/updatefirstname', (request, response) => {
     }
 
     // Define SQL query and values
-    const query = 'UPDATE MyLibraryAppUser SET FirstName=? WHERE Email=?';
+    const query = 'UPDATE BookmatchaUser SET FirstName=? WHERE Email=?';
     const values = [FirstName, Email];
     console.log("FirstName, Email: ", FirstName, Email);
 
@@ -347,7 +348,7 @@ app.put('/api/updatelastname', (request, response) => {
     }
 
     // Define SQL query and values
-    const query = 'UPDATE MyLibraryAppUser SET LastName=? WHERE Email=?';
+    const query = 'UPDATE BookmatchaUser SET LastName=? WHERE Email=?';
     const values = [LastName, Email];
     
     // Execute the query
@@ -386,7 +387,7 @@ app.delete('/api/deletereview/:id', (req, res) => {
 
 // Endpoint to confirm password matches the backend
 app.post('/api/validatepassword', (request, response) => {
-    const query = 'SELECT * FROM MyLibraryAppUser WHERE Email =?';
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email =?';
     const values = [request.body['Email'],request.body['Password']];
 
     connection.query(query, values, function(err, results, fields) {
@@ -447,7 +448,7 @@ app.put('/api/updatepassword', (request, response) => {
                 return;
             }
 
-            const query = 'UPDATE MyLibraryAppUser SET Password=? WHERE Email =?';
+            const query = 'UPDATE BookmatchaUser SET Password=? WHERE Email =?';
             values = [hashedPassword, Email];
 
             connection.query(query, values, function(err, result) {

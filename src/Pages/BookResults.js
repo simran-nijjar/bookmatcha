@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-var config = require('../config');
 
 // This file contains the details of the book results that the user searches for
 
@@ -17,15 +16,22 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   // When a book is selected, it will be inserted into the backend if it's not already inserted 
   const insertBook = async (book) => {
+    const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.id}`);
     try {
-      const response = await axios.post(`${config.API_URL}insertbook`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}insertbook`, {
         Name: book.volumeInfo.title,
         BookID: book.id,
         Author: book.volumeInfo.authors?.join(', '),
         ImageLink: book.volumeInfo.imageLinks.smallThumbnail,
-        Categories: book.categories
+        Genre: bookDetails.data.volumeInfo?.categories?.[0]
+        ? bookDetails.data.volumeInfo.categories[0].split('/')[1]
+        : 'Unknown',
+        Sub_Genre: bookDetails.data.volumeInfo?.categories?.[0]
+        ? bookDetails.data.volumeInfo.categories
+        .map(category => category.split('/')[2])
+        .filter(Boolean)
+        .join(',') : 'Unknown'
       });
-      
       // Successful book insertion will navigate to the book details page
       if (response.status === 200) {
         navigate(`/book/${book.id}`, { state: { book } });
@@ -37,7 +43,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   const fetchAverageRatings = async (bookIDs) => {
     try {
-      const response = await axios.get(`${config.API_URL}fetchaverageratings`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}fetchaverageratings`, {
         params: {BookIDs: bookIDs.join(",")}
       });
       const ratings = response.data.reduce((acc, item) => {

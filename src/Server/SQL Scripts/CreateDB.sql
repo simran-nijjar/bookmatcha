@@ -1,7 +1,7 @@
-CREATE DATABASE MyLibraryApp;
-USE MyLibraryApp;
+CREATE DATABASE Bookmatcha;
+USE Bookmatcha;
 
-CREATE TABLE MyLibraryAppUser(
+CREATE TABLE BookmatchaUser(
     FirstName CHAR(50) NOT NULL,
     LastName CHAR(50) NOT NULL,
     Email CHAR(255) NOT NULL UNIQUE,
@@ -14,7 +14,8 @@ CREATE TABLE Book (
     BookID CHAR(50) NOT NULL UNIQUE,
     Author CHAR(100) NOT NULL,
     ImageLink TEXT(500),
-    Categories CHAR(100),
+    Genre CHAR(100),
+    Sub_Genre CHAR(100),
     AverageRating INT, 
     PRIMARY KEY (BookID)
 );
@@ -29,5 +30,5 @@ CREATE TABLE BookReview (
     PRIMARY KEY (BookReviewID),
     UNIQUE KEY UniqueReview (BookID, ReviewerID),
     FOREIGN KEY (BookID) REFERENCES Book(BookID) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (ReviewerID) REFERENCES MyLibraryAppUser(Email) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (ReviewerID) REFERENCES BookmatchaUser(Email) ON UPDATE CASCADE ON DELETE CASCADE
 );

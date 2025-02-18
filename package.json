@@ -1,6 +1,6 @@
 {
-  "homepage": "http://simran-nijjar.github.io/my-library-app",
-  "name": "my-library-app",
+  "homepage": "http://simran-nijjar.github.io/bookmatcha",
+  "name": "bookmatcha",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

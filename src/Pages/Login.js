@@ -54,11 +54,11 @@ export const Login = ({ onLogin }) => {
                 navigate("/HomePage");
             }
         } catch (error) {
-            console.error(error.response);
+            console.error('Login error:', error.response?.data || error.message);
             if (error.response && error.response.status === 400) {
                 setError('The email and password you entered do not match our records. Please try again.');
             } else {
-                setError('Login failed. Please try again later.');
+                setError('Login failed. Please try again later.', error.response);
             }
         }
     };

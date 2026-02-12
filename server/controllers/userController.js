@@ -1,0 +1,196 @@
+const bcrypt = require("bcryptjs");
+const connection = require('../config/db');
+const generateToken = require('../utils/generateToken');
+const saltRounds = 12;
+
+// Register user
+exports.register = (req, res) => {
+    const { FirstName, LastName, Email, Password } = req.body;
+
+    if (!FirstName || !LastName || !Email || !Password) {
+        return res.status(400).json({ message: "FirstName, LastName, Email, and Password are all required"});
+    }
+
+    const checkEmailQuery = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
+
+    connection.query(checkEmailQuery, [Email], async (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: "Error checking email"});
+        }
+        if (results.length > 0) {
+            return res.status(409).json({ message: "Account with this email already exists"});
+        }
+
+        const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
+        const query = 'INSERT INTO BookmatchaUser (FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?)';
+
+        connection.query(query, [FirstName, LastName, Email, hashedPassword], (err) => {
+            if (err)
+            {
+                return res.status(500).send("Failed to register user");
+            }
+
+            const token = generateToken({ email: Email });
+            return res.status(201).json({ message: "User registered successfully", token})
+        });
+    });
+};
+
+// User login
+exports.login = async (req, res) => {
+    try {
+        const { Email, Password } = req.body;
+
+        if (!Email || !Password) {
+            return res.status(400).json({ message: "Email and Password are required"});
+        }
+
+        const query = 'SELECT * FROM BookmatchaUser WHERE Email =?';
+
+        connection.query(query, [Email], async (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Error checking for user"});
+            }
+            if (result.length == 0){
+                return res.status(404).json({ message: "User not found"});
+            }
+
+            const user = result[0]
+            const isMatch = await bcrypt.compare(Password, user.Password);
+
+            if (!isMatch) {
+                return res.status(400).json({ message: "Incorrect password" });
+            }
+
+            const token = generateToken(user);
+            return res.status(200).json({ message: "User logged in successfully", token});
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+// Validate password
+exports.validatePassword = (req, res) => {
+    const { Email, Password } = req.body;
+
+    if (!Email || !Password) {
+        return res.status(400).json({ message: "Email and password are required"});
+    }
+
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email =?';
+
+    connection.query(query, [Email], async (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: "Error checking for user"});
+        }
+        if (results.length == 0) {
+            return res.status(404).json({ message: "User not found"});
+        }
+
+        const user = results[0];
+        await bcrypt.compare(Password, user.Password, (err, isMatch) => {
+            if (err) {
+                return res.status(500).json({ message: "Error comparing passwords"});
+            }
+            if (!isMatch) {
+                return res.status(400).json({ message: "Current password is not correct"});
+            }
+            return res.status(200).json({ message: "Password is valid"});
+        });
+    });
+}
+
+// Update password
+exports.updatePassword = (req, res) => {
+    const { NewPassword, Email } = req.body;
+
+    if (!NewPassword || !Email) {
+        return res.status(400).json({ message: "New Password and Email is required"});
+    }
+    
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (err) {
+            return res.status(500).json({ message: "Error generating salt"});
+        }
+
+        bcrypt.hash(NewPassword, salt, (err, hashedPassword) => {
+            if (err) {
+                return res.status(500).json({ message: "Error hashing password"});
+            }
+
+            const query = 'UPDATE BookmatchaUser SET Password=? WHERE Email =?';
+
+            values = [hashedPassword, Email];
+
+            connection.query(query, values, (err, result) => {
+                if (err) {
+                    return res.status(500).json({ message: "Error updating password"});
+                } else if (result.affectedRows > 0) {
+                    return res.status(200).json({ message: "Password updated successfully"});
+                } 
+                return res.status(404).json({ message: "User not found"});
+            });
+        });
+    });
+}
+
+// Get user information
+exports.getUserInformation = (req, res) => {
+    const Email = req.query.Email;
+
+    if (!Email) {
+        return res.status(400).json({ message: "Email is required"});
+    }
+
+    const query = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
+
+    connection.query(query, [Email], async (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Error getting user information"});
+        } 
+        
+        if (result.length > 0) {
+            return res.status(200).send(result[0]); 
+        }
+        return res.status(404).json({ message: "User not found"});
+    });
+};
+
+// Update first or last name
+exports.updateUserInformation = (req, res) => {
+    const { Email, FirstName, LastName } = req.body;
+
+    if (!Email) {
+        return res.status(400).json({ message: "Email is required"});
+    }
+
+    const fieldsToUpdate = [];
+    const values = [];
+
+    if (FirstName) {
+        fieldsToUpdate.push('FirstName = ?');
+        values.push(FirstName);
+    }
+
+    if (LastName) {
+        fieldsToUpdate.push('LastName = ?');
+        values.push(LastName);
+    }
+
+    if (fieldsToUpdate.length === 0) {
+        return res.status(400).send("At least one field to update must be provided");
+    }
+    
+    const query = `UPDATE BookmatchaUser SET ${fieldsToUpdate.join(', ')} WHERE Email = ?`;
+    values.push(Email);
+    
+     connection.query(query, values, async (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Error updating first name"});
+        } else if (result.affectedRows > 0) {
+            return res.status(200).json({ message: "User updated successfully"});
+        } 
+    });
+};

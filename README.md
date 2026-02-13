@@ -7,48 +7,48 @@ User authentication was developed using JWT tokens and session state using local
 ### Landing Page
 This is the first page the user sees if they are not already logged in.
 The user can login or register from here.
-![Landing Page](images/landingpage.png)
+![Landing Page](Images/landingpage.png)
 
 ### Login
 This is the form the user has to fill out to login.
-![Login](images/login.png)
+![Login](Images/login.png)
 
 ### Register
 This is the form the user has to fill out to register.
-![Register](images/register.png)
+![Register](Images/register.png)
 
 ### Homepage 
 When the user successfully logs in or registers, they will see this page once they enter bookmatcha.
 Here they will see the top rated books by bookmatcha users.
-![Homepage](images/homepage.png)
+![Homepage](Images/homepage.png)
 
 ### User's Books 
 ### Non-empty
 When the user has reviewed/rated books they can view their books here.
 From this table, users can edit or delete their reviews/ratings here.
-![Non-empty User's Books](images/nonemptyuserbooks.png)
+![Non-empty User's Books](Images/nonemptyuserbooks.png)
 ### Empty
-![Empty User's Books](images/emptyuserbooks.png)
+![Empty User's Books](Images/emptyuserbooks.png)
 
 ### Book Recommendations
 ### Non-empty 
 If the user has reviewed/rated at least one book, then they can view books that are recommended to them.
 Books are recommended based on books the user has given a rating of greater than or equal to three.
-![Empty Book Recommendations](images/nonemptybookrecommendations.png)
+![Empty Book Recommendations](Images/nonemptybookrecommendations.png)
 ### Empty
-![Non-empty Book Recommendations](images/emptybookrecommendations.png)
+![Non-empty Book Recommendations](Images/emptybookrecommendations.png)
 
 ### User Account
 The user can change their first name, last name, or password on this page.
-![User Account](images/useraccount.png)
+![User Account](Images/useraccount.png)
 
 ### Search Results
 When a user searches for a book, this is how the results will be displayed to them.
 The books are queried and shown for them using Google Books API.
-![Search Results](images/searchresults.png)
+![Search Results](Images/searchresults.png)
 
 ### Book Details
 When a user selects a book, these are the details of the book given. The details are fetched from Google Books This page is also where a user can write their own review and rating and look at reviews and ratings written by other users. If the user has already reviewed the book, they can edit their review and rating here.
-![Book Details 1](images/bookdetails1.png)
+![Book Details 1](Images/bookdetails1.png)
 
-![Book Details 2](images/bookdetails2.png)
+![Book Details 2](Images/bookdetails2.png)

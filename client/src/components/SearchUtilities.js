@@ -15,7 +15,6 @@ export const fetchResults = async (query, startIndex = 0) => {
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error('Error fetching from Google Books API', error);
     return null;
   }
 };

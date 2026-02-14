@@ -16,7 +16,6 @@ export const HomePage = () => {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}books/top-rated`);
             setTopBooks(response.data);
         } catch (error) {
-            console.error("Error fetching top books", error);
         }
     };
 

@@ -37,7 +37,6 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
         navigate(`/book/${book.id}`, { state: { book } });
       }
     } catch (error) {
-      console.error('Error inserting book:', error);
     }
   };
 
@@ -52,7 +51,6 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
     }, {});
     setAverageRatings(ratings);
     } catch (error) {
-      console.error('Error fetching ratings:', error);
     }
   };
 

@@ -54,7 +54,6 @@ export const Login = ({ onLogin }) => {
                 navigate("/HomePage");
             }
         } catch (error) {
-            console.error('Login error:', error.response?.data || error.message);
             if (error.response && error.response.status === 400) {
                 setError('The email and password you entered do not match our records. Please try again.');
             } else {

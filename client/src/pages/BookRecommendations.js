@@ -16,7 +16,6 @@ export const BookRecommendations = () => {
 
     useEffect(() => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
-        console.log("savedUser " + savedUser.email);
 
         if (savedUser) {
             fetchUsersBooks(savedUser.email);
@@ -37,7 +36,6 @@ export const BookRecommendations = () => {
             });
             setUsersBooks(response.data);
         } catch (error) {
-            console.log("Error fetching user's books: ", error.response);
             setError('Error fetching user books.');
         }
     };
@@ -86,7 +84,6 @@ export const BookRecommendations = () => {
 
             setRecommendedBooks(recommendedBooksWithRatings);
         } catch (error) {
-            console.error('Error in recommendation logic:', error);
             setError('Error fetching recommendations.');
         }
     };
@@ -103,7 +100,6 @@ export const BookRecommendations = () => {
             const result = await response.json();
             return result.items;
         } catch (error) {
-            console.error('Error fetching books from Google Books API:', error);
             return [];
         }
     };
@@ -126,7 +122,6 @@ export const BookRecommendations = () => {
             });
             return response.data;
         } catch (error) {
-            console.error('Error fetching average ratings:', error);
             setError('Error fetching average ratings.');
             return [];
         }

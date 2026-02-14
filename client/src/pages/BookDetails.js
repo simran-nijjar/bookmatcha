@@ -23,11 +23,9 @@ export function BookDetails() {
         try {
             const response = await axios.get(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
             setBook(response.data);
-            console.log(response.data);
             setBookID(response.data.id);
             fetchReviews(response.data.id);
         } catch (error) {
-            console.error('Error fetching book details:', error);
             setError('Failed to load book details.');
         }
     }, []);
@@ -45,8 +43,8 @@ export function BookDetails() {
                 setAverageRating(null);
             }
         })
-        .catch((error) => {
-            console.log("Error fetching reviews:", error.response);
+        .catch(() => {
+            setError("Failed to fetch reviews. Please try again later.");
         });
     };
 
@@ -62,8 +60,8 @@ export function BookDetails() {
                 setRating(response.data[0].RATING.toString());
             }
         })
-        .catch((error) => {
-          console.log("Error fetching existing review: ", error);
+        .catch(() => {
+            setError("Failed to get your review. Please try again later.");
         });
     };
 
@@ -121,7 +119,6 @@ export function BookDetails() {
               fetchExistingReview(bookID, reviewerID);
           }
       } catch (error) {
-          console.log("Error saving review:", error.response ? error.response.data : error.message);
           setError('Error saving review. Please try again later.');
       }
   };
@@ -145,7 +142,6 @@ export function BookDetails() {
             fetchExistingReview(bookID, reviewerID);
         }
     } catch (error) {
-        console.log("Error updating review:", error.response ? error.response.data : error.message);
         setError('Error updating review. Please try again later.');
     }
 };

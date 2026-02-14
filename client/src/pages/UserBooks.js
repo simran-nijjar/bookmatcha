@@ -13,6 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 export const UserBooks = () => {
     const [reviews, setReviews] = useState([]);
     const navigate = useNavigate();
+    const [error, setError] = useState('');
     
     useEffect(() => {
         // Retrieve user info from local storage
@@ -31,8 +32,8 @@ export const UserBooks = () => {
         .then((response) => {
             setReviews(response.data);
         })
-        .catch((error) => {
-            console.log("Error fetching user's reviews: ", error.response);
+        .catch(() => {
+          setError("Error fetching your reviews. Please try again later.");
         });
     };
 
@@ -47,8 +48,8 @@ export const UserBooks = () => {
                 const savedUser = JSON.parse(localStorage.getItem('user'));
                 fetchUserReviews(savedUser.email);
             })
-            .catch((error) => {
-                console.log("Error deleting review: ", error.response);
+            .catch(() => {
+              setError("Error deleting review. Please try again later.");
             });
         }
     };
@@ -60,11 +61,14 @@ export const UserBooks = () => {
     return (
         <div>
           <h1 className="title">Welcome to your books</h1>
-          {reviews.length === 0 ? (
+          {error ? (
+            <p className='subtitle'>{error}</p>
+          ) : reviews.length === 0 ? (
             <p className="subtitle">No books yet. Start searching and reviewing books!</p>
           ) : (
             <div>
               <h3 className="subtitle">Here are the books you've brewed.</h3>
+              
 
               {/* User reviews table */}
               <table className="table body table-striped table-custom">

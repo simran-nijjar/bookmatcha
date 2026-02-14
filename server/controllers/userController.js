@@ -222,7 +222,6 @@ exports.requestPasswordReset = (req, res) => {
         const updateTokenQuery = 'UPDATE BookmatchaUser SET ResetToken = ?, ResetTokenExpiry = ? WHERE Email = ?';
         connection.query(updateTokenQuery, [resetToken, tokenExpiration, Email], async (err) => {
             if (err) {
-                console.error("Error saving reset token:", err);
                 return;
             }
 

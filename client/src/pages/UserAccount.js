@@ -32,12 +32,10 @@ export const UserAccount = () => {
                     setFirstName(user.FirstName);
                     setLastName(user.LastName);
                 } else {
-                    console.log("No user data found in the response.");
                     setUserInfo(null);
                 }
             })
-            .catch((error) => {
-                console.log("Error fetching user info: ", error);
+            .catch(() => {
                 setUserInfo(null);
             })
             .finally(() => {
@@ -77,7 +75,6 @@ export const UserAccount = () => {
                 setNameUpdateStatus('First name updated successfully!');
             })
             .catch((error) => {
-                console.log("Error updating first name: ", error);
                 setNameUpdateStatus('Error updating first name.');
             });
         }
@@ -96,7 +93,6 @@ export const UserAccount = () => {
                 setNameUpdateStatus('Last name updated successfully!');
             })
             .catch((error) => {
-                console.log("Error updating last name: ", error);
                 setNameUpdateStatus('Error updating last name.');
             });
         }
@@ -117,7 +113,6 @@ export const UserAccount = () => {
                     return true;
                 }
             } catch (error) {
-                console.error(error.response);
                 if (error.response && error.response.status === 400) {
                     setPasswordUpdateStatus('The current password you entered does not match our records. Please try again.');
                 } else {
@@ -149,7 +144,6 @@ export const UserAccount = () => {
                 setPasswordUpdateStatus('Password updated successfully!');
             })
             .catch((error) => {
-                console.log("Error updating password: ", error);
                 setPasswordUpdateStatus('Error updating password.');
             });
         }

@@ -105,7 +105,6 @@ export const Register = ({ onLogin }) => {
         navigate('/HomePage');
       }
     } catch (error) {
-      console.log(error.response);
       if (error.response && error.response.status === 400) {
         setError('Email is already registered. Try a new email or login to an existing account.');
       } else {

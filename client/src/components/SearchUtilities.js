@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 // This file contains methods used to search for books
 
 // Each page will show 20 results
@@ -9,15 +11,16 @@ export const handleQueryChange = (event, setQuery) => {
 
 // This method fetches the results from Google Books that matches the user's query
 export const fetchResults = async (query, startIndex = 0) => {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.GOOGLE_BOOKS_API_KEY}&maxResults=${maxResults}`;
-  try {
-    const response = await fetch(url);
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    return null;
-  }
+    try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}google-books/search`, {
+            params: { q: query, startIndex }
+        });
+        return res.data;
+    } catch (error) {
+        return null;
+    }
 };
+
 
 // This method is called when the user clicks "Search"
 export const handleSearch = async (event, query, setResults, setTotalPages, setCurrentPage) => {

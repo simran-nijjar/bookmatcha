@@ -20,3 +20,4 @@ app.listen(process.env.PORT, () => {
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/google-books', require('./routes/googleBooksRoutes'));

@@ -92,17 +92,17 @@ export const BookRecommendations = () => {
     // Fetch books from Google Books
     const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
         const authorQuery = authors.map(author => `inauthor:${author}`).join(' OR ');
-        const query = `${authorQuery}`;
-        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.GOOGLE_BOOKS_API_KEY}&maxResults=${maxResults}`;
 
         try {
-            const response = await fetch(url);
-            const result = await response.json();
-            return result.items;
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}google-books/search`, {
+                params: { q: authorQuery, startIndex }
+            });
+            return res.data.items || [];
         } catch (error) {
             return [];
         }
     };
+
 
     const handleNextPage = () => {
         setCurrentPage(prevPage => prevPage + 1);

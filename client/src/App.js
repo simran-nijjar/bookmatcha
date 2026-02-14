@@ -6,6 +6,8 @@ import { BrowserRouter, Route, Routes, Navigate, Link } from 'react-router-dom';
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { UserAccount } from './pages/UserAccount';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { ResetPassword } from './pages/ResetPassword';
 import { LandingPage } from './pages/LandingPage';
 import { HomePage } from './pages/HomePage';
 import { BookResults } from './pages/BookResults';
@@ -84,6 +86,8 @@ function App() {
         <Route path="/Login" element={<Login onLogin={handleLogin} />} />
         <Route path="/Register" element={<Register onLogin={handleLogin} />} />
         <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
+        <Route path="/ForgotPassword" element={<ForgotPassword />} />
+        <Route path="/ResetPassword" element={<ResetPassword />} />
         <Route path="/" element={isLoggedIn ? <Navigate to="/HomePage" /> : <LandingPage />} />
         <Route path="/BookResults" element={<BookResults 
           results={results} 
@@ -96,6 +100,7 @@ function App() {
         <Route path="/HomePage" element={<HomePage />} />
         <Route path="/BookRecommendations" element={<BookRecommendations />} />
         <Route path="/book/:id" element={<BookDetails />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

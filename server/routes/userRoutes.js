@@ -8,5 +8,7 @@ router.post('/validate-password', userController.validatePassword);
 router.put('/password', userController.updatePassword);
 router.get('/userid', userController.getUserInformation);
 router.put('/userid', userController.updateUserInformation);
+router.post('/request-password-reset', userController.requestPasswordReset);
+router.post('/reset-password', userController.resetPassword);
 
 module.exports = router;

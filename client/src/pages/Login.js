@@ -87,13 +87,15 @@ export const Login = ({ onLogin }) => {
                                     {error && <p style={{ color: 'white' }}>{error}</p>}
                                 </div>
 
-                                {/* Logib button */}
+                                {/* Login button */}
                                 </div>
                                 <button className="btn btn-outline-light btn-lg px-5 theme-custom" type="submit" onClick={login}>Login</button>
-                            </div>
-                            <div>
-                                <p className="mb-0">Don't have an account? <a href="/Register" className="text-white">Register</a></p>
-                            </div>
+                                </div>
+                                <div>
+                                    <p className="mb-0">Forgot password? <a href="/ForgotPassword" className="text-white">Reset</a></p>                            </div>
+                                <div>
+                                    <p className="mb-0">Don't have an account? <a href="/Register" className="text-white">Register</a></p>
+                                </div>
                         </div>
                     </div>
                 </div>

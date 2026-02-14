@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const connection = require('../config/db');
 const generateToken = require('../utils/generateToken');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 const saltRounds = 12;
 
 // Register user
@@ -192,5 +194,89 @@ exports.updateUserInformation = (req, res) => {
         } else if (result.affectedRows > 0) {
             return res.status(200).json({ message: "User updated successfully"});
         } 
+    });
+};
+
+// Send request to reset password
+exports.requestPasswordReset = (req, res) => {
+    const { Email } = req.body;
+
+    if (!Email) {
+        return res.status(400).json({ message: "Email is required"});
+    }
+
+    const checkUserQuery = 'SELECT * FROM BookmatchaUser WHERE Email = ?';
+
+    connection.query(checkUserQuery, [Email], async (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Error getting user information"});
+        } 
+        
+        if (result.length == 0) {
+           return;
+        }
+
+        const user = result[0];
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const tokenExpiration = new Date(Date.now() + 3600000);
+
+        const updateTokenQuery = 'UPDATE BookmatchaUser SET ResetToken = ?, ResetTokenExpiry = ? WHERE Email = ?';
+        connection.query(updateTokenQuery, [resetToken, tokenExpiration, Email], async (err) => {
+            if (err) {
+                console.error("Error saving reset token:", err);
+                return;
+            }
+
+            const resetUrl = `${process.env.FRONT_END_URL}/reset-password?token=${resetToken}`;
+
+            const emailContent = `
+                <h2>Password Reset Request</h2>
+                <p>If you requested a password reset, click the link below. If not, ignore this email.</p>
+                <a href="${resetUrl}">Reset Password</a>
+                <p>This link expires in 1 hour.</p>
+            `;
+
+            try {
+                await sendEmail({
+                    to: Email,
+                    subject: 'Bookmatcha Password Reset',
+                    html: emailContent
+                });
+            } catch (error) {
+                console.error('Error sending reset email:', error);
+            }
+        });
+    });
+}
+
+// Reset password
+exports.resetPassword = (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    const query = 'SELECT * FROM BookmatchaUser WHERE ResetToken = ? AND ResetTokenExpiry > ?';
+    connection.query(query, [token, new Date()], async (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Database error" });
+        }
+        if (result.length === 0) {
+            return res.status(400).json({ message: "Invalid or expired token" });
+        }
+
+        const user = result[0];
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        const updateQuery = 'UPDATE BookmatchaUser SET Password = ?, ResetToken = NULL, ResetTokenExpiry = NULL WHERE Email = ?';
+        connection.query(updateQuery, [hashedPassword, user.Email], (err) => {
+            if (err) {
+                return res.status(500).json({ message: "Failed to reset password" });
+            }
+
+            return res.status(200).json({ message: "Password has been reset successfully" });
+        });
     });
 };

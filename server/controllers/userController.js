@@ -213,10 +213,8 @@ exports.requestPasswordReset = (req, res) => {
         } 
         
         if (result.length == 0) {
-           return;
+           return res.status(200);
         }
-
-        const user = result[0];
 
         const resetToken = crypto.randomBytes(32).toString('hex');
         const tokenExpiration = new Date(Date.now() + 3600000);
@@ -231,11 +229,26 @@ exports.requestPasswordReset = (req, res) => {
             const resetUrl = `${process.env.FRONT_END_URL}/reset-password?token=${resetToken}`;
 
             const emailContent = `
-                <h2>Password Reset Request</h2>
-                <p>If you requested a password reset, click the link below. If not, ignore this email.</p>
-                <a href="${resetUrl}">Reset Password</a>
-                <p>This link expires in 1 hour.</p>
+            <h2>Bookmatcha Password Reset Request</h2>
+            <p>Hello,</p>
+            <p>We received a request to reset the password for your Bookmatcha account. Click the button below to reset your password:</p>
+            <p style="text-align:center;">
+                <a href="${resetUrl}" style="
+                    background-color: #1a73e8;
+                    color: white;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                ">Reset Password</a>
+            </p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you did not request a password reset, please ignore this email.</p>
+            <p>Do not reply to this email. This inbox is not monitored.</p>
+            <hr />
+            <p style="font-size: 12px; color: #888;">© 2026 Bookmatcha. All rights reserved.</p>
             `;
+
 
             try {
                 await sendEmail({
@@ -243,8 +256,9 @@ exports.requestPasswordReset = (req, res) => {
                     subject: 'Bookmatcha Password Reset',
                     html: emailContent
                 });
+                return res.status(200);
             } catch (error) {
-                console.error('Error sending reset email:', error);
+                return res.status(500).json({ message: "Error sending reset email"});
             }
         });
     });

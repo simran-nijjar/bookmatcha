@@ -96,7 +96,7 @@ export const BookRecommendations = () => {
     const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
         const authorQuery = authors.map(author => `inauthor:${author}`).join(' OR ');
         const query = `${authorQuery}`;
-        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.REACT_APP_API_KEY}&maxResults=${maxResults}`;
+        const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.GOOGLE_BOOKS_API_KEY}&maxResults=${maxResults}`;
 
         try {
             const response = await fetch(url);

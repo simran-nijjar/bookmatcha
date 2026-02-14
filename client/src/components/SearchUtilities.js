@@ -9,7 +9,7 @@ export const handleQueryChange = (event, setQuery) => {
 
 // This method fetches the results from Google Books that matches the user's query
 export const fetchResults = async (query, startIndex = 0) => {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.REACT_APP_API_KEY}&maxResults=${maxResults}`;
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&startIndex=${startIndex}&key=${process.env.GOOGLE_BOOKS_API_KEY}&maxResults=${maxResults}`;
   try {
     const response = await fetch(url);
     const result = await response.json();

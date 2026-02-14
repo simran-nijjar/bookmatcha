@@ -2,10 +2,10 @@ const connection = require('../config/db');
 
 // Insert book
 exports.insertBook = (req, res) => {
-    const { Name, BookId, Author, ImageLink, Genre, SubGenre } = req.body;
+    const { Name, BookID, Author, ImageLink, Genre, SubGenre } = req.body;
     const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Genre, Sub_Genre) VALUES (?, ?, ?, ?, ?, ?)';
 
-    const values = [Name, BookId, Author, ImageLink, Genre, SubGenre];
+    const values = [Name, BookID, Author, ImageLink, Genre, SubGenre];
     connection.query(query, values, async(err, result) => {
         if (err) {
             if (err.code === "ER_DUP_ENTRY") {

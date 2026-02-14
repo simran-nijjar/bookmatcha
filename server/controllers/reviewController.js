@@ -128,15 +128,15 @@ exports.getUsersBookReviews = (req, res) => {
 
 // Get specfic review fora book by user
 exports.getReviewForBookByUser = (req, res) => {
-    const { BookID, ReviewerId } = req.query;
+    const { BookID, ReviewerID } = req.query;
 
-    if (!BookID || !ReviewerId) {
+    if (!BookID || !ReviewerID) {
         return res.status(400).json({ message: "BookID and ReviewerID are required"});
     }
 
     const query = 'SELECT * FROM BookReview WHERE BookID=? AND ReviewerID=?';
 
-    connection.query(query [BookID, ReviewerId], async (err, result) => {
+    connection.query(query, [BookID, ReviewerID], async (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error getting review"});
         }

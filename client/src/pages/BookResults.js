@@ -18,7 +18,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   const insertBook = async (book) => {
     const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.id}`);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}insertbook`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
         Name: book.volumeInfo.title,
         BookID: book.id,
         Author: book.volumeInfo.authors?.join(', '),
@@ -42,7 +42,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   const fetchAverageRatings = async (bookIDs) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/books/average-rating`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}books/average-rating`, {
         params: {BookIDs: bookIDs.join(",")}
       });
       const ratings = response.data.reduce((acc, item) => {

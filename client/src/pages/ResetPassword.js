@@ -16,8 +16,12 @@ export const ResetPassword = () => {
 
     const onChange = (event) => {
         const { name, value } = event.target;
-        if (name === 'Password') setPassword(value);
-        if (name === 'ConfirmPassword') setConfirmPassword(value);
+        if (name === 'Password') { 
+            setPassword(value); 
+        }
+        if (name === 'ConfirmPassword') { 
+            setConfirmPassword(value); 
+        }
     };
 
     const resetPassword = async (event) => {
@@ -36,7 +40,7 @@ export const ResetPassword = () => {
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}users/reset-password`, {
-                token,
+                token: token,
                 newPassword: password
             });
 

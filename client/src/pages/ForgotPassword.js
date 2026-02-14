@@ -9,13 +9,14 @@ export const ForgotPassword = () => {
 
     const onChange = (event) => {
         const { name, value } = event.target;
-        if (name === 'Email') {
+        if (name === 'email') {
             setEmail(value);
         }
-    }
+    };
 
     const requestPasswordReset = async (event) => {
         event.preventDefault();
+        setMessage('');
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}users/request-password-reset`, {
@@ -43,21 +44,35 @@ export const ForgotPassword = () => {
 
                                 {/*Email input*/}
                                 <div className="form-outline form-white mb-3">
-                                    <input type="Email" name="Email" placeholder='Email' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder='Email'
+                                        value={email}
+                                        onChange={onChange}
+                                        className="form-control form-control-lg text-custom"
+                                        style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}
+                                    />
                                 </div>
                                 
-                                {/* Error message */}
+                                {/* Message */}
                                 <div style={{ minHeight: '20px' }}>
                                     {message && <p style={{ color: 'white' }}>{message}</p>}
                                 </div>
 
                                 {/* Reset button */}
-                                </div>
-                                <button className="btn btn-outline-light btn-lg px-5 theme-custom" type="submit" onClick={requestPasswordReset}>Reset</button>
+                                <button
+                                    className="btn btn-outline-light btn-lg px-5 theme-custom"
+                                    type="submit"
+                                    onClick={requestPasswordReset}
+                                >
+                                    Reset
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     );
-}
+};

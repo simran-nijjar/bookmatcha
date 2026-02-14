@@ -1,100 +1,128 @@
 const connection = require('../config/db');
 
-// Insert book
+// Insert a book into the database
 exports.insertBook = (req, res) => {
-    const { Name, BookID, Author, ImageLink, Genre, SubGenre } = req.body;
-    const query = 'INSERT INTO Book (Name, BookID, Author, ImageLink, Genre, Sub_Genre) VALUES (?, ?, ?, ?, ?, ?)';
+    const { title, book_id: BookID, author, image_link, genre, sub_genre } = req.body;
 
-    const values = [Name, BookID, Author, ImageLink, Genre, SubGenre];
-    connection.query(query, values, async(err, result) => {
+    // Validate required fields
+    if (!title || !BookID || !author) {
+        return res.status(400).json({ message: "Title, BookID, and Author are required" });
+    }
+
+    const query = 'INSERT INTO books (name, book_id, author, image_link, genre, sub_genre) VALUES (?, ?, ?, ?, ?, ?)';
+    const values = [title, BookID, author, image_link, genre, sub_genre];
+
+    connection.query(query, values, (err, result) => {
         if (err) {
+            console.error("Error inserting book:", err);
             if (err.code === "ER_DUP_ENTRY") {
-                return res.status(204).json({ message: "Book already exists in the database"});
+                return res.status(200).json({ message: "Book already exists in the database" });
             } else {
-                return res.status(500).json({ message: "Error inserting book"});
+                return res.status(500).json({ message: "Error inserting book" });
             }
         }
-        return res.status(201).json({ message: "Book inserted successfully"});
+        return res.status(201).json({ message: "Book inserted successfully" });
     });
 };
 
-// Get user's reviewed books with a rating of 3 or greater
+// Fetch books a user has rated 3 or higher
 exports.fetchUsersHighlyRatedBooks = (req, res) => {
     const ReviewerID = req.query.ReviewerID;
+
     if (!ReviewerID) {
-        return res.status(400).json({ message: "ReviewerID is missing"});
+        return res.status(400).json({ message: "ReviewerID is required" });
     }
 
-    const query = `SELECT Book.BookID, Book.Name, Book.Author, BookReview.RATING FROM BOOK
-                   INNER JOIN BookReview ON BookReview.BookID = Book.BookID
-                   WHERE BookReview.ReviewerID=? AND BookReview.RATING >= 3`;
+    const query = `
+        SELECT b.book_id AS BookID, b.name AS Title, b.author AS Author, r.rating AS Rating
+        FROM books b
+        INNER JOIN reviews r ON r.book_id = b.book_id
+        WHERE r.user_id = ? AND r.rating >= 3
+    `;
 
-    connection.query(query, [ReviewerID], async(err, result) => {
+    connection.query(query, [ReviewerID], (err, result) => {
         if (err) {
-            return res.status(500).json({message: "Error fetching books"});
+            console.error("Error fetching user's books:", err);
+            return res.status(500).json({ message: "Error fetching user's books" });
         }
-        return res.status(200).send(result);
+        return res.status(200).json(result);
     });
 };
 
-// Get recommended books for user
+// Fetch recommended books for the user (books rated 3+ by others)
 exports.getRecommendedBooks = (req, res) => {
     const ReviewerID = req.query.ReviewerID;
+
     if (!ReviewerID) {
-        return res.status(400).json({ message: "ReviewerID is missing"});
+        return res.status(400).json({ message: "ReviewerID is required" });
     }
 
-    const query = `SELECT DISTINCT b.BookID, b.Name, b.Author, br.RATING
-                   FROM Book b
-                   INNER JOIN BookReview br ON b.BookID = br.BookID
-                   WHERE br.RATING >= 3
-                   AND br.ReviewerID !=?`;
+    const query = `
+        SELECT DISTINCT b.book_id AS BookID, b.name AS Title, b.author AS Author, r.rating AS Rating
+        FROM books b
+        INNER JOIN reviews r ON r.book_id = b.book_id
+        WHERE r.rating >= 3 AND r.user_id != ?
+    `;
 
-    connection.query(query, [ReviewerID], async(err, result) => {
+    connection.query(query, [ReviewerID], (err, result) => {
         if (err) {
-            return res.status(500).json({ message: "Error getting recommended books"});
+            console.error("Error fetching recommended books:", err);
+            return res.status(500).json({ message: "Error fetching recommended books" });
         }
-        return res.status(200).send(result);
+        return res.status(200).json(result);
     });
 };
 
-// Get top rated books
-exports.getTopRatedBooks = async (req, res) => {
-    const query = `SELECT 
-                    Book.BookID,
-                    Book.Name,
-                    Book.Author,
-                    Book.ImageLink,
-                    AVG(BookReview.RATING) AS AvgRating
-                    FROM Book
-                    INNER JOIN BookReview ON BookReview.BookID = Book.BookID
-                    GROUP BY Book.BookID
-                    HAVING AVG(BookReview.RATING) >= 4
-                    ORDER BY AvgRating DESC
-                    LIMIT 5`
-                ;
-    
-    connection.query(query, async (err, result) => {
+// Fetch top rated books (average rating >= 3)
+exports.getTopRatedBooks = (req, res) => {
+    const query = `
+        SELECT 
+            b.book_id AS BookID,
+            b.name AS Title,
+            b.author AS Author,
+            b.image_link AS ImageLink,
+            AVG(r.rating) AS AverageRating
+        FROM books b
+        INNER JOIN reviews r ON r.book_id = b.book_id
+        GROUP BY b.book_id
+        HAVING AVG(r.rating) >= 3
+        ORDER BY AverageRating DESC
+        LIMIT 5
+    `;
+
+    connection.query(query, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: "Error fetching top rated books"});
+            console.error("Error fetching top rated books:", err);
+            return res.status(500).json({ message: "Error fetching top rated books" });
         }
-        return res.status(200).send(result);
-    })
-}
+        return res.status(200).json(result);
+    });
+};
 
-// Get average rating for given BookID(s)
+// Get average rating for a list of BookIDs
 exports.getAverageRating = (req, res) => {
-    const bookIDs = req.query.BookIDs.split(",");
-
-    if (bookIDs.length == 0) {
-        return res.status(400).json({ message: "BookID(s) is required"});
+    if (!req.query.BookIDs) {
+        return res.status(400).json({ message: "BookIDs are required" });
     }
 
-    const query = 'SELECT BookID, AVG(RATING) AS averageRating FROM BookReview WHERE BookID IN (?) GROUP BY BookID';
-    connection.query(query, [bookIDs], async (err, result) => {
+    const BookIDs = req.query.BookIDs.split(",");
+
+    if (BookIDs.length === 0) {
+        return res.status(400).json({ message: "BookIDs are required" });
+    }
+
+    const query = `
+        SELECT book_id AS BookID, AVG(rating) AS AverageRating
+        FROM reviews
+        WHERE book_id IN (?)
+        GROUP BY book_id
+    `;
+
+    connection.query(query, [BookIDs], (err, result) => {
         if (err) {
-            return res.status(500).json({ message: "Error getting average rating"});
+            console.error("Error fetching average ratings:", err);
+            return res.status(500).json({ message: "Error getting average ratings" });
         }
-        return res.status(200).send(result);
+        return res.status(200).json(result);
     });
 };

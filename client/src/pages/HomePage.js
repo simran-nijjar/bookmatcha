@@ -23,39 +23,39 @@ export const HomePage = () => {
         fetchTopBooks();
     }, []);
 
-return (
+    return (
         <div>
             <h1 className="title">Top Rated Books by bookmatcha Users</h1>
             <p className="subtitle">These are the top books users have been sipping on.</p>
             <MDBRow className="justify-content-center mb-4">
             {topBooks.map(book => (
-                <MDBCol key={book.BookID} md = '4' lg = '4' className="justify-content-center mb-4">
+                <MDBCol key={book.book_id} md='4' lg='4' className="justify-content-center mb-4">
                     <MDBCard className="card-custom" style={{ maxWidth: '540px' }}>
-                            <MDBRow className='g-0'>
-                                <MDBCol md='12' lg='6' xl='4' >
-                                    <MDBCardImage
-                                        src={book.ImageLink}
-                                        alt={book.Name}
-                                        fluid
-                                    />
-                                </MDBCol>
-                                <MDBCol md='8'>
-                                    <MDBCardBody>
-                                        <MDBCardTitle>
-                                            <Link to={`/book/${book.BookID}`} className="link-custom text-custom">
-                                                {book.Name}
-                                            </Link>
-                                        </MDBCardTitle>
-                                        <MDBCardText className="text-custom">
-                                            By: {book.Author}
-                                        </MDBCardText>
-                                        <MDBCardText className="text-custom">
-                                            Average Rating: {book.AvgRating}
-                                        </MDBCardText>
-                                    </MDBCardBody>
-                                </MDBCol>
-                            </MDBRow>
-                        </MDBCard>
+                        <MDBRow className='g-0'>
+                            <MDBCol md='12' lg='6' xl='4'>
+                                <MDBCardImage
+                                    src={book.ImageLink}
+                                    alt={book.Title}
+                                    fluid
+                                />
+                            </MDBCol>
+                            <MDBCol md='8'>
+                                <MDBCardBody>
+                                    <MDBCardTitle>
+                                        <Link to={`/book/${book.book_id}`} className="link-custom text-custom">
+                                            {book.Title}
+                                        </Link>
+                                    </MDBCardTitle>
+                                    <MDBCardText className="text-custom">
+                                        By: {book.Author}
+                                    </MDBCardText>
+                                    <MDBCardText className="text-custom">
+                                        Average Rating: {book.AverageRating}
+                                    </MDBCardText>
+                                </MDBCardBody>
+                            </MDBCol>
+                        </MDBRow>
+                    </MDBCard>
                 </MDBCol>
             ))}
             </MDBRow>

@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -77,10 +77,10 @@ export const Register = ({ onLogin }) => {
     // If all fields are valid, insert into backend
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}users`, {
-        FirstName: firstName,
-        LastName: lastName,
-        Email: email,
-        Password: password
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        password: password
       });
       
       // Upon successful registration, store user into token
@@ -93,9 +93,10 @@ export const Register = ({ onLogin }) => {
 
         // Store user info in local storage
         localStorage.setItem('user', JSON.stringify({
+          user_id: decodedToken.user_id,
           email: decodedToken.email,
-          firstName: decodedToken.firstName,
-          lastName: decodedToken.lastName
+          firstName: decodedToken.first_name,
+          lastName: decodedToken.last_name
         }));
         
         // Navigate to home page
@@ -147,12 +148,12 @@ export const Register = ({ onLogin }) => {
                 <div className="form-outline form-white mb-4">
                   <input type="password" name="ConfirmPassword" placeholder='Re-Enter Password' value={confirmPassword} onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                   <PasswordChecklist
-				              rules={["minLength","specialChar","number","capital","match"]}
-				              minLength={8}
-				              value={password}
-				              valueAgain={confirmPassword}
-				              onChange={(onChange) => {}}
-			            />
+                    rules={["minLength","specialChar","number","capital","match"]}
+                    minLength={8}
+                    value={password}
+                    valueAgain={confirmPassword}
+                    onChange={(onChange) => {}}
+                  />
                 </div>
 
                 {/* Error message */}

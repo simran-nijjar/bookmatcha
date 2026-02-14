@@ -28,11 +28,11 @@ export const Login = ({ onLogin }) => {
         // Validate user input in backend
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}users/login`, {
-                Email: email, 
-                Password: password
+                email: email, 
+                password: password
             });
             
-            // Upon successful log, store user info in token
+            // Upon successful login, store user info in token
             if (res.status === 200) {
                 const token = res.data.token;
                 localStorage.setItem('token', token);
@@ -42,9 +42,10 @@ export const Login = ({ onLogin }) => {
     
                 // Store user info in local storage
                 localStorage.setItem('user', JSON.stringify({
+                    user_id: decodedToken.user_id,
                     email: decodedToken.email,
-                    firstName: decodedToken.firstName,
-                    lastName: decodedToken.lastName
+                    firstName: decodedToken.first_name,
+                    lastName: decodedToken.last_name
                 }));
                 
                 // Navigate to home page
@@ -57,7 +58,7 @@ export const Login = ({ onLogin }) => {
             if (error.response && error.response.status === 400) {
                 setError('The email and password you entered do not match our records. Please try again.');
             } else {
-                setError('Login failed. Please try again later.', error.response);
+                setError('Login failed. Please try again later.');
             }
         }
     };
@@ -74,27 +75,29 @@ export const Login = ({ onLogin }) => {
 
                                 {/*Email input*/}
                                 <div className="form-outline form-white mb-3">
-                                    <input type="Email" name="Email" placeholder='Email' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
+                                    <input type="email" name="Email" placeholder='Email' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
                                 </div>
 
                                 {/*Password input*/}
                                 <div className="form-outline form-white mb-4">
-                                    <input type="Password" name="Password" placeholder='Password' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }} />
-                                
+                                    <input type="password" name="Password" placeholder='Password' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }} />
+                                </div>
+
                                 {/* Error message */}
                                 <div style={{ minHeight: '20px' }}>
                                     {error && <p style={{ color: 'white' }}>{error}</p>}
                                 </div>
 
                                 {/* Login button */}
-                                </div>
                                 <button className="btn btn-outline-light btn-lg px-5 theme-custom" type="submit" onClick={login}>Login</button>
-                                </div>
-                                <div>
-                                    <p className="mb-0">Forgot password? <a href="/ForgotPassword" className="text-white">Reset</a></p>                            </div>
-                                <div>
-                                    <p className="mb-0">Don't have an account? <a href="/Register" className="text-white">Register</a></p>
-                                </div>
+                            </div>
+
+                            <div>
+                                <p className="mb-0">Forgot password? <a href="/ForgotPassword" className="text-white">Reset</a></p>
+                            </div>
+                            <div>
+                                <p className="mb-0">Don't have an account? <a href="/Register" className="text-white">Register</a></p>
+                            </div>
                         </div>
                     </div>
                 </div>

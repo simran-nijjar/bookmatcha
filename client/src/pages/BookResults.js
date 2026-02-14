@@ -42,9 +42,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
       if (response.status === 200) {
         navigate(`/book/${book.id}`, { state: { book } });
       }
-    } catch (error) {
-      console.error('Error inserting book:', error);
-    }
+    } catch { }
   };
 
   const fetchAverageRatings = async (bookIDs) => {
@@ -57,9 +55,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
         return acc;
       }, {});
       setAverageRatings(ratings);
-    } catch (error) {
-      console.error('Error fetching average ratings:', error);
-    }
+    } catch { }
   };
 
   return (

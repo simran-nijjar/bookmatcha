@@ -37,7 +37,6 @@ export const UserAccount = () => {
             .catch(() => setUserInfo(null))
             .finally(() => setLoading(false));
         } else {
-            console.log("No user data found in local storage.");
             setLoading(false);
         }
     }, []);

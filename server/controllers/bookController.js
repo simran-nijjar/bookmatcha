@@ -14,7 +14,6 @@ exports.insertBook = (req, res) => {
 
     connection.query(query, values, (err, result) => {
         if (err) {
-            console.error("Error inserting book:", err);
             if (err.code === "ER_DUP_ENTRY") {
                 return res.status(200).json({ message: "Book already exists in the database" });
             } else {
@@ -27,10 +26,10 @@ exports.insertBook = (req, res) => {
 
 // Fetch books a user has rated 3 or higher
 exports.fetchUsersHighlyRatedBooks = (req, res) => {
-    const ReviewerID = req.query.ReviewerID;
+    const user_id = req.query.user_id;
 
-    if (!ReviewerID) {
-        return res.status(400).json({ message: "ReviewerID is required" });
+    if (!user_id) {
+        return res.status(400).json({ message: "user_id is required" });
     }
 
     const query = `
@@ -40,9 +39,8 @@ exports.fetchUsersHighlyRatedBooks = (req, res) => {
         WHERE r.user_id = ? AND r.rating >= 3
     `;
 
-    connection.query(query, [ReviewerID], (err, result) => {
+    connection.query(query, [user_id], (err, result) => {
         if (err) {
-            console.error("Error fetching user's books:", err);
             return res.status(500).json({ message: "Error fetching user's books" });
         }
         return res.status(200).json(result);
@@ -51,10 +49,10 @@ exports.fetchUsersHighlyRatedBooks = (req, res) => {
 
 // Fetch recommended books for the user (books rated 3+ by others)
 exports.getRecommendedBooks = (req, res) => {
-    const ReviewerID = req.query.ReviewerID;
+    const user_id = req.query.user_id;
 
-    if (!ReviewerID) {
-        return res.status(400).json({ message: "ReviewerID is required" });
+    if (!user_id) {
+        return res.status(400).json({ message: "user_id is required" });
     }
 
     const query = `
@@ -64,9 +62,8 @@ exports.getRecommendedBooks = (req, res) => {
         WHERE r.rating >= 3 AND r.user_id != ?
     `;
 
-    connection.query(query, [ReviewerID], (err, result) => {
+    connection.query(query, [user_id], (err, result) => {
         if (err) {
-            console.error("Error fetching recommended books:", err);
             return res.status(500).json({ message: "Error fetching recommended books" });
         }
         return res.status(200).json(result);
@@ -92,7 +89,6 @@ exports.getTopRatedBooks = (req, res) => {
 
     connection.query(query, (err, result) => {
         if (err) {
-            console.error("Error fetching top rated books:", err);
             return res.status(500).json({ message: "Error fetching top rated books" });
         }
         return res.status(200).json(result);
@@ -101,13 +97,15 @@ exports.getTopRatedBooks = (req, res) => {
 
 // Get average rating for a list of BookIDs
 exports.getAverageRating = (req, res) => {
-    if (!req.query.BookIDs) {
+    const BookIDs = req.query.BookIDs;
+
+    if (!BookIDs) {
         return res.status(400).json({ message: "BookIDs are required" });
     }
 
-    const BookIDs = req.query.BookIDs.split(",");
+    const bookIDsArray = BookIDs.split(",");
 
-    if (BookIDs.length === 0) {
+    if (bookIDsArray.length === 0) {
         return res.status(400).json({ message: "BookIDs are required" });
     }
 
@@ -118,9 +116,8 @@ exports.getAverageRating = (req, res) => {
         GROUP BY book_id
     `;
 
-    connection.query(query, [BookIDs], (err, result) => {
+    connection.query(query, [bookIDsArray], (err, result) => {
         if (err) {
-            console.error("Error fetching average ratings:", err);
             return res.status(500).json({ message: "Error getting average ratings" });
         }
         return res.status(200).json(result);

@@ -13,7 +13,6 @@ exports.addReview = (req, res) => {
 
     connection.query(query, [BookID, WrittenReview, Rating, ReviewerID], (err, result) => {
         if (err) {
-            console.error("Error inserting review:", err);
             return res.status(500).json({ message: "Error saving review" });
         }
         return res.status(201).json({ message: "Review saved successfully" });
@@ -36,7 +35,6 @@ exports.updateReview = (req, res) => {
 
     connection.query(query, [WrittenReview, Rating, BookID, ReviewerID], (err, result) => {
         if (err) {
-            console.error("Error updating review:", err);
             return res.status(500).json({ message: "Error updating review" });
         }
         return res.status(200).json({ message: "Review updated successfully" });
@@ -79,7 +77,6 @@ exports.getBookReviews = (req, res) => {
 
     connection.query(query, [book_id], (err, result) => {
         if (err) {
-            console.error("Error fetching reviews for book:", err);
             return res.status(500).json({ message: "Error getting reviews for BookID: " + book_id });
         }
         return res.status(200).json(result);
@@ -118,7 +115,6 @@ exports.getUsersBookReviews = (req, res) => {
 
     connection.query(query, [user_id], (err, result) => {
         if (err) {
-            console.error("Error fetching user's reviews:", err);
             return res.status(500).json({ message: "Error getting reviews written by user" });
         }
         return res.status(200).json(result);
@@ -137,7 +133,6 @@ exports.getReviewForBookByUser = (req, res) => {
 
     connection.query(query, [BookID, ReviewerID], (err, result) => {
         if (err) {
-            console.error("Error fetching review:", err);
             return res.status(500).json({ message: "Error getting review" });
         }
         return res.status(200).json(result);
@@ -152,7 +147,6 @@ exports.deleteReview = (req, res) => {
 
     connection.query(query, [reviewID], (err, result) => {
         if (err) {
-            console.error("Error deleting review:", err);
             return res.status(500).json({ message: "Error deleting review" });
         }
         return res.status(200).json({ message: "Review deleted successfully" });

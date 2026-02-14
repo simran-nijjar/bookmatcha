@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../styles.css'
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // This file contains the book recommendations page which recommends user books based on what they have in their library
 
@@ -13,12 +13,13 @@ export const BookRecommendations = () => {
   const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
 
-    if (savedUser?.email) {
-      fetchUsersBooks(savedUser.email);
+    if (savedUser?.user_id) {
+      fetchUsersBooks(savedUser.user_id);
     }
   }, []);
 
@@ -29,10 +30,10 @@ export const BookRecommendations = () => {
   }, [usersBooks, currentPage]);
 
   // Fetch books that the user has reviewed and rated
-  const fetchUsersBooks = async (userEmail) => {
+  const fetchUsersBooks = async (user_id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}books/users`, {
-        params: { ReviewerID: userEmail }
+        params: { user_id: user_id }
       });
       setUsersBooks(response.data);
     } catch (error) {
@@ -46,8 +47,10 @@ export const BookRecommendations = () => {
     const savedBookIDs = new Set();
 
     usersBooks.forEach(book => {
-      if (book.author) authors.add(book.author.trim());
-      savedBookIDs.add(book.book_id);
+      if (book.Author) {
+        authors.add(book.Author.trim());
+      }
+      savedBookIDs.add(book.BookID);
     });
 
     return { authors: Array.from(authors), savedBookIDs: Array.from(savedBookIDs) };
@@ -86,9 +89,12 @@ export const BookRecommendations = () => {
   // Fetch books from Google Books API via backend proxy
   const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
     const authorQuery = authors.map(author => `inauthor:${author}`).join(' OR ');
+    if (!authorQuery) {
+      return [];
+    }
     try {
       const res = await axios.get(`${process.env.REACT_APP_API_URL}google-books/search`, {
-        params: { q: authorQuery, startIndex }
+        params: { query: authorQuery, startIndex }
       });
       return res.data.items || [];
     } catch {
@@ -101,6 +107,10 @@ export const BookRecommendations = () => {
 
   // Fetch average ratings from backend
   const fetchAverageRatings = async (bookIDs) => {
+    if (!bookIDs || bookIDs.length === 0){
+      return [];
+    }
+
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}books/average-rating`, {
         params: { BookIDs: bookIDs.join(',') }
@@ -111,6 +121,36 @@ export const BookRecommendations = () => {
       return [];
     }
   };
+
+  const insertBook = async (book) => {
+  const savedUser = JSON.parse(localStorage.getItem('user'));
+  if (!savedUser?.user_id) return;
+
+  try {
+    const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
+    await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
+      title: book.title,
+      book_id: book.book_id,
+      author: book.author || 'Unknown',
+      image_link: book.image_link || '',
+      genre: bookDetails.data.volumeInfo?.categories?.[0]
+        ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
+        : 'Unknown',
+      sub_genre: bookDetails.data.volumeInfo?.categories?.[0]
+        ? bookDetails.data.volumeInfo.categories
+            .map(category => category.split('/')[2])
+            .filter(Boolean)
+            .join(',') || 'Unknown'
+        : 'Unknown',
+      user_email: savedUser.user_id
+    });
+
+    navigate(`/book/${book.book_id}`, { state: { book } });
+  } catch (error) {
+    console.error('Error inserting book:', error);
+  }
+};
+
 
   return (
     <div>
@@ -146,8 +186,14 @@ export const BookRecommendations = () => {
                     )}
                   </td>
                   <td>
-                    <Link to={`/book/${book.book_id}`} className="link-custom">{book.title}</Link>
-                  </td>
+                <button
+                  className="link-custom"
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  onClick={() => insertBook(book)}
+                >
+                  {book.title}
+                </button>
+              </td>
                   <td>{book.author}</td>
                   <td>{book.average_rating}</td>
                 </tr>

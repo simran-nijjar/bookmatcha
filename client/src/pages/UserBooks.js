@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { jwtDecode } from 'jwt-decode'; // fixed import
 
 // This page is the first page the user sees when they login or register
 // Here the user can see all of the books they have reviewed
@@ -15,19 +16,29 @@ export const UserBooks = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const savedUser = JSON.parse(localStorage.getItem('user'));
-        if (savedUser?.userId) {
-            fetchUserReviews(savedUser.userId);
-        } else {
+        const token = localStorage.getItem('token');
+        if (!token) {
             setError('User not logged in. Please login to view your books.');
+            return;
         }
+
+        let decoded;
+        try {
+            decoded = jwtDecode(token);
+        } catch {
+            setError('Invalid session. Please login again.');
+            return;
+        }
+
+        fetchUserReviews(decoded.userId, token);
     }, []);
 
     // Fetch all reviews the user has posted
-    const fetchUserReviews = async (userId) => {
+    const fetchUserReviews = async (userId, token) => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}reviews/user`, {
-                params: { userId: userId }
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` } // send token for verification
             });
             setReviews(response.data);
             setError('');
@@ -41,12 +52,17 @@ export const UserBooks = () => {
         const confirmDelete = window.confirm("Are you sure you want to delete this review?");
         if (!confirmDelete) return;
 
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        let decoded;
+        try { decoded = jwtDecode(token); } catch { return; }
+
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}reviews/${reviewID}`);
-            const savedUser = JSON.parse(localStorage.getItem('user'));
-            if (savedUser?.userId) {
-                fetchUserReviews(savedUser.userId);
-            }
+            await axios.delete(`${process.env.REACT_APP_API_URL}reviews/${reviewID}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchUserReviews(decoded.userId, token);
         } catch {
             setError('Error deleting review. Please try again later.');
         }

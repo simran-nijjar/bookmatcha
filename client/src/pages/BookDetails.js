@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import '../styles.css';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 // This file contains the details of each book when a user selects it
 // Here the user can write a review, update their review, and look at reviews posted by other users
@@ -33,10 +34,9 @@ export function BookDetails() {
     // Fetch all reviews for the specified book
     const fetchReviews = (bookId) => {
         axios.get(`${process.env.REACT_APP_API_URL}reviews`, {
-            params: { bookId: bookId }
+            params: { bookId }
         }).then((response) => {
             setReviews(response.data);
-            // Set average rating if reviews exist
             if (response.data.length > 0) {
                 setAverageRating(response.data[0].average_rating);
             } else {
@@ -50,7 +50,7 @@ export function BookDetails() {
     // Fetch the existing review for the logged-in user
     const fetchExistingReview = (bookId, userId) => {
         axios.get(`${process.env.REACT_APP_API_URL}reviews/book/user`, {
-            params: { bookId: bookId, userId: userId }
+            params: { bookId, userId }
         }).then((response) => {
             if (response.data.length > 0) {
                 setExistingReview(response.data[0]);
@@ -64,16 +64,19 @@ export function BookDetails() {
 
     // On component mount, fetch user info and book details
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            setUserId(user.userId);
+        const token = localStorage.getItem('token');
+        let currentUserId = '';
+        if (token) {
+            const decoded = jwtDecode(token);
+            currentUserId = decoded.userId;
+            setUserId(currentUserId);
         }
 
         if (id) {
             fetchBookDetails(id);
 
-            if (user) {
-                fetchExistingReview(id, user.userId);
+            if (currentUserId) {
+                fetchExistingReview(id, currentUserId);
             }
         }
     }, [id, fetchBookDetails]);
@@ -100,23 +103,21 @@ export function BookDetails() {
     // Save a new review
     const saveReview = async (event) => {
         event.preventDefault();
+        if (!validateFields()) return;
 
-        if (!validateFields()) {
-            return;
-        }
         try {
             const result = await axios.post(`${process.env.REACT_APP_API_URL}reviews`, {
-                bookId: bookId,
-                writtenReview: writtenReview,
-                rating: rating,
-                userId: userId
+                bookId,
+                writtenReview,
+                rating,
+                userId
             });
             if (result.status === 200) {
                 setError('Review saved successfully.');
                 fetchReviews(bookId);
                 fetchExistingReview(bookId, userId);
             }
-        } catch (error) {
+        } catch {
             setError('Error saving review. Please try again later.');
         }
     };
@@ -130,17 +131,17 @@ export function BookDetails() {
         }
         try {
             const result = await axios.put(`${process.env.REACT_APP_API_URL}reviews`, {
-                bookId: bookId,
-                writtenReview: writtenReview,
-                rating: rating,
-                userId: userId
+                bookId,
+                writtenReview,
+                rating,
+                userId
             });
             if (result.status === 200) {
                 setError('Review updated successfully.');
                 fetchReviews(bookId);
                 fetchExistingReview(bookId, userId);
             }
-        } catch (error) {
+        } catch {
             setError('Error updating review. Please try again later.');
         }
     };
@@ -231,7 +232,6 @@ export function BookDetails() {
 
                 {/* Error / success messages */}
                 <div className="text-custom"><p>{error}</p></div>
-
                 <hr />
 
                 {/* Display reviews from other users */}

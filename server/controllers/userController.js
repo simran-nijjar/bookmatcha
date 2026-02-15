@@ -34,7 +34,14 @@ exports.register = (req, res) => {
             const userId = insertResult.insertId;
             const token = generateToken({ userId });
 
-            return res.status(201).json({ message: "User registered successfully", token });
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict',
+                maxAge: 3600000
+            });
+
+            return res.status(201).json({ token: token});
         });
     });
 };
@@ -66,7 +73,15 @@ exports.login = async (req, res) => {
             }
 
             const token = generateToken({ userId: user.user_id });
-            return res.status(200).json({ message: "User logged in successfully", token });
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict',
+                maxAge: 3600000
+            });
+
+            return res.status(200).json({ token: token});
         });
     } catch (error) {
         return res.status(500).json({ message: "Server error" });
@@ -75,7 +90,8 @@ exports.login = async (req, res) => {
 
 // Validate password
 exports.validatePassword = (req, res) => {
-    const { userId, password } = req.body;
+    const userId = req.user.userId;
+    const { password } = req.body;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });
@@ -108,7 +124,8 @@ exports.validatePassword = (req, res) => {
 
 // Update password
 exports.updatePassword = (req, res) => {
-    const { userId, newPassword } = req.body;
+    const userId = req.user.userId;
+    const { newPassword } = req.body;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });
@@ -140,7 +157,7 @@ exports.updatePassword = (req, res) => {
 
 // Get user information
 exports.getUserInformation = (req, res) => {
-    const { userId } = req.query;
+    const userId = req.user.userId;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });
@@ -172,7 +189,8 @@ exports.getUserInformation = (req, res) => {
 
 // Update first or last name
 exports.updateUserInformation = (req, res) => {
-    const { userId, firstName, lastName, profilePic } = req.body;
+    const userId = req.user.userId;
+    const { firstName, lastName, profilePic } = req.body;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });
@@ -249,6 +267,7 @@ exports.requestPasswordReset = (req, res) => {
                 </p>
                 <p>This link will expire in 1 hour.</p>
                 <p>If you did not request a password reset, please ignore this email.</p>
+                <p>Do not reply to this email. This email is not monitered.</p>
             `;
 
             try {
@@ -292,3 +311,16 @@ exports.resetPassword = (req, res) => {
         });
     });
 };
+
+// Logout
+exports.logout = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+};
+
+

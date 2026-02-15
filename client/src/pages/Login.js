@@ -37,17 +37,6 @@ export const Login = ({ onLogin }) => {
                 const token = res.data.token;
                 localStorage.setItem('token', token);
     
-                // Decode the token
-                const decodedToken = jwtDecode(token);
-    
-                // Store user info in local storage
-                localStorage.setItem('user', JSON.stringify({
-                    userId: decodedToken.userId,
-                    email: decodedToken.email,
-                    firstName: decodedToken.firstName,
-                    lastName: decodedToken.lastName
-                }));
-                
                 // Navigate to home page
                 localStorage.setItem('isLoggedIn', 'true');
                 setError('Logged in.');

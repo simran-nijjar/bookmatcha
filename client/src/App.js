@@ -38,10 +38,29 @@ function App() {
     setIsLoggedIn(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+  try {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      await fetch(`${process.env.REACT_APP_API_URL}users/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+    }
+  } catch (error) {
+    console.error('Logout failed:', error);
+  } finally {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.setItem('isLoggedIn', 'false');
     setIsLoggedIn(false);
-  };
+    window.location.href = '/';
+  }
+};
 
   return (
     <BrowserRouter>
@@ -65,7 +84,7 @@ function App() {
                     <Link className="nav-link theme-custom" to="/UserAccount">My Account</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link theme-custom" to="/" onClick={handleLogout}>Logout</Link>
+                    <button className="nav-link theme-custom btn btn-link" onClick={handleLogout}>Logout</button>
                   </li>
                 </>
               )}

@@ -16,10 +16,17 @@ export const BookRecommendations = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    let userId = '';
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userId = payload.userId;
+      } catch {}
+    }
 
-    if (savedUser?.userId) {
-      fetchUsersBooks(savedUser.userId);
+    if (userId) {
+      fetchUsersBooks(userId);
     }
   }, []);
 
@@ -123,36 +130,43 @@ export const BookRecommendations = () => {
   };
 
   const insertBook = async (book) => {
-  const savedUser = JSON.parse(localStorage.getItem('user'));
-  if (!savedUser?.userId) {
-    return;
-  }
+    const token = localStorage.getItem('token');
+    let userId = '';
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userId = payload.userId;
+      } catch {}
+    }
 
-  try {
-    const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
-    await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
-      title: book.title,
-      bookId: book.book_id,
-      author: book.author || 'Unknown',
-      imageLink: book.image_link || '',
-      genre: bookDetails.data.volumeInfo?.categories?.[0]
-        ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
-        : 'Unknown',
-      subGenre: bookDetails.data.volumeInfo?.categories?.[0]
-        ? bookDetails.data.volumeInfo.categories
-            .map(category => category.split('/')[2])
-            .filter(Boolean)
-            .join(',') || 'Unknown'
-        : 'Unknown',
-      userId: savedUser.userId
-    });
+    if (!userId) {
+      return;
+    }
 
-    navigate(`/book/${book.book_id}`, { state: { book } });
-  } catch (error) {
-    console.error('Error inserting book:', error);
-  }
-};
+    try {
+      const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
+      await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
+        title: book.title,
+        bookId: book.book_id,
+        author: book.author || 'Unknown',
+        imageLink: book.image_link || '',
+        genre: bookDetails.data.volumeInfo?.categories?.[0]
+          ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
+          : 'Unknown',
+        subGenre: bookDetails.data.volumeInfo?.categories?.[0]
+          ? bookDetails.data.volumeInfo.categories
+              .map(category => category.split('/')[2])
+              .filter(Boolean)
+              .join(',') || 'Unknown'
+          : 'Unknown',
+        userId: userId
+      });
 
+      navigate(`/book/${book.book_id}`, { state: { book } });
+    } catch (error) {
+      console.error('Error inserting book:', error);
+    }
+  };
 
   return (
     <div>

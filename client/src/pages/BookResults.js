@@ -16,8 +16,8 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   // When a book is selected, it will be inserted into the backend if it's not already inserted
   const insertBook = async (book) => {
-    const savedUser = JSON.parse(localStorage.getItem('user'));
-    if (!savedUser?.userId){
+    const userId = localStorage.getItem('userId');
+    if (!userId){
       return;
     }
     try {
@@ -36,7 +36,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
               .filter(Boolean)
               .join(',') || 'Unknown'
           : 'Unknown',
-        userId: savedUser.userId
+        userId: userId
       });
       
       // Successful book insertion will navigate to the book details page

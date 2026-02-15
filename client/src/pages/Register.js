@@ -83,24 +83,18 @@ export const Register = ({ onLogin }) => {
         password: password
       });
       
-      // Upon successful registration, store user into token
+      // Upon successful registration, store JWT token only
       if (res.status === 201) {
         const token = res.data.token;
         localStorage.setItem('token', token);
 
-        // Decode the token
+        // Decode the token to get userId and email only if needed
         const decodedToken = jwtDecode(token);
 
-        // Store user info in local storage
-        localStorage.setItem('user', JSON.stringify({
-          userId: decodedToken.userId,
-          email: decodedToken.email,
-          firstName: decodedToken.firstName,
-          lastName: decodedToken.lastName
-        }));
-        
-        // Navigate to home page
+        // Store only minimal user info for convenience
+        localStorage.setItem('userId', decodedToken.userId);
         localStorage.setItem('isLoggedIn', 'true');
+        
         setError('');
         onLogin();
         navigate('/HomePage');

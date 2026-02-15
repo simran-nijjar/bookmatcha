@@ -42,7 +42,7 @@ export const HomePage = () => {
                             <MDBCol md='8'>
                                 <MDBCardBody>
                                     <MDBCardTitle>
-                                        <Link to={`/book/${book.book_id}`} className="link-custom text-custom">
+                                        <Link to={`/book/${book.BookID}`} className="link-custom text-custom">
                                             {book.Title}
                                         </Link>
                                     </MDBCardTitle>

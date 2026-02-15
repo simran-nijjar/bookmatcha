@@ -100,7 +100,7 @@ export const UserBooks = () => {
                                     <td>
                                         <Tooltip title="Edit">
                                             <EditIcon
-                                                onClick={() => handleEdit(review.BookID)}
+                                                onClick={() => handleEdit(review.book_id)}
                                                 style={{ cursor: 'pointer', marginRight: '10px' }}
                                             />
                                         </Tooltip>

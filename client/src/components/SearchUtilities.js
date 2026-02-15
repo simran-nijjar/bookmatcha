@@ -13,7 +13,7 @@ export const handleQueryChange = (event, setQuery) => {
 export const fetchResults = async (query, startIndex = 0) => {
     try {
         const res = await axios.get(`${process.env.REACT_APP_API_URL}google-books/search`, {
-            params: { q: query, startIndex }
+            params: { query: query, startIndex }
         });
         return res.data;
     } catch (error) {

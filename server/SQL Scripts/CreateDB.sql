@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) DEFAULT NULL,
     password VARCHAR(255) DEFAULT NULL,
     profile_pic TEXT DEFAULT NULL,
-    created_at DATETIME DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT NULL,
     reset_token VARCHAR(64) DEFAULT NULL,
     reset_token_expiry DATETIME DEFAULT NULL,

@@ -17,8 +17,9 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   // When a book is selected, it will be inserted into the backend if it's not already inserted
   const insertBook = async (book) => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
-    if (!savedUser?.email) return;
-
+    if (!savedUser?.user_id){
+      return;
+    }
     try {
       const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.id}`);
       const response = await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
@@ -35,11 +36,11 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
               .filter(Boolean)
               .join(',') || 'Unknown'
           : 'Unknown',
-        user_email: savedUser.email
+        user_id: savedUser.user_id
       });
-
+      
       // Successful book insertion will navigate to the book details page
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         navigate(`/book/${book.id}`, { state: { book } });
       }
     } catch { }

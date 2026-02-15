@@ -15,7 +15,7 @@ exports.insertBook = (req, res) => {
     connection.query(query, values, (err, result) => {
         if (err) {
             if (err.code === "ER_DUP_ENTRY") {
-                return res.status(200).json({ message: "Book already exists in the database" });
+                // do nothing
             } else {
                 return res.status(500).json({ message: "Error inserting book" });
             }

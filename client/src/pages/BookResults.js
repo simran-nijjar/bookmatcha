@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/api';
 
 // This file contains the details of the book results that the user searches for
 
@@ -22,7 +23,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
     }
     try {
       const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.id}`);
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
+      const response = await api.post('books/insertbook', {
         title: book.volumeInfo.title,
         bookId: book.id,
         author: book.volumeInfo.authors?.join(', ') || 'Unknown',
@@ -48,7 +49,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   const fetchAverageRatings = async (bookIds) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}books/average-rating`, {
+      const response = await api.get('books/average-rating', {
         params: { bookIds: bookIds.join(",") }
       });
       const ratings = response.data.reduce((acc, item) => {

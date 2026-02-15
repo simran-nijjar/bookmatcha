@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import '../styles.css'
-import axios from 'axios';
+import '../styles.css';
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from 'jwt-decode';
+import api from '../api/api';
 
 // This file contains the form the user sees when they login and the login processes
 
@@ -25,27 +24,26 @@ export const Login = ({ onLogin }) => {
     const login = async (event) => {
         event.preventDefault();
         
-        // Validate user input in backend
+        if (!email || !password) {
+            setError('Please enter both email and password.');
+            return;
+        }
+
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}users/login`, {
-                email: email, 
-                password: password
-            });
-            
-            // Upon successful login, store user info in token
+            const res = await api.post('users/login', { email, password });
+
             if (res.status === 200) {
                 const token = res.data.token;
                 localStorage.setItem('token', token);
-    
-                // Navigate to home page
                 localStorage.setItem('isLoggedIn', 'true');
-                setError('Logged in.');
-                onLogin();
-                navigate("/HomePage");
+
+                setError('Logged in successfully.');
+                onLogin?.();
+                navigate("/homepage");
             }
-        } catch (error) {
-            if (error.response && error.response.status === 400) {
-                setError('The email and password you entered do not match our records. Please try again.');
+        } catch (err) {
+            if (err.response?.status === 400) {
+                setError('The email and password you entered do not match our records.');
             } else {
                 setError('Login failed. Please try again later.');
             }
@@ -82,10 +80,10 @@ export const Login = ({ onLogin }) => {
                             </div>
 
                             <div>
-                                <p className="mb-0">Forgot password? <a href="/ForgotPassword" className="text-white">Reset</a></p>
+                                <p className="mb-0">Forgot password? <a href="/forgotpassword" className="text-white">Reset</a></p>
                             </div>
                             <div>
-                                <p className="mb-0">Don't have an account? <a href="/Register" className="text-white">Register</a></p>
+                                <p className="mb-0">Don't have an account? <a href="/register" className="text-white">Register</a></p>
                             </div>
                         </div>
                     </div>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import '../styles.css'
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import api from '../api/api';
 
 // This file contains the book recommendations page which recommends user books based on what they have in their library
 
@@ -39,9 +40,7 @@ export const BookRecommendations = () => {
   // Fetch books that the user has reviewed and rated
   const fetchUsersBooks = async (userId) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}books/users`, {
-        params: { userId: userId }
-      });
+      const response = await api.get('books/users', { params: { userId } });
       setUsersBooks(response.data);
     } catch (error) {
       setError('Error fetching user books.');
@@ -100,9 +99,7 @@ export const BookRecommendations = () => {
       return [];
     }
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}google-books/search`, {
-        params: { query: authorQuery, startIndex }
-      });
+      const res = await api.get('google-books/search', { params: { query: authorQuery, startIndex } });
       return res.data.items || [];
     } catch {
       return [];
@@ -119,9 +116,7 @@ export const BookRecommendations = () => {
     }
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}books/average-rating`, {
-        params: { bookIds: bookIds.join(',') }
-      });
+      const response = await api.get('books/average-rating', { params: { bookIds: bookIds.join(',') } });
       return response.data;
     } catch {
       setError('Error fetching average ratings.');
@@ -145,7 +140,7 @@ export const BookRecommendations = () => {
 
     try {
       const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
-      await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
+      await api.post('books/insertbook', {
         title: book.title,
         bookId: book.book_id,
         author: book.author || 'Unknown',
@@ -159,7 +154,7 @@ export const BookRecommendations = () => {
               .filter(Boolean)
               .join(',') || 'Unknown'
           : 'Unknown',
-        userId: userId
+        userId
       });
 
       navigate(`/book/${book.book_id}`, { state: { book } });
@@ -202,14 +197,14 @@ export const BookRecommendations = () => {
                     )}
                   </td>
                   <td>
-                <button
-                  className="link-custom"
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                  onClick={() => insertBook(book)}
-                >
-                  {book.title}
-                </button>
-              </td>
+                    <button
+                      className="link-custom"
+                      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                      onClick={() => insertBook(book)}
+                    >
+                      {book.title}
+                    </button>
+                  </td>
                   <td>{book.author}</td>
                   <td>{book.average_rating}</td>
                 </tr>

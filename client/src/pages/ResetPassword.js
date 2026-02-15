@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import '../styles.css';
-import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PasswordChecklist from 'react-password-checklist';
+import api from '../api/api';
 
 export const ResetPassword = () => {
     const [password, setPassword] = useState('');
@@ -39,14 +39,9 @@ export const ResetPassword = () => {
         }
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}users/reset-password`, {
-                token: token,
-                newPassword: password
-            });
-
+            const res = await api.post('users/reset-password', { token, newPassword: password });
             setMessage(res.data.message);
-
-            setTimeout(() => navigate('/Login'), 2000);
+            setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to reset password.');
         }
@@ -59,7 +54,7 @@ export const ResetPassword = () => {
                     <div className="card bg-dark text-white">
                         <div className="card-body p-3 text-center theme-custom">
                             <div className="mb-3">
-                                <h2 className="fw-bold mb-2 text-uppercase">Reset Password</h2>
+                            <h2 className="fw-bold mb-2 text-uppercase">Reset Password</h2>
                                 <p className="text-white-50">Enter your new password below.</p>
 
                                 {/* Password input */}
@@ -86,35 +81,35 @@ export const ResetPassword = () => {
                                         className="form-control form-control-lg text-custom"
                                         style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}
                                     />
-                                    <PasswordChecklist
+                            <PasswordChecklist
                                         rules={["minLength", "specialChar", "number", "capital", "match"]}
-                                        minLength={8}
-                                        value={password}
-                                        valueAgain={confirmPassword}
+                                minLength={8}
+                                value={password}
+                                valueAgain={confirmPassword}
                                         onChange={(isValid) => {}}
-                                    />
+                            />
                                 </div>
 
                                 {/* Error / Message */}
-                                <div style={{ minHeight: '20px' }}>
-                                    {error && <p style={{ color: 'white' }}>{error}</p>}
-                                    {message && <p style={{ color: 'lightgreen' }}>{message}</p>}
-                                </div>
+                            <div style={{ minHeight: '20px' }}>
+                                {error && <p style={{ color: 'white' }}>{error}</p>}
+                                {message && <p style={{ color: 'lightgreen' }}>{message}</p>}
+                            </div>
 
                                 {/* Reset Button */}
-                                <button
-                                    className="btn btn-outline-light btn-lg px-5 theme-custom"
-                                    onClick={resetPassword}
-                                    type="submit"
-                                >
-                                    Reset Password
-                                </button>
+                            <button
+                                className="btn btn-outline-light btn-lg px-5 theme-custom"
+                                onClick={resetPassword}
+                                type="submit"
+                            >
+                                Reset Password
+                            </button>
                             </div>
 
                             <div>
                                 <p className="mb-0">
                                     Remembered your password? <a href="/Login" className="text-white">Login</a>
-                                </p>
+                            </p>
                             </div>
                         </div>
                     </div>

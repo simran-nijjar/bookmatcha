@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles.css';
-import axios from 'axios';
 import PasswordChecklist from "react-password-checklist";
-import { jwtDecode } from 'jwt-decode';
+import api from '../api/api';
 
 // On this page the user can update their informations
 
@@ -17,16 +16,7 @@ export const UserAccount = () => {
     const [passwordUpdateStatus, setPasswordUpdateStatus] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        
-        if (token) {
-            const decoded = jwtDecode(token);
-            const userId = decoded.userId;
-
-            axios.get(`${process.env.REACT_APP_API_URL}users/userid`, {
-                params: { userId },
-                headers: { Authorization: `Bearer ${token}` }
-            })
+        api.get('users/userid')
             .then((response) => {
                 if (response.data) {
                     const user = response.data;
@@ -39,9 +29,6 @@ export const UserAccount = () => {
             })
             .catch(() => setUserInfo(null))
             .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
-        }
     }, []);
 
     const handleFirstNameChange = (event) => setFirstName(event.target.value);
@@ -50,61 +37,28 @@ export const UserAccount = () => {
     const handleNewPasswordChange = (event) => setNewPassword(event.target.value);
 
     const handleUpdateFirstName = () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decoded = jwtDecode(token);
-            const userId = decoded.userId;
-
-            axios.put(`${process.env.REACT_APP_API_URL}users/userid`, {
-                firstName: firstName,
-                userId
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+        api.put('users/userid', { firstName })
             .then(() => setNameUpdateStatus('First name updated successfully!'))
             .catch(() => setNameUpdateStatus('Error updating first name.'));
-        }
     };
 
     const handleUpdateLastName = () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decoded = jwtDecode(token);
-            const userId = decoded.userId;
-
-            axios.put(`${process.env.REACT_APP_API_URL}users/userid`, {
-                lastName: lastName,
-                userId
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+        api.put('users/userid', { lastName })
             .then(() => setNameUpdateStatus('Last name updated successfully!'))
             .catch(() => setNameUpdateStatus('Error updating last name.'));
-        }
     };
 
     const validateCurrentPassword = async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decoded = jwtDecode(token);
-            const userId = decoded.userId;
-
-            try {
-                const res = await axios.post(`${process.env.REACT_APP_API_URL}users/validate-password`, {
-                    userId,
-                    password: currentPassword
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                return res.status === 200;
-            } catch (error) {
-                if (error.response && error.response.status === 400) {
-                    setPasswordUpdateStatus('The current password you entered does not match our records.');
-                } else {
-                    setPasswordUpdateStatus('Updating password failed. Please try again later.');
-                }
-                return false;
+        try {
+            const res = await api.post('users/validate-password', { password: currentPassword });
+            return res.status === 200;
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                setPasswordUpdateStatus('The current password you entered does not match our records.');
+            } else {
+                setPasswordUpdateStatus('Updating password failed. Please try again later.');
             }
+            return false;
         }
     };
 
@@ -114,19 +68,10 @@ export const UserAccount = () => {
     };
 
     const handleUpdatePassword = async () => {
-        const token = localStorage.getItem('token');
-        if (token && await validateCurrentPassword() && validateNewPassword()) {
-            const decoded = jwtDecode(token);
-            const userId = decoded.userId;
-
-            axios.put(`${process.env.REACT_APP_API_URL}users/password`, {
-                newPassword: newPassword,
-                userId
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            .then(() => setPasswordUpdateStatus('Password updated successfully!'))
-            .catch(() => setPasswordUpdateStatus('Error updating password.'));
+        if (await validateCurrentPassword() && validateNewPassword()) {
+            api.put('users/password', { newPassword })
+                .then(() => setPasswordUpdateStatus('Password updated successfully!'))
+                .catch(() => setPasswordUpdateStatus('Error updating password.'));
         }
     };
 

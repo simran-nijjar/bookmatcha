@@ -1,94 +1,91 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import '../styles.css';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/api';
 import { jwtDecode } from 'jwt-decode';
 
-// This file contains the details of each book when a user selects it
-// Here the user can write a review, update their review, and look at reviews posted by other users
-
+// Book details page: user can write/update their review and see reviews from others
 export function BookDetails() {
-    const { id } = useParams(); // Extract book Id from URL parameters
-    const [book, setBook] = useState(null); // Store book details from Google Books API
-    const [bookId, setBookId] = useState(''); // Store book Id for backend API calls
-    const [writtenReview, setWrittenReview] = useState(''); // Store user's written review
-    const [rating, setRating] = useState(''); // Store user's rating (1-5)
-    const [userId, setUserId] = useState(''); // Logged-in user Id
-    const [error, setError] = useState(''); // Error or success messages
-    const [reviews, setReviews] = useState([]); // List of reviews for this book
-    const [averageRating, setAverageRating] = useState(null); // Average rating for the book
-    const [existingReview, setExistingReview] = useState(null); // Review by logged-in user
+    const { id } = useParams(); // Book ID from URL
+    const [book, setBook] = useState(null);
+    const [bookId, setBookId] = useState('');
+    const [writtenReview, setWrittenReview] = useState('');
+    const [rating, setRating] = useState('');
+    const [userId, setUserId] = useState('');
+    const [error, setError] = useState('');
+    const [reviews, setReviews] = useState([]);
+    const [averageRating, setAverageRating] = useState(null);
+    const [existingReview, setExistingReview] = useState(null);
 
-    // Fetch book details from the Google Books API
+    // Helper: fetch logged-in user ID from token
+    const getUserIdFromToken = () => {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+        try {
+            const decoded = jwtDecode(token);
+            return decoded.userId;
+        } catch {
+            return null;
+        }
+    };
+
+    // Fetch book details from Google Books API
     const fetchBookDetails = useCallback(async (bookId) => {
         try {
-            const response = await axios.get(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
-            setBook(response.data);
-            setBookId(response.data.id);
-            fetchReviews(response.data.id); // Fetch reviews for this book after fetching details
-        } catch (error) {
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
+            const data = await response.json();
+            setBook(data);
+            setBookId(data.id);
+            fetchReviews(data.id);
+        } catch {
             setError('Failed to load book details.');
         }
     }, []);
 
-    // Fetch all reviews for the specified book
-    const fetchReviews = (bookId) => {
-        axios.get(`${process.env.REACT_APP_API_URL}reviews`, {
-            params: { bookId }
-        }).then((response) => {
-            setReviews(response.data);
-            if (response.data.length > 0) {
-                setAverageRating(response.data[0].average_rating);
-            } else {
-                setAverageRating(null);
-            }
-        }).catch(() => {
-            setError("Failed to fetch reviews. Please try again later.");
-        });
-    };
-
-    // Fetch the existing review for the logged-in user
-    const fetchExistingReview = (bookId, userId) => {
-        axios.get(`${process.env.REACT_APP_API_URL}reviews/book/user`, {
-            params: { bookId, userId }
-        }).then((response) => {
-            if (response.data.length > 0) {
-                setExistingReview(response.data[0]);
-                setWrittenReview(response.data[0].written_review);
-                setRating(response.data[0].rating.toString());
-            }
-        }).catch(() => {
-            setError("Failed to get your review. Please try again later.");
-        });
-    };
-
-    // On component mount, fetch user info and book details
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        let currentUserId = '';
-        if (token) {
-            const decoded = jwtDecode(token);
-            currentUserId = decoded.userId;
-            setUserId(currentUserId);
+    // Fetch all reviews for this book
+    const fetchReviews = async (bookId) => {
+        try {
+            const res = await api.get('reviews', { params: { bookId } });
+            setReviews(res.data);
+            setAverageRating(res.data.length > 0 ? res.data[0].average_rating : null);
+        } catch {
+            setError('Failed to fetch reviews. Please try again later.');
         }
+    };
+
+    // Fetch logged-in user's review
+    const fetchExistingReview = async (bookId, userId) => {
+        if (!userId) return;
+        try {
+            const res = await api.get('reviews/book/user', { params: { bookId, userId } });
+            if (res.data.length > 0) {
+                setExistingReview(res.data[0]);
+                setWrittenReview(res.data[0].written_review);
+                setRating(res.data[0].rating.toString());
+            }
+        } catch {
+            setError('Failed to get your review. Please try again later.');
+        }
+    };
+
+    // On mount: fetch book details and user review
+    useEffect(() => {
+        const currentUserId = getUserIdFromToken();
+        setUserId(currentUserId);
 
         if (id) {
             fetchBookDetails(id);
-
             if (currentUserId) {
                 fetchExistingReview(id, currentUserId);
             }
         }
     }, [id, fetchBookDetails]);
 
-    // Handle form field changes
-    const onChange = (event) => {
-        const { name, value } = event.target;
-        if (name === 'WrittenReview') {
-            setWrittenReview(value);
-        } else if (name === 'Rating') {
-            setRating(value);
-        }
+    // Form changes
+    const onChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'WrittenReview') setWrittenReview(value);
+        else if (name === 'Rating') setRating(value);
     };
 
     // Validate review fields
@@ -100,19 +97,14 @@ export function BookDetails() {
         return true;
     };
 
-    // Save a new review
-    const saveReview = async (event) => {
-        event.preventDefault();
-        if (!validateFields()) return;
+    // Save new review
+    const saveReview = async (e) => {
+        e.preventDefault();
+        if (!validateFields() || !userId) return;
 
         try {
-            const result = await axios.post(`${process.env.REACT_APP_API_URL}reviews`, {
-                bookId,
-                writtenReview,
-                rating,
-                userId
-            });
-            if (result.status === 200) {
+            const res = await api.post('reviews', { bookId, writtenReview, rating, userId });
+            if (res.status === 200) {
                 setError('Review saved successfully.');
                 fetchReviews(bookId);
                 fetchExistingReview(bookId, userId);
@@ -122,21 +114,14 @@ export function BookDetails() {
         }
     };
 
-    // Update an existing review
-    const updateReview = async (event) => {
-        event.preventDefault();
+    // Update existing review
+    const updateReview = async (e) => {
+        e.preventDefault();
+        if (!validateFields() || !userId) return;
 
-        if (!validateFields()) {
-            return;
-        }
         try {
-            const result = await axios.put(`${process.env.REACT_APP_API_URL}reviews`, {
-                bookId,
-                writtenReview,
-                rating,
-                userId
-            });
-            if (result.status === 200) {
+            const res = await api.put('reviews', { bookId, writtenReview, rating, userId });
+            if (res.status === 200) {
                 setError('Review updated successfully.');
                 fetchReviews(bookId);
                 fetchExistingReview(bookId, userId);
@@ -146,119 +131,95 @@ export function BookDetails() {
         }
     };
 
-    // Display loading message if book details are not yet available
-    if (!book) {
-        return <p>Loading book details...</p>;
-    }
+    if (!book) return <p>Loading book details...</p>;
 
     return (
         <div>
             <h1 className="title">{book.volumeInfo?.title || 'No Title Available'}</h1>
 
-            {/* Book cover */}
             <div style={{ textAlign: 'center' }}>
                 {book.volumeInfo?.imageLinks?.thumbnail && (
                     <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
                 )}
             </div>
 
-            {/* Book author */}
             <p style={{ textAlign: 'center' }}><strong>By:</strong> {book.volumeInfo?.authors?.join(', ') || 'Unknown'}</p>
-
-            {/* Book description */}
             <p style={{ textAlign: 'center' }}><strong>Description:</strong></p>
             <div
                 style={{ textAlign: 'center' }}
                 dangerouslySetInnerHTML={{ __html: book.volumeInfo?.description || 'No Description Available' }}
             />
 
-            {/* Book genre and sub-genre */}
             <p><strong>Genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories[0].split('/')[1] : 'Unknown'}</p>
-            <p><strong>Sub-genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories.map(category => category.split('/')[2]).filter(Boolean).join(',') : 'Unknown'}</p>
+            <p><strong>Sub-genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories.map(c => c.split('/')[2]).filter(Boolean).join(',') : 'Unknown'}</p>
 
-            {/* Book ratings */}
             <p><strong>Average Rating:</strong> {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}</p>
             <p><strong>Total Reviews:</strong> {reviews.length}</p>
 
-            <div>
-                <hr />
+            <hr />
 
-                {/* User review form */}
-                <h2 className="title">Reviews</h2>
-                <form>
+            <h2 className="title">Reviews</h2>
+            <form>
+                {!existingReview ? <p className="subtitle">Write your review here:</p> : <p className="subtitle">Update your review here:</p>}
+
+                <textarea
+                    className="text-custom"
+                    style={{ display: 'block', margin: 'auto', width: '50%', maxWidth: '600px' }}
+                    name="WrittenReview"
+                    value={writtenReview}
+                    onChange={onChange}
+                    rows="8"
+                    cols="100"
+                />
+
+                <center>
+                    <p className="text-custom">Give a rating:</p>
+                    <div className="btn-group btn-group-toggle" data-toggle="buttons">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                            <label key={num} className={`btn btn-secondary theme-custom ${rating === num.toString() ? 'active' : ''}`}>
+                                <input
+                                    type="radio"
+                                    name="Rating"
+                                    value={num}
+                                    checked={rating === num.toString()}
+                                    onChange={onChange}
+                                /> {num}
+                            </label>
+                        ))}
+                    </div>
+
                     {!existingReview ? (
-                        <p className="subtitle">Write your review here:</p>
+                        <button className="btn text-custom button-custom" type="submit" onClick={saveReview}>Save Review</button>
                     ) : (
-                        <p className="subtitle">Update your review here:</p>
+                        <button className="btn text-custom button-custom" type="submit" onClick={updateReview}>Update Review</button>
                     )}
+                </center>
+            </form>
 
-                    <textarea
-                        className="text-custom"
-                        style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%', maxWidth: '600px' }}
-                        id="reviewTextBox"
-                        name="WrittenReview"
-                        value={writtenReview}
-                        onChange={onChange}
-                        rows="8"
-                        cols="100"
-                    ></textarea>
+            <div className="text-custom"><p>{error}</p></div>
+            <hr />
 
-                    {/* Rating selection */}
-                    <center>
-                        <p className="text-custom">Give a rating:</p>
-                        <div className="btn-group btn-group-toggle" data-toggle="buttons">
-                            {[1, 2, 3, 4, 5].map((num) => (
-                                <label key={num} className={`btn btn-secondary theme-custom ${rating === num.toString() ? 'active' : ''}`}>
-                                    <input
-                                        type="radio"
-                                        name="Rating"
-                                        autoComplete="off"
-                                        value={num}
-                                        checked={rating === num.toString()}
-                                        onChange={onChange}
-                                    /> {num}
-                                </label>
-                            ))}
-                        </div>
-
-                        {/* Save or update button */}
-                        {!existingReview ? (
-                            <button className="btn text-custom button-custom" type="submit" onClick={saveReview}>Save Review</button>
-                        ) : (
-                            <button className="btn text-custom button-custom" type="submit" onClick={updateReview}>Update Review</button>
-                        )}
-                    </center>
-                </form>
-
-                {/* Error / success messages */}
-                <div className="text-custom"><p>{error}</p></div>
-                <hr />
-
-                {/* Display reviews from other users */}
-                <div>
-                    <h2 className="title">Posted Reviews</h2>
-                    <table className="table table-striped table-custom">
-                        <thead className="text-custom">
-                            <tr>
-                                <th>Reviewer</th>
-                                <th>Rating</th>
-                                <th>Review</th>
-                                <th>Date Posted</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-custom">
-                            {reviews.map((review) => (
-                                <tr key={review.book_review_id}>
-                                    <td>{review.first_name + ' ' + review.last_name}</td>
-                                    <td>{review.rating}</td>
-                                    <td>{review.written_review}</td>
-                                    <td>{new Date(review.created_at).toDateString() + ' ' + new Date(review.created_at).toLocaleTimeString()}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <h2 className="title">Posted Reviews</h2>
+            <table className="table table-striped table-custom">
+                <thead className="text-custom">
+                    <tr>
+                        <th>Reviewer</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Date Posted</th>
+                    </tr>
+                </thead>
+                <tbody className="text-custom">
+                    {reviews.map(review => (
+                        <tr key={review.book_review_id}>
+                            <td>{review.first_name + ' ' + review.last_name}</td>
+                            <td>{review.rating}</td>
+                            <td>{review.written_review}</td>
+                            <td>{new Date(review.created_at).toDateString() + ' ' + new Date(review.created_at).toLocaleTimeString()}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }

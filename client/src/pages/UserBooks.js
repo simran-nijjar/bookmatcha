@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import '../styles.css';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { jwtDecode } from 'jwt-decode'; // fixed import
+import { jwtDecode } from 'jwt-decode';
+import api from '../api/api';
 
 // This page is the first page the user sees when they login or register
 // Here the user can see all of the books they have reviewed
@@ -30,15 +30,14 @@ export const UserBooks = () => {
             return;
         }
 
-        fetchUserReviews(decoded.userId, token);
+        fetchUserReviews(decoded.userId);
     }, []);
 
     // Fetch all reviews the user has posted
-    const fetchUserReviews = async (userId, token) => {
+    const fetchUserReviews = async (userId) => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}reviews/user`, {
-                params: { userId },
-                headers: { Authorization: `Bearer ${token}` } // send token for verification
+            const response = await api.get('reviews/user', {
+                params: { userId }
             });
             setReviews(response.data);
             setError('');
@@ -52,17 +51,12 @@ export const UserBooks = () => {
         const confirmDelete = window.confirm("Are you sure you want to delete this review?");
         if (!confirmDelete) return;
 
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        let decoded;
-        try { decoded = jwtDecode(token); } catch { return; }
-
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}reviews/${reviewID}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchUserReviews(decoded.userId, token);
+            await api.delete(`reviews/${reviewID}`);
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const decoded = jwtDecode(token);
+            fetchUserReviews(decoded.userId);
         } catch {
             setError('Error deleting review. Please try again later.');
         }

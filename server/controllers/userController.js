@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const connection = require('../config/db');
-const generateToken = require('../utils/generateToken');
+const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 const saltRounds = 12;
@@ -32,16 +32,24 @@ exports.register = (req, res) => {
             }
 
             const userId = insertResult.insertId;
-            const token = generateToken({ userId });
+            const accessToken = generateAccessToken({ userId });
+            const refreshToken = generateRefreshToken({ userId });
 
-            res.cookie('token', token, {
+            res.cookie('token', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'Strict',
                 maxAge: 3600000
             });
 
-            return res.status(201).json({ token: token});
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
+
+            return res.status(201).json({ token: accessToken });
         });
     });
 };
@@ -72,21 +80,55 @@ exports.login = async (req, res) => {
                 return res.status(400).json({ message: "Incorrect password" });
             }
 
-            const token = generateToken({ userId: user.user_id });
+            const accessToken = generateAccessToken({ userId: user.user_id });
+            const refreshToken = generateRefreshToken({ userId: user.user_id });
 
-            res.cookie('token', token, {
+            res.cookie('token', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'Strict',
                 maxAge: 3600000
             });
 
-            return res.status(200).json({ token: token});
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'Strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
+
+            return res.status(200).json({ token: accessToken });
         });
     } catch (error) {
         return res.status(500).json({ message: "Server error" });
     }
-}
+};
+
+// Refresh token endpoint
+exports.refreshToken = (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ message: "No refresh token provided" });
+    }
+
+    const jwt = require('jsonwebtoken');
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: "Invalid refresh token" });
+        }
+
+        const newAccessToken = generateAccessToken({ userId: user.userId });
+        res.cookie('token', newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 3600000
+        });
+
+        return res.status(200).json({ token: newAccessToken });
+    });
+};
 
 // Validate password
 exports.validatePassword = (req, res) => {
@@ -314,13 +356,17 @@ exports.resetPassword = (req, res) => {
 
 // Logout
 exports.logout = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict',
-  });
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+    });
 
-  return res.status(200).json({ message: "Logged out successfully" });
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+    });
+
+    return res.status(200).json({ message: "Logged out successfully" });
 };
-
-

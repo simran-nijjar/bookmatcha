@@ -18,8 +18,8 @@ export const BookRecommendations = () => {
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
 
-    if (savedUser?.user_id) {
-      fetchUsersBooks(savedUser.user_id);
+    if (savedUser?.userId) {
+      fetchUsersBooks(savedUser.userId);
     }
   }, []);
 
@@ -30,10 +30,10 @@ export const BookRecommendations = () => {
   }, [usersBooks, currentPage]);
 
   // Fetch books that the user has reviewed and rated
-  const fetchUsersBooks = async (user_id) => {
+  const fetchUsersBooks = async (userId) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}books/users`, {
-        params: { user_id: user_id }
+        params: { userId: userId }
       });
       setUsersBooks(response.data);
     } catch (error) {
@@ -44,27 +44,27 @@ export const BookRecommendations = () => {
   // Extract authors and saved book IDs from user's books
   const extractAuthors = () => {
     const authors = new Set();
-    const savedBookIDs = new Set();
+    const savedBookIds = new Set();
 
     usersBooks.forEach(book => {
       if (book.Author) {
         authors.add(book.Author.trim());
       }
-      savedBookIDs.add(book.BookID);
+      savedBookIds.add(book.bookId);
     });
 
-    return { authors: Array.from(authors), savedBookIDs: Array.from(savedBookIDs) };
+    return { authors: Array.from(authors), savedBookIds: Array.from(savedBookIds) };
   };
 
   // Get recommendations from Google Books
   const getRecommendations = async () => {
     try {
-      const { authors, savedBookIDs } = extractAuthors();
+      const { authors, savedBookIds } = extractAuthors();
       const startIndex = (currentPage - 1) * maxResults;
       const googleBooks = await fetchBooksFromGoogle(authors, startIndex);
 
       const filteredBooks = googleBooks
-        .filter(book => !savedBookIDs.includes(book.id))
+        .filter(book => !savedBookIds.includes(book.id))
         .map(book => ({
           book_id: book.id,
           title: book.volumeInfo.title || 'Untitled',
@@ -106,14 +106,14 @@ export const BookRecommendations = () => {
   const handlePrevPage = () => currentPage > 1 && setCurrentPage(prev => prev - 1);
 
   // Fetch average ratings from backend
-  const fetchAverageRatings = async (bookIDs) => {
-    if (!bookIDs || bookIDs.length === 0){
+  const fetchAverageRatings = async (bookIds) => {
+    if (!bookIds || bookIds.length === 0){
       return [];
     }
 
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}books/average-rating`, {
-        params: { BookIDs: bookIDs.join(',') }
+        params: { bookIds: bookIds.join(',') }
       });
       return response.data;
     } catch {
@@ -124,25 +124,27 @@ export const BookRecommendations = () => {
 
   const insertBook = async (book) => {
   const savedUser = JSON.parse(localStorage.getItem('user'));
-  if (!savedUser?.user_id) return;
+  if (!savedUser?.userId) {
+    return;
+  }
 
   try {
     const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
     await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
       title: book.title,
-      book_id: book.book_id,
+      bookId: book.book_id,
       author: book.author || 'Unknown',
-      image_link: book.image_link || '',
+      imageLink: book.image_link || '',
       genre: bookDetails.data.volumeInfo?.categories?.[0]
         ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
         : 'Unknown',
-      sub_genre: bookDetails.data.volumeInfo?.categories?.[0]
+      subGenre: bookDetails.data.volumeInfo?.categories?.[0]
         ? bookDetails.data.volumeInfo.categories
             .map(category => category.split('/')[2])
             .filter(Boolean)
             .join(',') || 'Unknown'
         : 'Unknown',
-      user_email: savedUser.user_id
+      userId: savedUser.userId
     });
 
     navigate(`/book/${book.book_id}`, { state: { book } });

@@ -77,8 +77,8 @@ export const Register = ({ onLogin }) => {
     // If all fields are valid, insert into backend
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}users`, {
-        first_name: firstName,
-        last_name: lastName,
+        firstName: firstName,
+        lastName: lastName,
         email: email,
         password: password
       });
@@ -93,10 +93,10 @@ export const Register = ({ onLogin }) => {
 
         // Store user info in local storage
         localStorage.setItem('user', JSON.stringify({
-          user_id: decodedToken.user_id,
+          userId: decodedToken.userId,
           email: decodedToken.email,
-          firstName: decodedToken.first_name,
-          lastName: decodedToken.last_name
+          firstName: decodedToken.firstName,
+          lastName: decodedToken.lastName
         }));
         
         // Navigate to home page

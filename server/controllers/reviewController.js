@@ -2,16 +2,16 @@ const connection = require('../config/db');
 
 // Add a review for a book
 exports.addReview = (req, res) => {
-    const { BookID, WrittenReview, Rating, ReviewerID } = req.body;
+    const { bookId, writtenReview, rating, userId } = req.body;
 
     // Validate input
-    if (!BookID || !WrittenReview || !Rating || !ReviewerID) {
-        return res.status(400).json({ message: "BookID, WrittenReview, Rating, and ReviewerID are required" });
+    if (!bookId || !writtenReview || !rating || !userId) {
+        return res.status(400).json({ message: "bookId, writtenReview, rating, and userId are required" });
     }
 
     const query = 'INSERT INTO reviews (book_id, written_review, rating, user_id) VALUES (?, ?, ?, ?)';
 
-    connection.query(query, [BookID, WrittenReview, Rating, ReviewerID], (err, result) => {
+    connection.query(query, [bookId, writtenReview, rating, userId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error saving review" });
         }
@@ -21,10 +21,10 @@ exports.addReview = (req, res) => {
 
 // Update an existing review
 exports.updateReview = (req, res) => {
-    const { BookID, WrittenReview, Rating, ReviewerID } = req.body;
+    const { bookId, writtenReview, rating, userId } = req.body;
 
-    if (!BookID || !WrittenReview || !Rating || !ReviewerID) {
-        return res.status(400).json({ message: "BookID, WrittenReview, Rating, and ReviewerID are required" });
+    if (!bookId || !writtenReview || !rating || !userId) {
+        return res.status(400).json({ message: "bookId, writtenReview, rating, and userId are required" });
     }
 
     const query = `
@@ -33,7 +33,7 @@ exports.updateReview = (req, res) => {
         WHERE book_id = ? AND user_id = ?
     `;
 
-    connection.query(query, [WrittenReview, Rating, BookID, ReviewerID], (err, result) => {
+    connection.query(query, [writtenReview, rating, bookId, userId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error updating review" });
         }
@@ -43,10 +43,10 @@ exports.updateReview = (req, res) => {
 
 // Get all reviews for a specific book
 exports.getBookReviews = (req, res) => {
-    const book_id = req.query.BookID;
+    const { bookId } = req.query;
 
-    if (!book_id) {
-        return res.status(400).json({ message: "BookID is required" });
+    if (!bookId) {
+        return res.status(400).json({ message: "bookId is required" });
     }
 
     const query = `
@@ -75,9 +75,9 @@ exports.getBookReviews = (req, res) => {
         WHERE r.book_id = ?;
     `;
 
-    connection.query(query, [book_id], (err, result) => {
+    connection.query(query, [bookId], (err, result) => {
         if (err) {
-            return res.status(500).json({ message: "Error getting reviews for BookID: " + book_id });
+            return res.status(500).json({ message: "Error getting reviews for bookId: " + bookId });
         }
         return res.status(200).json(result);
     });
@@ -85,10 +85,10 @@ exports.getBookReviews = (req, res) => {
 
 // Get all reviews written by a user
 exports.getUsersBookReviews = (req, res) => {
-    const user_id = req.query.ReviewerID;
+    const { userId } = req.query;
 
-    if (!user_id) {
-        return res.status(400).json({ message: "ReviewerID is required" });
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
     }
 
     const query = `
@@ -113,7 +113,7 @@ exports.getUsersBookReviews = (req, res) => {
         WHERE r.user_id = ?;
     `;
 
-    connection.query(query, [user_id], (err, result) => {
+    connection.query(query, [userId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error getting reviews written by user" });
         }
@@ -123,15 +123,15 @@ exports.getUsersBookReviews = (req, res) => {
 
 // Get a specific review for a book by a user
 exports.getReviewForBookByUser = (req, res) => {
-    const { BookID, ReviewerID } = req.query;
+    const { bookId, userId } = req.query;
 
-    if (!BookID || !ReviewerID) {
-        return res.status(400).json({ message: "BookID and ReviewerID are required" });
+    if (!bookId || !userId) {
+        return res.status(400).json({ message: "bookId and userId are required" });
     }
 
     const query = 'SELECT * FROM reviews WHERE book_id = ? AND user_id = ?';
 
-    connection.query(query, [BookID, ReviewerID], (err, result) => {
+    connection.query(query, [bookId, userId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error getting review" });
         }

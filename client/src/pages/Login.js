@@ -42,10 +42,10 @@ export const Login = ({ onLogin }) => {
     
                 // Store user info in local storage
                 localStorage.setItem('user', JSON.stringify({
-                    user_id: decodedToken.user_id,
+                    userId: decodedToken.userId,
                     email: decodedToken.email,
-                    firstName: decodedToken.first_name,
-                    lastName: decodedToken.last_name
+                    firstName: decodedToken.firstName,
+                    lastName: decodedToken.lastName
                 }));
                 
                 // Navigate to home page

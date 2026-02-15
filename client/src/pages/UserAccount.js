@@ -22,14 +22,14 @@ export const UserAccount = () => {
         if (savedUser) {
             // Get user information from the backend
             axios.get(`${process.env.REACT_APP_API_URL}users/userid`, {
-                params: { user_id: savedUser.user_id }
+                params: { userId: savedUser.userId }
             })
             .then((response) => {
                 if (response.data) {
                     const user = response.data;
                     setUserInfo(user);
-                    setFirstName(user.first_name);
-                    setLastName(user.last_name);
+                    setFirstName(user.firstName);
+                    setLastName(user.lastName);
                 } else {
                     setUserInfo(null);
                 }
@@ -51,8 +51,8 @@ export const UserAccount = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         if (savedUser) {
             axios.put(`${process.env.REACT_APP_API_URL}users/userid`, {
-                first_name: firstName,
-                user_id: savedUser.user_id
+                firstName: firstName,
+                userId: savedUser.userId
             })
             .then(() => setNameUpdateStatus('First name updated successfully!'))
             .catch(() => setNameUpdateStatus('Error updating first name.'));
@@ -64,8 +64,8 @@ export const UserAccount = () => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
         if (savedUser) {
             axios.put(`${process.env.REACT_APP_API_URL}users/userid`, {
-                last_name: lastName,
-                user_id: savedUser.user_id
+                lastName: lastName,
+                userId: savedUser.userId
             })
             .then(() => setNameUpdateStatus('Last name updated successfully!'))
             .catch(() => setNameUpdateStatus('Error updating last name.'));
@@ -78,7 +78,7 @@ export const UserAccount = () => {
         if (savedUser) {
             try {
                 const res = await axios.post(`${process.env.REACT_APP_API_URL}users/validate-password`, {
-                    user_id: savedUser.user_id,
+                    userId: savedUser.userId,
                     password: currentPassword
                 });
                 return res.status === 200;
@@ -105,7 +105,7 @@ export const UserAccount = () => {
         if (savedUser && await validateCurrentPassword() && validateNewPassword()) {
             axios.put(`${process.env.REACT_APP_API_URL}users/password`, {
                 newPassword: newPassword,
-                user_id: savedUser.user_id
+                userId: savedUser.userId
             })
             .then(() => setPasswordUpdateStatus('Password updated successfully!'))
             .catch(() => setPasswordUpdateStatus('Error updating password.'));
@@ -116,7 +116,7 @@ export const UserAccount = () => {
 
     return (
         <div>
-            <h1 className="title">Hello {userInfo ? userInfo.first_name : 'Guest'}!</h1>
+            <h1 className="title">Hello {firstName ? firstName : 'Guest'}!</h1>
             <h3 className="subtitle">Here you can make changes to your bookmatcha account</h3>
 
             <div className="container py-5 h-100">

@@ -7,12 +7,12 @@ import axios from 'axios';
 // Here the user can write a review, update their review, and look at reviews posted by other users
 
 export function BookDetails() {
-    const { id } = useParams(); // Extract book ID from URL parameters
+    const { id } = useParams(); // Extract book Id from URL parameters
     const [book, setBook] = useState(null); // Store book details from Google Books API
-    const [bookID, setBookID] = useState(''); // Store book ID for backend API calls
+    const [bookId, setBookId] = useState(''); // Store book Id for backend API calls
     const [writtenReview, setWrittenReview] = useState(''); // Store user's written review
     const [rating, setRating] = useState(''); // Store user's rating (1-5)
-    const [userID, setUserID] = useState(''); // Logged-in user ID
+    const [userId, setUserId] = useState(''); // Logged-in user Id
     const [error, setError] = useState(''); // Error or success messages
     const [reviews, setReviews] = useState([]); // List of reviews for this book
     const [averageRating, setAverageRating] = useState(null); // Average rating for the book
@@ -23,7 +23,7 @@ export function BookDetails() {
         try {
             const response = await axios.get(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
             setBook(response.data);
-            setBookID(response.data.id);
+            setBookId(response.data.id);
             fetchReviews(response.data.id); // Fetch reviews for this book after fetching details
         } catch (error) {
             setError('Failed to load book details.');
@@ -33,7 +33,7 @@ export function BookDetails() {
     // Fetch all reviews for the specified book
     const fetchReviews = (bookId) => {
         axios.get(`${process.env.REACT_APP_API_URL}reviews`, {
-            params: { BookID: bookId }
+            params: { bookId: bookId }
         }).then((response) => {
             setReviews(response.data);
             // Set average rating if reviews exist
@@ -50,7 +50,7 @@ export function BookDetails() {
     // Fetch the existing review for the logged-in user
     const fetchExistingReview = (bookId, userId) => {
         axios.get(`${process.env.REACT_APP_API_URL}reviews/book/user`, {
-            params: { BookID: bookId, ReviewerID: userId }
+            params: { bookId: bookId, userId: userId }
         }).then((response) => {
             if (response.data.length > 0) {
                 setExistingReview(response.data[0]);
@@ -65,16 +65,15 @@ export function BookDetails() {
     // On component mount, fetch user info and book details
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-
         if (user) {
-            setUserID(user.user_id);
+            setUserId(user.userId);
         }
 
         if (id) {
             fetchBookDetails(id);
 
             if (user) {
-                fetchExistingReview(id, user.user_id);
+                fetchExistingReview(id, user.userId);
             }
         }
     }, [id, fetchBookDetails]);
@@ -107,15 +106,15 @@ export function BookDetails() {
         }
         try {
             const result = await axios.post(`${process.env.REACT_APP_API_URL}reviews`, {
-                BookID: bookID,
-                WrittenReview: writtenReview,
-                Rating: rating,
-                ReviewerID: userID
+                bookId: bookId,
+                writtenReview: writtenReview,
+                rating: rating,
+                userId: userId
             });
             if (result.status === 200) {
                 setError('Review saved successfully.');
-                fetchReviews(bookID);
-                fetchExistingReview(bookID, userID);
+                fetchReviews(bookId);
+                fetchExistingReview(bookId, userId);
             }
         } catch (error) {
             setError('Error saving review. Please try again later.');
@@ -131,15 +130,15 @@ export function BookDetails() {
         }
         try {
             const result = await axios.put(`${process.env.REACT_APP_API_URL}reviews`, {
-                BookID: bookID,
-                WrittenReview: writtenReview,
-                Rating: rating,
-                ReviewerID: userID
+                bookId: bookId,
+                writtenReview: writtenReview,
+                rating: rating,
+                userId: userId
             });
             if (result.status === 200) {
                 setError('Review updated successfully.');
-                fetchReviews(bookID);
-                fetchExistingReview(bookID, userID);
+                fetchReviews(bookId);
+                fetchExistingReview(bookId, userId);
             }
         } catch (error) {
             setError('Error updating review. Please try again later.');

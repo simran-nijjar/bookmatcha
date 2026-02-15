@@ -10,33 +10,33 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   const [averageRatings, setAverageRatings] = useState({});
 
   useEffect(() => {
-    const bookIDs = results.map(book => book.id);
-    fetchAverageRatings(bookIDs);
+    const bookIds = results.map(book => book.id);
+    fetchAverageRatings(bookIds);
   }, [results]);
 
   // When a book is selected, it will be inserted into the backend if it's not already inserted
   const insertBook = async (book) => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
-    if (!savedUser?.user_id){
+    if (!savedUser?.userId){
       return;
     }
     try {
       const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.id}`);
       const response = await axios.post(`${process.env.REACT_APP_API_URL}books/insertbook`, {
         title: book.volumeInfo.title,
-        book_id: book.id,
+        bookId: book.id,
         author: book.volumeInfo.authors?.join(', ') || 'Unknown',
-        image_link: book.volumeInfo.imageLinks?.smallThumbnail || '',
+        imageLink: book.volumeInfo.imageLinks?.smallThumbnail || '',
         genre: bookDetails.data.volumeInfo?.categories?.[0]
           ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
           : 'Unknown',
-        sub_genre: bookDetails.data.volumeInfo?.categories?.[0]
+        subGenre: bookDetails.data.volumeInfo?.categories?.[0]
           ? bookDetails.data.volumeInfo.categories
               .map(category => category.split('/')[2])
               .filter(Boolean)
               .join(',') || 'Unknown'
           : 'Unknown',
-        user_id: savedUser.user_id
+        userId: savedUser.userId
       });
       
       // Successful book insertion will navigate to the book details page
@@ -46,10 +46,10 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
     } catch { }
   };
 
-  const fetchAverageRatings = async (bookIDs) => {
+  const fetchAverageRatings = async (bookIds) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}books/average-rating`, {
-        params: { BookIDs: bookIDs.join(",") }
+        params: { bookIds: bookIds.join(",") }
       });
       const ratings = response.data.reduce((acc, item) => {
         acc[item.book_id] = item.average_rating;

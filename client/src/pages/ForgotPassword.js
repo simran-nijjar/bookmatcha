@@ -20,7 +20,7 @@ export const ForgotPassword = () => {
 
         try {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}users/request-password-reset`, {
-                Email: email
+                email: email
             });
 
             if (res.status === 200) {

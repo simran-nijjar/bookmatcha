@@ -7,9 +7,9 @@ const saltRounds = 12;
 
 // Register user
 exports.register = (req, res) => {
-    const { first_name, last_name, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
-    if (!first_name || !last_name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -26,13 +26,13 @@ exports.register = (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const insertQuery = 'INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)';
-        connection.query(insertQuery, [first_name, last_name, email, hashedPassword], (err, insertResult) => {
+        connection.query(insertQuery, [firstName, lastName, email, hashedPassword], (err, insertResult) => {
             if (err) {
                 return res.status(500).json({ message: "Failed to register user" });
             }
 
-            const user_id = insertResult.insertId;
-            const token = generateToken({ user_id });
+            const userId = insertResult.insertId;
+            const token = generateToken({ userId });
 
             return res.status(201).json({ message: "User registered successfully", token });
         });
@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
+            return res.status(400).json({ message: "email and password are required" });
         }
 
         const query = 'SELECT * FROM users WHERE email = ?';
@@ -65,7 +65,7 @@ exports.login = async (req, res) => {
                 return res.status(400).json({ message: "Incorrect password" });
             }
 
-            const token = generateToken({ user_id: user.user_id });
+            const token = generateToken({ userId: user.user_id });
             return res.status(200).json({ message: "User logged in successfully", token });
         });
     } catch (error) {
@@ -75,19 +75,18 @@ exports.login = async (req, res) => {
 
 // Validate password
 exports.validatePassword = (req, res) => {
-    const { password } = req.body;
-    const user_id = req.body?.user_id || req.query?.user_id;
+    const { userId, password } = req.body;
 
-    if (!user_id) {
-        return res.status(400).json({ message: "user_id is required" });
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
     }
 
     if (!password) {
-        return res.status(400).json({ message: "Password is required" });
+        return res.status(400).json({ message: "password is required" });
     }
 
     const query = 'SELECT * FROM users WHERE user_id = ?';
-    connection.query(query, [user_id], async (err, results) => {
+    connection.query(query, [userId], async (err, results) => {
         if (err) {
             return res.status(500).json({ message: "Error checking for user" });
         }
@@ -109,11 +108,10 @@ exports.validatePassword = (req, res) => {
 
 // Update password
 exports.updatePassword = (req, res) => {
-    const { newPassword } = req.body;
-    const user_id = req.body?.user_id || req.query?.user_id;
+    const { userId, newPassword } = req.body;
 
-    if (!user_id) {
-        return res.status(400).json({ message: "user_id is required" });
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
     }
 
     if (!newPassword) {
@@ -126,7 +124,7 @@ exports.updatePassword = (req, res) => {
         }
 
         const query = 'UPDATE users SET password = ? WHERE user_id = ?';
-        connection.query(query, [hashedPassword, user_id], (err, result) => {
+        connection.query(query, [hashedPassword, userId], (err, result) => {
             if (err) {
                 return res.status(500).json({ message: "Error updating password" });
             }
@@ -142,20 +140,30 @@ exports.updatePassword = (req, res) => {
 
 // Get user information
 exports.getUserInformation = (req, res) => {
-    const user_id = req.body?.user_id || req.query?.user_id;
+    const { userId } = req.query;
 
-    if (!user_id) {
-        return res.status(400).json({ message: "user_id is required" });
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
     }
 
     const query = 'SELECT * FROM users WHERE user_id = ?';
-    connection.query(query, [user_id], (err, results) => {
+    connection.query(query, [userId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error getting user information" });
         }
 
-        if (results.length > 0) {
-            return res.status(200).json(results[0]);
+        if (result.length > 0) {
+            const user = result[0];
+            const formattedUser = {
+                userId: user.user_id,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                email: user.email,
+                profilePic: user.profile_pic,
+                createdAt: user.created_at,
+                updatedAt: user.updated_at
+            };
+            return res.status(200).json(formattedUser);
         } else {
             return res.status(404).json({ message: "User not found" });
         }
@@ -164,27 +172,25 @@ exports.getUserInformation = (req, res) => {
 
 // Update first or last name
 exports.updateUserInformation = (req, res) => {
-    const user_id = req.body?.user_id || req.query?.user_id;
+    const { userId, firstName, lastName, profilePic } = req.body;
 
-    if (!user_id) {
-        return res.status(400).json({ message: "user_id is required" });
+    if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
     }
-
-    const { first_name, last_name, profile_pic } = req.body;
 
     const fieldsToUpdate = [];
     const values = [];
 
-    if (first_name) { fieldsToUpdate.push('first_name = ?'); values.push(first_name); }
-    if (last_name) { fieldsToUpdate.push('last_name = ?'); values.push(last_name); }
-    if (profile_pic) { fieldsToUpdate.push('profile_pic = ?'); values.push(profile_pic); }
+    if (firstName) { fieldsToUpdate.push('first_name = ?'); values.push(firstName); }
+    if (lastName) { fieldsToUpdate.push('last_name = ?'); values.push(lastName); }
+    if (profilePic) { fieldsToUpdate.push('profile_pic = ?'); values.push(profilePic); }
 
     if (fieldsToUpdate.length === 0) {
         return res.status(400).json({ message: "At least one field to update must be provided" });
     }
 
     const query = `UPDATE users SET ${fieldsToUpdate.join(', ')}, updated_at = NOW() WHERE user_id = ?`;
-    values.push(user_id);
+    values.push(userId);
 
     connection.query(query, values, (err, result) => {
         if (err) {
@@ -204,7 +210,7 @@ exports.requestPasswordReset = (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+        return res.status(400).json({ message: "email is required" });
     }
 
     const checkUserQuery = 'SELECT * FROM users WHERE email = ?';
@@ -260,7 +266,7 @@ exports.resetPassword = (req, res) => {
     const { token, newPassword } = req.body;
 
     if (!token || !newPassword) {
-        return res.status(400).json({ message: "Token and new password are required" });
+        return res.status(400).json({ message: "token and new password are required" });
     }
 
     const query = 'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > ?';

@@ -16,18 +16,18 @@ export const UserBooks = () => {
 
     useEffect(() => {
         const savedUser = JSON.parse(localStorage.getItem('user'));
-        if (savedUser?.user_id) {
-            fetchUserReviews(savedUser.user_id);
+        if (savedUser?.userId) {
+            fetchUserReviews(savedUser.userId);
         } else {
             setError('User not logged in. Please login to view your books.');
         }
     }, []);
 
     // Fetch all reviews the user has posted
-    const fetchUserReviews = async (reviewerID) => {
+    const fetchUserReviews = async (userId) => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}reviews/user`, {
-                params: { ReviewerID: reviewerID }
+                params: { userId: userId }
             });
             setReviews(response.data);
             setError('');
@@ -44,8 +44,8 @@ export const UserBooks = () => {
         try {
             await axios.delete(`${process.env.REACT_APP_API_URL}reviews/${reviewID}`);
             const savedUser = JSON.parse(localStorage.getItem('user'));
-            if (savedUser?.user_id) {
-                fetchUserReviews(savedUser.user_id);
+            if (savedUser?.userId) {
+                fetchUserReviews(savedUser.userId);
             }
         } catch {
             setError('Error deleting review. Please try again later.');

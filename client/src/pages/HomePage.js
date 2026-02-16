@@ -66,14 +66,6 @@ export const HomePage = () => {
                                     ⭐ {book.AverageRating}
                                 </div>
                             </div>
-
-                            <Link
-                                to={`/book/${book.BookID}`}
-                                className="theme-custom"
-                            >
-                                View Details
-                            </Link>
-
                         </div>
                     </div>
                 ))}

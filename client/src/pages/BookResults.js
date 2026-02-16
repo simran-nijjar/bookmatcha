@@ -27,7 +27,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
         title: book.volumeInfo.title,
         bookId: book.id,
         author: book.volumeInfo.authors?.join(', ') || 'Unknown',
-        imageLink: book.volumeInfo.imageLinks?.smallThumbnail || '',
+        imageLink: book.volumeInfo.imageLinks?.thumbnail || '',
         genre: bookDetails.data.volumeInfo?.categories?.[0]
           ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
           : 'Unknown',
@@ -61,37 +61,62 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <h1 className="title">Search Results</h1>
       {results.length === 0 ? (
-        <p>No results found</p>
+        <p className="empty-message">No results found</p>
       ) : (
         <>
           {/* Display book thumbnail, title, and author */}
-          <div style={{ justifyContent: 'center', display: 'flex' }}>
-            <ul style={{ maxWidth: '600px', justifyContent: 'center' }}>
-              {results.map((book, index) => (
-                <li key={index} style={{ listStyleType: 'none', margin: '20px 0', border: '2px solid', borderRadius: '8px', display: 'flex', gap: '10px' }}>
-                  {book.volumeInfo.imageLinks?.thumbnail && (
-                    <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
-                  )}
+          <div className="recommendations-grid">
+            {results.map((book, index) => (
+              <div key={index} className="book-card">
+
+                {book.volumeInfo.imageLinks?.thumbnail ? (
+                  <img
+                    src={book.volumeInfo.imageLinks.thumbnail}
+                    alt={book.volumeInfo.title}
+                    className="book-cover"
+                  />
+                ) : (
+                  <div className="book-cover" />
+                )}
+
+                <div className="book-content">
                   <div>
-                    <br />
-                    <button className="btn theme-custom" onClick={() => insertBook(book)}>
-                      <strong>{book.volumeInfo.title}</strong>
-                    </button>
-                    <p><strong>By:</strong> {book.volumeInfo.authors?.join(', ') || 'Unknown'}</p>
-                    <p><strong>Average Rating:</strong> {averageRatings[book.id] || 'No ratings'}</p>
+                    <div
+                      className="book-title"
+                      onClick={() => insertBook(book)}
+                    >
+                      {book.volumeInfo.title}
+                    </div>
+                    <div className="book-author">
+                      By: {book.volumeInfo.authors?.join(', ') || 'Unknown'}
+                    </div>
+                    <div className="rating-badge">
+                      Average Rating: {averageRatings[book.id] || 'No ratings'}
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ul>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Previous and next page buttons */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-            <button className="btn theme-custom" onClick={onPrevPage} disabled={currentPage === 1}>Previous</button>
-            <button className="btn theme-custom" onClick={onNextPage}>Next</button>
+          <div className="pagination">
+            <button
+              className="theme-custom"
+              onClick={onPrevPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <button
+              className="theme-custom"
+              onClick={onNextPage}
+            >
+              Next
+            </button>
           </div>
         </>
       )}

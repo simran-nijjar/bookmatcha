@@ -50,45 +50,57 @@ export const Login = ({ onLogin }) => {
         }
     };
 
-    return (
-        <div className="container py-5 h-100">
-            <div className="row d-flex justify-content-center align-items-center h-100">
-                <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                    <div className="card bg-dark text-white">
-                        <div className="card-body p-3 text-center theme-custom">
-                            <div className="mb-3">
-                                <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
-                                <p className="text-white-50">Welcome back to bookmatcha!</p>
+return (
+  <div className="page-container">
 
-                                {/*Email input*/}
-                                <div className="form-outline form-white mb-3">
-                                    <input type="email" name="Email" placeholder='Email' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}/>
-                                </div>
+    <h1 className="title">Login</h1>
+    <p className="subtitle">Welcome back to bookmatcha</p>
 
-                                {/*Password input*/}
-                                <div className="form-outline form-white mb-4">
-                                    <input type="password" name="Password" placeholder='Password' onChange={onChange} className="form-control form-control-lg text-custom" style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }} />
-                                </div>
+    <div className="auth-wrapper">
+      <div className="auth-card">
 
-                                {/* Error message */}
-                                <div style={{ minHeight: '20px' }}>
-                                    {error && <p style={{ color: 'white' }}>{error}</p>}
-                                </div>
+        <input
+          type="email"
+          name="Email"
+          placeholder="Email"
+          value={email}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
 
-                                {/* Login button */}
-                                <button className="btn btn-outline-light btn-lg px-5 theme-custom" type="submit" onClick={login}>Login</button>
-                            </div>
+        <input
+          type="password"
+          name="Password"
+          placeholder="Password"
+          value={password}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
 
-                            <div>
-                                <p className="mb-0">Forgot password? <a href="/forgotpassword" className="text-white">Reset</a></p>
-                            </div>
-                            <div>
-                                <p className="mb-0">Don't have an account? <a href="/register" className="text-white">Register</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="auth-message">
+          {error && <p>{error}</p>}
         </div>
-    );
+
+        <button
+          className="theme-custom w-100"
+          onClick={login}
+        >
+          Login
+        </button>
+
+        <div className="auth-links">
+          <p>
+            Forgot password? <a href="/forgotpassword">Reset</a>
+          </p>
+          <p>
+            Don’t have an account? <a href="/register">Register</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+);
+
 };

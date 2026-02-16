@@ -64,43 +64,73 @@ function App() {
 
   return (
     <BrowserRouter>
-      <nav className="navbar navbar-expand-lg theme-custom">
-        <div className="container-fluid">
-          <Link className="navbar-brand theme-custom" to={isLoggedIn ? "/HomePage" : "/"}>bookmatcha</Link>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse theme-custom" id="navbarNav">
-            <ul className="navbar-nav theme-custom">
-              {isLoggedIn && (
-                <>
-                  <li className="nav-item">
-                    <Link className="nav-link theme-custom" to="/BookRecommendations">Recommendations</Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link theme-custom" to="/UserBooks">My Books</Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link theme-custom" to="/UserAccount">My Account</Link>
-                  </li>
-                  <li className="nav-item">
-                    <button className="nav-link theme-custom btn btn-link" onClick={handleLogout}>Logout</button>
-                  </li>
-                </>
-              )}
-            </ul>
-            {isLoggedIn && (
-              <div className="ms-auto">
-                <SearchBar className="theme-custom"
-                  query={query}
-                  onQueryChange={(event) => handleQueryChange(event, setQuery)}
-                  onSearch={(event) => handleSearch(event, query, setResults, setTotalPages, setCurrentPage)} 
-                />
-              </div>
-            )}
-          </div>
+<nav className="navbar navbar-expand-lg cozy-navbar">
+  <div className="container-fluid navbar-inner">
+
+    <Link className="navbar-brand brand-logo" to={isLoggedIn ? "/HomePage" : "/"}>
+      bookmatcha
+    </Link>
+
+    <button
+      className="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span className="navbar-toggler-icon"></span>
+    </button>
+
+    <div className="collapse navbar-collapse" id="navbarNav">
+      <ul className="navbar-nav nav-links">
+        {isLoggedIn && (
+          <>
+            <li className="nav-item">
+              <Link className="nav-link cozy-link" to="/BookRecommendations">
+                Recommendations
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link className="nav-link cozy-link" to="/UserBooks">
+                My Books
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link className="nav-link cozy-link" to="/UserAccount">
+                My Account
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <button
+                className="nav-link cozy-link logout-btn"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </li>
+          </>
+        )}
+      </ul>
+
+      {isLoggedIn && (
+        <div className="ms-auto search-wrapper">
+          <SearchBar
+            query={query}
+            onQueryChange={(event) => handleQueryChange(event, setQuery)}
+            onSearch={(event) =>
+              handleSearch(event, query, setResults, setTotalPages, setCurrentPage)
+            }
+          />
         </div>
-      </nav>
+      )}
+    </div>
+  </div>
+</nav>
       <Routes>
         <Route path="/Login" element={<Login onLogin={handleLogin} />} />
         <Route path="/Register" element={<Register onLogin={handleLogin} />} />

@@ -131,30 +131,35 @@ export function BookDetails() {
         }
     };
 
-    if (!book) return <p>Loading book details...</p>;
+    if (!book) return <p className="empty-message">Loading book details...</p>;
 
     return (
-        <div>
-            <h1 className="title">{book.volumeInfo?.title || 'No Title Available'}</h1>
+        <div className="page-container">
 
-            <div style={{ textAlign: 'center' }}>
-                {book.volumeInfo?.imageLinks?.thumbnail && (
-                    <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
+            <div className="book-card">
+                {book.volumeInfo?.imageLinks?.thumbnail ? (
+                    <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} className="book-cover" />
+                ) : (
+                    <div className="book-cover" />
                 )}
+
+                <div className="book-content">
+                    <h1 className="title">{book.volumeInfo?.title || 'No Title Available'}</h1>
+                    <div className="book-author">
+                        By: {book.volumeInfo?.authors?.join(', ') || 'Unknown'}
+                    </div>
+                    <p><strong>Description:</strong></p>
+                    <div dangerouslySetInnerHTML={{ __html: book.volumeInfo?.description || 'No Description Available' }} />
+
+                    <p><strong>Genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories[0].split('/')[1] : 'Unknown'}</p>
+                    <p><strong>Sub-genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories.map(c => c.split('/')[2]).filter(Boolean).join(',') : 'Unknown'}</p>
+
+                    <div className="rating-badge">
+                        Average Rating: {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}
+                    </div>
+                    <p><strong>Total Reviews:</strong> {reviews.length}</p>
+                </div>
             </div>
-
-            <p style={{ textAlign: 'center' }}><strong>By:</strong> {book.volumeInfo?.authors?.join(', ') || 'Unknown'}</p>
-            <p style={{ textAlign: 'center' }}><strong>Description:</strong></p>
-            <div
-                style={{ textAlign: 'center' }}
-                dangerouslySetInnerHTML={{ __html: book.volumeInfo?.description || 'No Description Available' }}
-            />
-
-            <p><strong>Genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories[0].split('/')[1] : 'Unknown'}</p>
-            <p><strong>Sub-genre:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories.map(c => c.split('/')[2]).filter(Boolean).join(',') : 'Unknown'}</p>
-
-            <p><strong>Average Rating:</strong> {averageRating !== null ? averageRating.toFixed(2) : 'No ratings yet'}</p>
-            <p><strong>Total Reviews:</strong> {reviews.length}</p>
 
             <hr />
 
@@ -163,63 +168,60 @@ export function BookDetails() {
                 {!existingReview ? <p className="subtitle">Write your review here:</p> : <p className="subtitle">Update your review here:</p>}
 
                 <textarea
-                    className="text-custom"
-                    style={{ display: 'block', margin: 'auto', width: '50%', maxWidth: '600px' }}
+                    className="auth-input"
                     name="WrittenReview"
                     value={writtenReview}
                     onChange={onChange}
                     rows="8"
-                    cols="100"
                 />
 
-                <center>
-                    <p className="text-custom">Give a rating:</p>
-                    <div className="btn-group btn-group-toggle" data-toggle="buttons">
+                <div className="auth-wrapper" style={{ marginTop: '15px' }}>
+                    <p className="subtitle">Give a rating:</p>
+                    <div className="btn-group" role="group">
                         {[1, 2, 3, 4, 5].map((num) => (
-                            <label key={num} className={`btn btn-secondary theme-custom ${rating === num.toString() ? 'active' : ''}`}>
-                                <input
-                                    type="radio"
-                                    name="Rating"
-                                    value={num}
-                                    checked={rating === num.toString()}
-                                    onChange={onChange}
-                                /> {num}
-                            </label>
+                            <button
+                                key={num}
+                                type="button"
+                                className={`theme-custom ${rating === num.toString() ? 'active' : ''}`}
+                                onClick={() => setRating(num.toString())}
+                            >
+                                {num}
+                            </button>
                         ))}
                     </div>
 
                     {!existingReview ? (
-                        <button className="btn text-custom button-custom" type="submit" onClick={saveReview}>Save Review</button>
+                        <button className="theme-custom" type="submit" onClick={saveReview} style={{ marginTop: '15px' }}>Save Review</button>
                     ) : (
-                        <button className="btn text-custom button-custom" type="submit" onClick={updateReview}>Update Review</button>
+                        <button className="theme-custom" type="submit" onClick={updateReview} style={{ marginTop: '15px' }}>Update Review</button>
                     )}
-                </center>
+                </div>
             </form>
 
-            <div className="text-custom"><p>{error}</p></div>
+            {error && <p className="error-text" style={{ marginTop: '10px' }}>{error}</p>}
+
             <hr />
 
             <h2 className="title">Posted Reviews</h2>
-            <table className="table table-striped table-custom">
-                <thead className="text-custom">
-                    <tr>
-                        <th>Reviewer</th>
-                        <th>Rating</th>
-                        <th>Review</th>
-                        <th>Date Posted</th>
-                    </tr>
-                </thead>
-                <tbody className="text-custom">
-                    {reviews.map(review => (
-                        <tr key={review.book_review_id}>
-                            <td>{review.first_name + ' ' + review.last_name}</td>
-                            <td>{review.rating}</td>
-                            <td>{review.written_review}</td>
-                            <td>{new Date(review.created_at).toDateString() + ' ' + new Date(review.created_at).toLocaleTimeString()}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="reviews-grid">
+                {reviews.length === 0 ? (
+                    <p className="empty-message">No reviews yet. Be the first to review!</p>
+                ) : (
+                    reviews.map((review) => (
+                        <div className="review-card" key={review.book_review_id}>
+                            <div className="review-header">
+                                <strong>{review.first_name} {review.last_name}</strong>
+                                <span className="review-rating">Rating: {review.rating}</span>
+                            </div>
+                            <p className="review-text">{review.written_review}</p>
+                            <div className="review-date">
+                                {new Date(review.created_at).toDateString()}
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
         </div>
     );
 }

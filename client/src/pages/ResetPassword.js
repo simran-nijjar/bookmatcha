@@ -48,73 +48,66 @@ export const ResetPassword = () => {
     };
 
     return (
-        <div className="container py-5 h-100">
-            <div className="row d-flex justify-content-center align-items-center h-100">
-                <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                    <div className="card bg-dark text-white">
-                        <div className="card-body p-3 text-center theme-custom">
-                            <div className="mb-3">
-                            <h2 className="fw-bold mb-2 text-uppercase">Reset Password</h2>
-                                <p className="text-white-50">Enter your new password below.</p>
+  <div className="page-container">
 
-                                {/* Password input */}
-                                <div className="form-outline form-white mb-3">
-                                    <input
-                                        type="password"
-                                        name="Password"
-                                        placeholder="New Password"
-                                        value={password}
-                                        onChange={onChange}
-                                        className="form-control form-control-lg text-custom"
-                                        style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}
-                                    />
-                                </div>
+    <h1 className="title">Reset Password</h1>
+    <p className="subtitle">
+      Choose a new password for your account.
+    </p>
 
-                                {/* Confirm Password input */}
-                                <div className="form-outline form-white mb-4">
-                                    <input
-                                        type="password"
-                                        name="ConfirmPassword"
-                                        placeholder="Re-Enter Password"
-                                        value={confirmPassword}
-                                        onChange={onChange}
-                                        className="form-control form-control-lg text-custom"
-                                        style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}
-                                    />
-                            <PasswordChecklist
-                                        rules={["minLength", "specialChar", "number", "capital", "match"]}
-                                minLength={8}
-                                value={password}
-                                valueAgain={confirmPassword}
-                                        onChange={(isValid) => {}}
-                            />
-                                </div>
+    <div className="auth-wrapper">
+      <div className="auth-card">
 
-                                {/* Error / Message */}
-                            <div style={{ minHeight: '20px' }}>
-                                {error && <p style={{ color: 'white' }}>{error}</p>}
-                                {message && <p style={{ color: 'lightgreen' }}>{message}</p>}
-                            </div>
+        <input
+          type="password"
+          name="Password"
+          placeholder="New Password"
+          value={password}
+          onChange={onChange}
+          className="auth-input"
+        />
 
-                                {/* Reset Button */}
-                            <button
-                                className="btn btn-outline-light btn-lg px-5 theme-custom"
-                                onClick={resetPassword}
-                                type="submit"
-                            >
-                                Reset Password
-                            </button>
-                            </div>
+        <input
+          type="password"
+          name="ConfirmPassword"
+          placeholder="Confirm New Password"
+          value={confirmPassword}
+          onChange={onChange}
+          className="auth-input"
+        />
 
-                            <div>
-                                <p className="mb-0">
-                                    Remembered your password? <a href="/Login" className="text-white">Login</a>
-                            </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="password-checklist-wrapper">
+          <PasswordChecklist
+            rules={["minLength", "specialChar", "number", "capital", "match"]}
+            minLength={8}
+            value={password}
+            valueAgain={confirmPassword}
+          />
         </div>
-    );
+
+        <div className="auth-message">
+          {error && <p className="error-text">{error}</p>}
+          {message && <p className="success-text">{message}</p>}
+        </div>
+
+        <button
+          className="theme-custom auth-button"
+          onClick={resetPassword}
+        >
+          Reset Password
+        </button>
+
+        <div className="auth-links">
+          <p>
+            Remembered your password? <a href="/login">Login</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+);
+
+
 };

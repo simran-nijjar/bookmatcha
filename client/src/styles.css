@@ -1,82 +1,407 @@
-.theme-custom {
-    background-color: #44624a;
-    font-family: 'Barlow', sans-serif;
-    font-weight: 1000;
-    color: #f1ebe1
-}
+/* ===== Global ===== */
 
 body {
     font-family: 'Barlow', sans-serif;
-    font-weight: 500;
-    font-size: 20px;
-    color: #44624a;
-    background-color: #c0cfb2;
+    font-weight: 400;
+    font-size: 18px;
+    color: #2f3e32;
+    background-color: #e8efe6; /* soft matcha */
+    margin: 0;
+    padding: 0;
 }
 
-.table-custom {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 500;
-    font-size: 20px;
-    background-color: #c0cfb2;
-    margin-left: auto;
-    margin-right: auto;
-    width: 80%;
-    color: #44624a;
-    --bs-table-bg: #c0cfb2;
-}
-
-.button-custom {
-    background-color: white;
-    font-family: 'Barlow', sans-serif;
-    font-weight: 500;
-    color: #44624a;
-}
+/* ===== Typography ===== */
 
 .title {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 1000;
-    font-size: 30px;
-    margin-left: auto;
-    margin-right: auto;
-    color: #44624a;
+    font-weight: 700;
+    font-size: 32px;
     text-align: center;
+    margin-top: 40px;
+    margin-bottom: 10px;
 }
 
 .subtitle {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 1000;
-    font-size: 20px;
-    margin-left: auto;
-    margin-right: auto;
-    color: #44624a;
+    font-weight: 500;
+    font-size: 18px;
     text-align: center;
+    color: #5b6d5d;
+    margin-bottom: 30px;
 }
 
-.link-custom {
-    color: #44624a
+/* ===== Layout Containers ===== */
+
+.page-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.link-custom:hover {
-    color: #364d3a;
+/* ===== Card Layout ===== */
+
+.recommendations-grid {
+    display: grid;
+    gap: 24px;
 }
 
-.text-custom {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 1000;
+@media (min-width: 768px) {
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1100px) {
+    .recommendations-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.book-card {
+    background: linear-gradient(
+        180deg,
+        #f7f5ef 0%,
+        #f3f1ea 100%
+    );
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(68, 98, 74, 0.08);
+    transition: 0.2s ease;
+    display: flex;
+    gap: 16px;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+}
+
+.book-cover {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.book-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.book-title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 6px;
+    cursor: pointer;
     color: #44624a;
 }
 
-.book-text-custom {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 1000;
-    color: #44624a;
+.book-title:hover {
+    text-decoration: underline;
 }
 
-.card-custom {
-    background-color: #c0cfb2;
-    font-family: 'Barlow', sans-serif;
-    font-weight: 1000;
-    border: 2px solid #44624a;
+.book-author {
+    font-size: 15px;
+    color: #6b7d6d;
+    margin-bottom: 10px;
+}
+
+.rating-badge {
+    display: inline-block;
+    background-color: #dfe8dc;
+    color: #44624a;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+/* ===== Buttons ===== */
+
+.theme-custom {
+    background-color: #44624a;
+    color: #f4f1ea;
+    font-weight: 600;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.theme-custom:hover {
+    background-color: #364d3a;
+}
+
+.pagination {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* ===== Empty State ===== */
+
+.empty-message {
+    text-align: center;
+    font-size: 18px;
+    color: #6b7d6d;
+    margin-top: 40px;
+}
+
+/* ===== Navbar ===== */
+
+.cozy-navbar {
+    background-color: #44624a;
+    padding: 14px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.navbar-inner {
+    max-width: 1200px;
+}
+
+/* Brand */
+
+.brand-logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #f4f1ea !important;
+    text-transform: lowercase;
+}
+
+.brand-logo:hover {
+    opacity: 0.85;
+}
+
+/* Links */
+
+.nav-links {
+    gap: 10px;
+    margin-left: 30px;
+}
+
+.cozy-link {
+    color: #f4f1ea !important;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: 0.2s ease;
+}
+
+.cozy-link:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Logout button reset */
+
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Search Bar Wrapper */
+
+.search-wrapper {
     margin-left: auto;
-    margin-right: auto;
+}
+
+/* Make toggler icon white */
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+/* ===== User Account Page ===== */
+
+.account-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr; /* stacked on mobile */
+    margin-top: 30px;
+}
+
+@media (min-width: 768px) {
+    .account-grid {
+        grid-template-columns: 1fr 1fr; /* side by side on desktop */
+    }
+}
+
+.account-card {
+    background-color: #f7f5ef; /* soft card matcha */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(68, 98, 74, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.form-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #6fbf8f;
+}
+
+.button-custom {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #44624a;
+    color: #f4f1ea;
+    border: none;
+    transition: 0.2s ease;
+}
+
+.button-custom:hover {
+    background-color: #364d3a;
+}
+
+/* ===== Auth / Landing Pages ===== */
+
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #6fbf8f;
+}
+
+.auth-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.auth-message {
+  min-height: 24px;
+  color: #d9534f;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.error-text {
+  color: #d9534f;
+}
+
+.success-text {
+  color: #66bb6a;
+}
+
+.auth-links {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.auth-links a {
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+.landing-content {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.landing-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.landing-buttons button {
+  min-width: 140px;
+}
+
+/* ===== Book Reviews ===== */
+
+.reviews-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.review-card {
+    background-color: #f7f5ef;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 6px 16px rgba(68, 98, 74, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: 0.2s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #44624a;
+}
+
+.review-rating {
+    background-color: #dfe8dc;
+    color: #44624a;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.review-text {
+    font-size: 15px;
+    color: #2f3e32;
+}
+
+.review-date {
+    font-size: 13px;
+    color: #6b7d6d;
+    text-align: right;
 }

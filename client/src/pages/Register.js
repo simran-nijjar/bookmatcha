@@ -90,50 +90,90 @@ export const Register = ({ onLogin }) => {
   };
 
   return (
-    <div className="container py-5 h-100">
-      <div className="row d-flex justify-content-center align-items-center h-100">
-        <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-          <div className="card bg-dark text-white">
-            <div className="card-body p-3 text-center theme-custom">
-              <h2 className="fw-bold mb-2 text-uppercase">Register</h2>
-              <p className="text-white-50 mb-3">Create an account by filling out the fields below.</p>
+  <div className="page-container">
 
-              {['FirstName','LastName','Email','Password','ConfirmPassword'].map((field) => (
-                <div className="form-outline form-white mb-3" key={field}>
-                  <input
-                    type={field.toLowerCase().includes('password') ? 'password' : 'text'}
-                    name={field}
-                    placeholder={field.replace(/([A-Z])/g, ' $1').trim()}
-                    value={
-                      field === 'FirstName' ? firstName :
-                      field === 'LastName' ? lastName :
-                      field === 'Email' ? email :
-                      field === 'Password' ? password :
-                      confirmPassword
-                    }
-                    onChange={onChange}
-                    className="form-control form-control-lg text-custom"
-                    style={{ fontSize: '16px', padding: '8px', width: '80%', margin: 'auto' }}
-                  />
-                </div>
-              ))}
+    <h1 className="title">Register</h1>
+    <p className="subtitle">
+      Create your bookmatcha account
+    </p>
 
-              <PasswordChecklist
-                rules={["minLength","specialChar","number","capital","match"]}
-                minLength={8}
-                value={password}
-                valueAgain={confirmPassword}
-              />
+    <div className="auth-wrapper">
+      <div className="auth-card">
 
-              {error && <p style={{ color: 'white' }}>{error}</p>}
+        <input
+          type="text"
+          name="FirstName"
+          placeholder="First Name"
+          value={firstName}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
 
-              <button className="btn btn-outline-light btn-lg px-5 theme-custom" onClick={register}>Register</button>
+        <input
+          type="text"
+          name="LastName"
+          placeholder="Last Name"
+          value={lastName}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
 
-              <p className="mt-3 mb-0">Already have an account? <a href="/login" className="text-white">Login</a></p>
-            </div>
-          </div>
+        <input
+          type="email"
+          name="Email"
+          placeholder="Email"
+          value={email}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
+
+        <input
+          type="password"
+          name="Password"
+          placeholder="Password"
+          value={password}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
+
+        <input
+          type="password"
+          name="ConfirmPassword"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={onChange}
+          className="form-control mb-3"
+        />
+
+        <div className="password-checklist-wrapper">
+          <PasswordChecklist
+            rules={["minLength","specialChar","number","capital","match"]}
+            minLength={8}
+            value={password}
+            valueAgain={confirmPassword}
+          />
         </div>
+
+        <div className="auth-message">
+          {error && <p>{error}</p>}
+        </div>
+
+        <button
+          className="theme-custom w-100"
+          onClick={register}
+        >
+          Register
+        </button>
+
+        <div className="auth-links">
+          <p>
+            Already have an account? <a href="/login">Login</a>
+          </p>
+        </div>
+
       </div>
     </div>
-  );
+
+  </div>
+);
 };

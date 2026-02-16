@@ -22,18 +22,14 @@ export const UserBooks = () => {
             return;
         }
 
-        let decoded;
         try {
-            decoded = jwtDecode(token);
+            const decoded = jwtDecode(token);
+            fetchUserReviews(decoded.userId);
         } catch {
             setError('Invalid session. Please login again.');
-            return;
         }
-
-        fetchUserReviews(decoded.userId);
     }, []);
 
-    // Fetch all reviews the user has posted
     const fetchUserReviews = async (userId) => {
         try {
             const response = await api.get('reviews/user', {
@@ -46,9 +42,10 @@ export const UserBooks = () => {
         }
     };
 
-    // Method to handle deleting a user's review
     const handleDelete = async (reviewID) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this review?");
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this review?"
+        );
         if (!confirmDelete) return;
 
         try {
@@ -66,66 +63,90 @@ export const UserBooks = () => {
         navigate(`/book/${bookID}`);
     };
 
-    const formatDateTime = (dateString) => {
+    const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return `${date.toDateString()} ${date.toLocaleTimeString()}`;
+        return date.toLocaleDateString();
     };
 
     return (
-        <div>
-            <h1 className="title">Welcome to your books</h1>
-            {error ? (
-                <p className="subtitle" style={{ color: 'red' }}>{error}</p>
-            ) : reviews.length === 0 ? (
-                <p className="subtitle">No books yet. Start searching and reviewing books!</p>
-            ) : (
-                <div>
-                    <h3 className="subtitle">Here are the books you've brewed.</h3>
+        <div className="page-container">
 
-                    <table className="table body table-striped table-custom">
-                        <thead className="text-custom">
-                            <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Average Rating</th>
-                                <th>Your Rating</th>
-                                <th>Review</th>
-                                <th>Date Posted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-custom">
-                            {reviews.map((review) => (
-                                <tr key={review.BookReviewID}>
-                                    <td>
-                                        <Link to={`/book/${review.book_id}`} className="link-custom">
+            <h1 className="title">Your Reading Shelf</h1>
+
+            {error ? (
+                <p className="subtitle error-text">{error}</p>
+            ) : reviews.length === 0 ? (
+                <p className="subtitle">
+                    No books yet. Start searching and reviewing books!
+                </p>
+            ) : (
+                <>
+                    <p className="subtitle">
+                        Here are the books you've brewed.
+                    </p>
+
+                    <div className="recommendations-grid">
+                        {reviews.map((review) => (
+                            <div
+                                key={review.BookReviewID}
+                                className="book-card"
+                            >
+                                <div className="book-content">
+
+                                    <div>
+
+                                        <Link
+                                            to={`/book/${review.book_id}`}
+                                            className="book-title"
+                                        >
                                             {review.bookTitle}
                                         </Link>
-                                    </td>
-                                    <td>{review.bookAuthor}</td>
-                                    <td>{review.average_rating}</td>
-                                    <td>{review.rating}</td>
-                                    <td>{review.written_review}</td>
-                                    <td>{formatDateTime(review.created_at)}</td>
-                                    <td>
+
+                                        <div className="book-author">
+                                            {review.bookAuthor}
+                                        </div>
+
+                                        <div className="rating-badge">
+                                            ⭐ Your Rating: {review.rating}
+                                        </div>
+
+                                        <div className="user-review">
+                                            {review.written_review}
+                                        </div>
+
+                                        <div className="review-date">
+                                            Reviewed on {formatDate(review.created_at)}
+                                        </div>
+
+                                    </div>
+
+                                    <div className="review-actions">
                                         <Tooltip title="Edit">
                                             <EditIcon
-                                                onClick={() => handleEdit(review.book_id)}
-                                                style={{ cursor: 'pointer', marginRight: '10px' }}
+                                                onClick={() =>
+                                                    handleEdit(review.book_id)
+                                                }
+                                                className="icon-button"
                                             />
                                         </Tooltip>
+
                                         <Tooltip title="Delete">
                                             <DeleteIcon
-                                                onClick={() => handleDelete(review.BookReviewID)}
-                                                style={{ cursor: 'pointer' }}
+                                                onClick={() =>
+                                                    handleDelete(
+                                                        review.BookReviewID
+                                                    )
+                                                }
+                                                className="icon-button delete"
                                             />
                                         </Tooltip>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

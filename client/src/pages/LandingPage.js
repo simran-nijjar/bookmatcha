@@ -15,36 +15,33 @@ export const LandingPage = () => {
         navigate('/register');
     };
 
-    return (
-        <div className="container py-5 h-100">
-            <div className="row d-flex justify-content-center align-items-center h-100">
-                <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                    <div className="card bg-dark text-white">
-                        <div className="card-body p-5 text-center theme-custom">
-                            <div className="mb-md-5 mt-md-4 pb-5">
-                                <h2 className="fw-bold mb-2">Welcome to bookmatcha!</h2>
-                                <p className="text-white-50">Login or register to start getting matcha-ed with books.</p> 
-                                <br />
-                                <div className="btn-group">
-                                    <button 
-                                        className="btn btn-outline-light btn-lg px-5 mb-4 theme-custom" 
-                                        onClick={handleLoginClick}
-                                    >
-                                        Login
-                                    </button>
-                                    <br />
-                                    <button 
-                                        className="btn btn-outline-light btn-lg px-5 mb-4 theme-custom" 
-                                        onClick={handleRegisterClick}
-                                    >
-                                        Register
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+return (
+  <div className="page-container">
+
+    <div className="landing-content">
+      <h1 className="title">Welcome to bookmatcha</h1>
+      <p className="subtitle">
+        Login or register to start getting matcha-ed with books.
+      </p>
+
+      <div className="landing-buttons">
+        <button
+          className="theme-custom"
+          onClick={handleLoginClick}
+        >
+          Login
+        </button>
+
+        <button
+          className="theme-custom"
+          onClick={handleRegisterClick}
+        >
+          Register
+        </button>
+      </div>
+    </div>
+
+  </div>
+);
+
 };

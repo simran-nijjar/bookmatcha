@@ -31,10 +31,10 @@ export const UserAccount = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    const handleFirstNameChange = (event) => setFirstName(event.target.value);
-    const handleLastNameChange = (event) => setLastName(event.target.value);
-    const handleCurrentPasswordChange = (event) => setCurrentPassword(event.target.value);
-    const handleNewPasswordChange = (event) => setNewPassword(event.target.value);
+    const handleFirstNameChange = (e) => setFirstName(e.target.value);
+    const handleLastNameChange = (e) => setLastName(e.target.value);
+    const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
+    const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
 
     const handleUpdateFirstName = () => {
         api.put('users/userid', { firstName })
@@ -53,8 +53,8 @@ export const UserAccount = () => {
             const res = await api.post('users/validate-password', { password: currentPassword });
             return res.status === 200;
         } catch (error) {
-            if (error.response && error.response.status === 400) {
-                setPasswordUpdateStatus('The current password you entered does not match our records.');
+            if (error.response?.status === 400) {
+                setPasswordUpdateStatus('Current password does not match our records.');
             } else {
                 setPasswordUpdateStatus('Updating password failed. Please try again later.');
             }
@@ -64,7 +64,7 @@ export const UserAccount = () => {
 
     const validateNewPassword = () => {
         const regex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/;
-        return regex.test(String(newPassword));
+        return regex.test(newPassword);
     };
 
     const handleUpdatePassword = async () => {
@@ -75,112 +75,77 @@ export const UserAccount = () => {
         }
     };
 
-    if (loading) return <h1>Loading...</h1>;
+    if (loading) return <h1 className="title">Loading...</h1>;
 
     return (
-        <div>
-            <h1 className="title">Hello {firstName ? firstName : 'Guest'}!</h1>
-            <h3 className="subtitle">Here you can make changes to your bookmatcha account</h3>
+        <div className="page-container">
+            <h1 className="title">Hello {firstName || 'Guest'}!</h1>
+            <p className="subtitle">Manage your BookMatcha account here.</p>
 
-            <div className="container py-5 h-100">
-                <div className="row d-flex h-100">
-                    {/* Name Section */}
-                    <div className="col-md-6 d-flex align-items-stretch">
-                        <div className="card bg-dark text-white w-100 d-flex flex-column">
-                            <div className="card-body p-3 text-center theme-custom flex-grow-1">
-                                <div className="mb-md-5 mt-md-4 pb-5">
-                                    <h2 className="fw-bold mb-2 text-uppercase">Update Name</h2>
-                                    <p>Here you can change your first and last name.</p>
+            <div className="account-grid">
+                {/* Name Section */}
+                <div className="account-card">
+                    <h2 className="subtitle">Update Name</h2>
 
-                                    <div className="form-outline form-white mb-3">
-                                        <label>First Name</label>
-                                        <input
-                                            type="text"
-                                            name="FirstName"
-                                            value={firstName}
-                                            onChange={handleFirstNameChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
-                                        <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
-                                            type="button"
-                                            onClick={handleUpdateFirstName}
-                                        >
-                                            Update First Name
-                                        </button>
-                                    </div>
+                    <input
+                        type="text"
+                        placeholder="First Name"
+                        value={firstName}
+                        onChange={handleFirstNameChange}
+                        className="form-input"
+                    />
+                    <button className="theme-custom" onClick={handleUpdateFirstName}>
+                        Update First Name
+                    </button>
 
-                                    <div className="form-outline form-white mb-3">
-                                        <label>Last Name</label>
-                                        <input
-                                            type="text"
-                                            name="LastName"
-                                            value={lastName}
-                                            onChange={handleLastNameChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
-                                        <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 mb-5 theme-custom"
-                                            type="button"
-                                            onClick={handleUpdateLastName}
-                                        >
-                                            Update Last Name
-                                        </button>
-                                    </div>
-                                    {nameUpdateStatus && <p>{nameUpdateStatus}</p>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <input
+                        type="text"
+                        placeholder="Last Name"
+                        value={lastName}
+                        onChange={handleLastNameChange}
+                        className="form-input"
+                        style={{ marginTop: '12px' }}
+                    />
+                    <button className="theme-custom" onClick={handleUpdateLastName} style={{ marginTop: '8px' }}>
+                        Update Last Name
+                    </button>
 
-                    {/* Password Section */}
-                    <div className="col-md-6 d-flex align-items-stretch">
-                        <div className="card bg-dark text-white w-100 d-flex flex-column">
-                            <div className="card-body p-3 text-center theme-custom flex-grow-1">
-                                <div className="mb-md-5 mt-md-4 pb-5">
-                                    <h2 className="fw-bold mb-2 text-uppercase">Update Password</h2>
-                                    <p>Here you can change your password.</p>
+                    {nameUpdateStatus && <p style={{ marginTop: '10px', color: '#44624a' }}>{nameUpdateStatus}</p>}
+                </div>
 
-                                    <div className="form-outline form-white mb-3">
-                                        <label>Current Password</label>
-                                        <input
-                                            type="password"
-                                            name="CurrentPassword"
-                                            value={currentPassword}
-                                            onChange={handleCurrentPasswordChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
+                {/* Password Section */}
+                <div className="account-card">
+                    <h2 className="subtitle">Update Password</h2>
 
-                                        <label>New Password</label>
-                                        <input
-                                            type="password"
-                                            name="NewPassword"
-                                            value={newPassword}
-                                            onChange={handleNewPasswordChange}
-                                            className="form-control form-control-lg text-custom"
-                                        />
+                    <input
+                        type="password"
+                        placeholder="Current Password"
+                        value={currentPassword}
+                        onChange={handleCurrentPasswordChange}
+                        className="form-input"
+                    />
+                    <input
+                        type="password"
+                        placeholder="New Password"
+                        value={newPassword}
+                        onChange={handleNewPasswordChange}
+                        className="form-input"
+                        style={{ marginTop: '12px' }}
+                    />
 
-                                        <PasswordChecklist
-                                            rules={["minLength","specialChar","number","capital"]}
-                                            minLength={8}
-                                            value={newPassword}
-                                            onChange={(isValid) => {}}
-                                        />
+                    <PasswordChecklist
+                        rules={["minLength", "specialChar", "number", "capital"]}
+                        minLength={8}
+                        value={newPassword}
+                        onChange={() => {}}
+                        style={{ marginTop: '10px' }}
+                    />
 
-                                        <button
-                                            className="btn btn-outline-light btn-lg px-5 mt-3 theme-custom"
-                                            type="button"
-                                            onClick={handleUpdatePassword}
-                                        >
-                                            Update Password
-                                        </button>
-                                    </div>
+                    <button className="theme-custom" onClick={handleUpdatePassword} style={{ marginTop: '12px' }}>
+                        Update Password
+                    </button>
 
-                                    {passwordUpdateStatus && <p>{passwordUpdateStatus}</p>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {passwordUpdateStatus && <p style={{ marginTop: '10px', color: '#44624a' }}>{passwordUpdateStatus}</p>}
                 </div>
             </div>
         </div>

@@ -5,8 +5,8 @@ exports.addReview = (req, res) => {
     const { bookId, writtenReview, rating, userId } = req.body;
 
     // Validate input
-    if (!bookId || !writtenReview || !rating || !userId) {
-        return res.status(400).json({ message: "bookId, writtenReview, rating, and userId are required" });
+    if (!bookId || !rating || !userId) {
+        return res.status(400).json({ message: "bookId, rating, and userId are required" });
     }
 
     const query = 'INSERT INTO reviews (book_id, written_review, rating, user_id) VALUES (?, ?, ?, ?)';
@@ -23,8 +23,8 @@ exports.addReview = (req, res) => {
 exports.updateReview = (req, res) => {
     const { bookId, writtenReview, rating, userId } = req.body;
 
-    if (!bookId || !writtenReview || !rating || !userId) {
-        return res.status(400).json({ message: "bookId, writtenReview, rating, and userId are required" });
+    if (!bookId || !rating || !userId) {
+        return res.status(400).json({ message: "bookId, rating, and userId are required" });
     }
 
     const query = `

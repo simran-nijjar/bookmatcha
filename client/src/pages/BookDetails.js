@@ -3,6 +3,7 @@ import '../styles.css';
 import { useParams } from 'react-router-dom';
 import api from '../api/api';
 import { jwtDecode } from 'jwt-decode';
+import StarRating from '../components/StarRating';
 
 // Book details page: user can write/update their review and see reviews from others
 export function BookDetails() {
@@ -10,12 +11,13 @@ export function BookDetails() {
     const [book, setBook] = useState(null);
     const [bookId, setBookId] = useState('');
     const [writtenReview, setWrittenReview] = useState('');
-    const [rating, setRating] = useState('');
+    const [rating, setRating] = useState(0);
     const [userId, setUserId] = useState('');
     const [error, setError] = useState('');
     const [reviews, setReviews] = useState([]);
     const [averageRating, setAverageRating] = useState(null);
     const [existingReview, setExistingReview] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
     // Helper: fetch logged-in user ID from token
     const getUserIdFromToken = () => {
@@ -61,7 +63,7 @@ export function BookDetails() {
             if (res.data.length > 0) {
                 setExistingReview(res.data[0]);
                 setWrittenReview(res.data[0].written_review);
-                setRating(res.data[0].rating.toString());
+                setRating(res.data[0].rating);
             }
         } catch {
             setError('Failed to get your review. Please try again later.');
@@ -84,13 +86,17 @@ export function BookDetails() {
     // Form changes
     const onChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'WrittenReview') setWrittenReview(value);
-        else if (name === 'Rating') setRating(value);
+        if (name === 'WrittenReview') {
+            setWrittenReview(value);
+        }
+        else if (name === 'Rating') {
+            setRating(value);
+        }
     };
 
     // Validate review fields
     const validateFields = () => {
-        if (!writtenReview.trim() || !rating.trim()) {
+        if (!writtenReview.trim()) {
             setError('Please fill out all fields before saving review.');
             return false;
         }
@@ -100,17 +106,22 @@ export function BookDetails() {
     // Save new review
     const saveReview = async (e) => {
         e.preventDefault();
-        if (!validateFields() || !userId) return;
+        if (!validateFields() || !userId || submitting) {
+            return;
+        }
+        
+        setSubmitting(true);
 
         try {
             const res = await api.post('reviews', { bookId, writtenReview, rating, userId });
-            if (res.status === 200) {
-                setError('Review saved successfully.');
+            if (res.status === 201) {
                 fetchReviews(bookId);
                 fetchExistingReview(bookId, userId);
             }
         } catch {
             setError('Error saving review. Please try again later.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -122,7 +133,6 @@ export function BookDetails() {
         try {
             const res = await api.put('reviews', { bookId, writtenReview, rating, userId });
             if (res.status === 200) {
-                setError('Review updated successfully.');
                 fetchReviews(bookId);
                 fetchExistingReview(bookId, userId);
             }
@@ -176,20 +186,10 @@ export function BookDetails() {
                 />
 
                 <div className="auth-wrapper" style={{ marginTop: '15px' }}>
-                    <p className="subtitle">Give a rating:</p>
-                    <div className="btn-group" role="group">
-                        {[1, 2, 3, 4, 5].map((num) => (
-                            <button
-                                key={num}
-                                type="button"
-                                className={`theme-custom ${rating === num.toString() ? 'active' : ''}`}
-                                onClick={() => setRating(num.toString())}
-                            >
-                                {num}
-                            </button>
-                        ))}
+                    <div className="auth-wrapper" style={{ marginTop: '15px' }}>
+                        <p className="subtitle">Give a rating:</p>
+                            <StarRating rating={rating || 0} setRating={setRating} />
                     </div>
-
                     {!existingReview ? (
                         <button className="theme-custom" type="submit" onClick={saveReview} style={{ marginTop: '15px' }}>Save Review</button>
                     ) : (

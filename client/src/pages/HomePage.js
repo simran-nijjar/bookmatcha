@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles.css';
 import { Link } from 'react-router-dom';
+import StarRating from '../components/StarRating';
 
 // This file contains the details the user sees when they first login/register into bookmatcha
 // The homepage displays the top rated books
@@ -62,8 +63,8 @@ export const HomePage = () => {
                                     {book.Author}
                                 </div>
 
-                                <div className="rating-badge">
-                                    ⭐ {book.AverageRating}
+                                <div>
+                                    <span><StarRating rating={book.AverageRating || 0} readOnly /></span>
                                 </div>
                             </div>
                         </div>

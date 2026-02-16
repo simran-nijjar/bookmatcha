@@ -3,6 +3,7 @@ import '../styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/api';
+import StarRating from '../components/StarRating';
 
 // This file contains the book recommendations page which recommends user books based on what they have in their library
 const maxResults = 20;
@@ -196,8 +197,12 @@ export const BookRecommendations = () => {
                       {book.author}
                     </div>
 
-                    <div className="rating-badge">
-                      Average Rating: {averageRatings[book.book_id] || 'No ratings'}
+                    <div>
+                      <span><StarRating rating={averageRatings[book.book_id] || 0} readOnly /></span>
+                    </div>
+
+                    <div>
+                     { averageRatings[book.bookId] >= 0 ? averageRatings[book.book_id] + '/5' : 'No ratings'}
                     </div>
                   </div>
                 </div>

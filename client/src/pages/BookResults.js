@@ -3,6 +3,7 @@ import '../styles.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/api';
+import StarRating from '../components/StarRating';
 
 // This file contains the details of the book results that the user searches for
 
@@ -60,7 +61,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
         params: { bookIds: bookIds.join(",") }
       });
       const ratings = response.data.reduce((acc, item) => {
-        acc[item.book_id] = item.average_rating;
+        acc[item.BookID] = item.AverageRating;
         return acc;
       }, {});
       setAverageRatings(ratings);
@@ -100,9 +101,11 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
                     <div className="book-author">
                       By: {book.volumeInfo.authors?.join(', ') || 'Unknown'}
                     </div>
-                    <div className="rating-badge">
-                      Average Rating: {averageRatings[book.id] || 'No ratings'}
-                    </div>
+                    <div>
+                      <span><StarRating rating={averageRatings[book.id] || 0} readOnly /></span>
+                    <div>
+                     { averageRatings[book.id] >= 0 ? averageRatings[book.id] + '/5' : 'No ratings'}
+                    </div></div>
                   </div>
                 </div>
               </div>

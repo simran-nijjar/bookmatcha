@@ -233,7 +233,7 @@ export function BookDetails() {
                         <div className="review-card" key={review.book_review_id}>
                             <div className="review-header">
                                 <strong>{review.username}</strong>
-                                <span className="review-rating">Rating: {review.rating}</span>
+                                <span><StarRating rating={review.rating || 0} readOnly /></span>
                             </div>
                             <p className="review-text">{review.written_review}</p>
                             <div className="review-date">

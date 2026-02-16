@@ -6,15 +6,15 @@ import api from '../api/api';
 // This file contains the form the user sees when they login and the login processes
 
 export const Login = ({ onLogin }) => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const onChange = (event) => {
         const { name, value } = event.target;
-        if (name === 'Email') {
-            setEmail(value);
+        if (name === 'Username') {
+            setUsername(value.toLowerCase());
         } else if (name === 'Password') {
             setPassword(value);
         }
@@ -24,13 +24,13 @@ export const Login = ({ onLogin }) => {
     const login = async (event) => {
         event.preventDefault();
         
-        if (!email || !password) {
-            setError('Please enter both email and password.');
+        if (!username || !password) {
+            setError('Please enter both username and password.');
             return;
         }
 
         try {
-            const res = await api.post('users/login', { email, password });
+            const res = await api.post('users/login', { username, password });
 
             if (res.status === 200) {
                 const token = res.data.token;
@@ -43,7 +43,7 @@ export const Login = ({ onLogin }) => {
             }
         } catch (err) {
             if (err.response?.status === 400) {
-                setError('The email and password you entered do not match our records.');
+                setError('The username and password you entered do not match our records.');
             } else {
                 setError('Login failed. Please try again later.');
             }
@@ -60,10 +60,10 @@ return (
       <div className="auth-card">
 
         <input
-          type="email"
-          name="Email"
-          placeholder="Email"
-          value={email}
+          type="username"
+          name="Username"
+          placeholder="Username"
+          value={username}
           onChange={onChange}
           className="form-control mb-3"
         />

@@ -5,8 +5,7 @@ import PasswordChecklist from "react-password-checklist";
 import api from '../api/api'; // your axios instance
 
 export const Register = ({ onLogin }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,10 +14,8 @@ export const Register = ({ onLogin }) => {
 
   const onChange = (event) => {
     const { name, value } = event.target;
-    if (name === 'FirstName') {
-      setFirstName(value);
-    } else if (name === 'LastName') {
-      setLastName(value);
+    if (username === 'Username') {
+      setUsername(value.toLowerCase());
     } else if (name === 'Email') {
       setEmail(value);
     } else if (name === 'Password') {
@@ -41,9 +38,23 @@ export const Register = ({ onLogin }) => {
     return regex.test(String(password));
   };
 
+  const validateUsername = () => {
+  const trimmed = username.trim();
+  if (trimmed.length < 3 || trimmed.length > 20) {
+    setError('Username must be between 3-20 characters');
+    return false;
+  }
+  const regex = /^[a-z0-9._]+$/; // only lowercase letters, numbers, . and _
+  if (!regex.test(trimmed)) {
+    setError('Username can only contain letters, numbers, dots, and underscores');
+    return false;
+  }
+  return true;
+};
+
   // Check if all fields are filled out
   const validateFields = () => {
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+    if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       setError('Please fill out all fields.');
       return false;
     }
@@ -53,6 +64,10 @@ export const Register = ({ onLogin }) => {
     }
     if (!validatePassword()){
       setError('Password does not meet requirements');
+      return false;
+    }
+    if (!validateUsername()){
+      setError('Username does not meet requirements');
       return false;
     }
     return true;
@@ -73,7 +88,7 @@ export const Register = ({ onLogin }) => {
 
     // If all fields are valid, insert into backend
     try {
-      const res = await api.post('users', { firstName, lastName, email, password });
+      const res = await api.post('users', { username, email, password });
       if (res.status === 201) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('isLoggedIn', 'true');
@@ -102,18 +117,9 @@ export const Register = ({ onLogin }) => {
 
         <input
           type="text"
-          name="FirstName"
-          placeholder="First Name"
-          value={firstName}
-          onChange={onChange}
-          className="form-control mb-3"
-        />
-
-        <input
-          type="text"
-          name="LastName"
-          placeholder="Last Name"
-          value={lastName}
+          name="UserName"
+          placeholder="Username"
+          value={username}
           onChange={onChange}
           className="form-control mb-3"
         />

@@ -210,7 +210,7 @@ export function BookDetails() {
                     reviews.map((review) => (
                         <div className="review-card" key={review.book_review_id}>
                             <div className="review-header">
-                                <strong>{review.first_name} {review.last_name}</strong>
+                                <strong>{review.username}</strong>
                                 <span className="review-rating">Rating: {review.rating}</span>
                             </div>
                             <p className="review-text">{review.written_review}</p>

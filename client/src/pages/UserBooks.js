@@ -24,6 +24,7 @@ export const UserBooks = () => {
 
         try {
             const decoded = jwtDecode(token);
+            console.log('Decoded token:', decoded);
             fetchUserReviews(decoded.userId);
         } catch {
             setError('Invalid session. Please login again.');

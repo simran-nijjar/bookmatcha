@@ -8,6 +8,7 @@ import api from '../api/api';
 export const UserAccount = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [nameUpdateStatus, setNameUpdateStatus] = useState('');
@@ -21,6 +22,7 @@ export const UserAccount = () => {
                 if (response.data) {
                     const user = response.data;
                     setUserInfo(user);
+                    setUsername(user.username);
                     setFirstName(user.firstName);
                     setLastName(user.lastName);
                 } else {
@@ -79,7 +81,7 @@ export const UserAccount = () => {
 
     return (
         <div className="page-container">
-            <h1 className="title">Hello {firstName || 'Guest'}!</h1>
+            <h1 className="title">Hello {username || 'Guest'}!</h1>
             <p className="subtitle">Manage your BookMatcha account here.</p>
 
             <div className="account-grid">

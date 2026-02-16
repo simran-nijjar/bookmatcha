@@ -7,11 +7,22 @@ const saltRounds = 12;
 
 // Register user
 exports.register = (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
+    if (!username || !email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
+
+    const checkUsernameQuery = 'SELECT * FROM users WHERE username = ?';
+    connection.query(checkUsernameQuery, [username], async (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Error checking username" });
+        }
+
+        if (result.length > 0) {
+            return res.status(409).json({ message: "Username is not available to use" });
+        }
+    });
 
     const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
     connection.query(checkEmailQuery, [email], async (err, result) => {
@@ -25,8 +36,8 @@ exports.register = (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const insertQuery = 'INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)';
-        connection.query(insertQuery, [firstName, lastName, email, hashedPassword], (err, insertResult) => {
+        const insertQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?, ?, ?)';
+        connection.query(insertQuery, [username, email, hashedPassword], (err, insertResult) => {
             if (err) {
                 return res.status(500).json({ message: "Failed to register user" });
             }
@@ -57,14 +68,14 @@ exports.register = (req, res) => {
 // User login
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ message: "email and password are required" });
+        if (!username || !password) {
+            return res.status(400).json({ message: "username and password are required" });
         }
 
-        const query = 'SELECT * FROM users WHERE email = ?';
-        connection.query(query, [email], async (err, results) => {
+        const query = 'SELECT * FROM users WHERE username = ?';
+        connection.query(query, [username], async (err, results) => {
             if (err) {
                 return res.status(500).json({ message: "Error checking for user" });
             }
@@ -215,8 +226,7 @@ exports.getUserInformation = (req, res) => {
             const user = result[0];
             const formattedUser = {
                 userId: user.user_id,
-                firstName: user.first_name,
-                lastName: user.last_name,
+                username: user.username,
                 email: user.email,
                 profilePic: user.profile_pic,
                 createdAt: user.created_at,

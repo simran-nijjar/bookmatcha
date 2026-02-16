@@ -46,8 +46,16 @@ export function BookDetails() {
         try {
             const res = await api.get('reviews', { params: { bookId } });
             setReviews(res.data);
-            const ratings = res.data.map(r => r.rating).filter(r => r > 0);
-            const avg = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+
+            const ratings = res.data
+                .map(r => r.rating)
+                .filter(r => r > 0);
+
+            const avg =
+                ratings.length > 0
+                    ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+                    : null;
+
             setAverageRating(avg);
         } catch {
             setError('Failed to fetch reviews. Please try again later.');
@@ -92,9 +100,19 @@ export function BookDetails() {
         setSubmitting(true);
         try {
             if (existingReview) {
-                await api.put('reviews', { bookId, writtenReview: existingReview.written_review || '', rating: newRating, userId });
+                await api.put('reviews', {
+                    bookId,
+                    writtenReview: existingReview.written_review || '',
+                    rating: newRating,
+                    userId
+                });
             } else {
-                await api.post('reviews', { bookId, writtenReview: '', rating: newRating, userId });
+                await api.post('reviews', {
+                    bookId,
+                    writtenReview: '',
+                    rating: newRating,
+                    userId
+                });
             }
             setRating(newRating);
             fetchReviews(bookId);
@@ -130,58 +148,75 @@ export function BookDetails() {
     };
 
     const formatDescription = (raw) => {
-        if (!raw) {
-            return <p>No description available.</p>;
-        }
-        const paragraphs = raw.split(/<br\s*\/?>/i).filter(p => p.trim() !== '');
+        if (!raw) return <p>No description available.</p>;
+
+        const paragraphs = raw
+            .split(/<br\s*\/?>/i)
+            .filter(p => p.trim() !== '');
+
         return paragraphs.map((p, idx) => (
-            <p key={idx} style={{ marginBottom: '12px', lineHeight: '1.6' }} dangerouslySetInnerHTML={{ __html: p }} />
+            <p
+                key={idx}
+                style={{ marginBottom: '12px', lineHeight: '1.6' }}
+                dangerouslySetInnerHTML={{ __html: p }}
+            />
         ));
     };
 
     if (!book) return <p className="empty-message">Loading book details...</p>;
 
-    const shortDescription = book.volumeInfo?.description?.slice(0, 300) + (book.volumeInfo?.description?.length > 300 ? '...' : '');
+    const shortDescription =
+        book.volumeInfo?.description?.slice(0, 300) +
+        (book.volumeInfo?.description?.length > 300 ? '...' : '');
+
+    const writtenReviews = reviews.filter(
+        r => r.written_review && r.written_review.trim() !== ''
+    );
+
+    const ratingCount = reviews.filter(r => r.rating > 0).length;
 
     return (
         <div className="page-container">
-
             <div style={{ display: 'flex', gap: '25px', alignItems: 'flex-start', marginBottom: '20px' }}>
-                {/* Left column: cover */}
+                
+                {/* LEFT COLUMN */}
                 <div style={{ minWidth: '200px' }}>
                     {book.volumeInfo?.imageLinks?.thumbnail ? (
-                        <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} style={{ width: '200px', borderRadius: '4px' }} />
+                        <img
+                            src={book.volumeInfo.imageLinks.thumbnail}
+                            alt={book.volumeInfo.title}
+                            style={{ width: '200px', borderRadius: '4px' }}
+                        />
                     ) : (
                         <div style={{ width: '200px', height: '300px', backgroundColor: '#ccc', borderRadius: '4px' }} />
                     )}
 
-                    {/* User's rating under cover */}
                     {userId && (
-                        <div style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ marginTop: '15px' }}>
                             <strong>Your Rating:</strong>
                             <StarRating rating={rating} setRating={saveRating} />
                         </div>
                     )}
                 </div>
 
-                {/* Right column: title, author, average rating, description */}
+                {/* RIGHT COLUMN */}
                 <div style={{ flex: 1 }}>
-                    <h1 className="title" style={{ margin: '0 0 8px 0' }}>{book.volumeInfo?.title || 'No Title Available'}</h1>
-                    <h3 className="subtitle" style={{ margin: '0 0 12px 0', fontWeight: 500 }}>{book.volumeInfo?.authors?.join(', ') || 'Unknown Author'}</h3>
+                    <h1 className="title">{book.volumeInfo?.title || 'No Title Available'}</h1>
+                    <h3 className="subtitle">
+                        {book.volumeInfo?.authors?.join(', ') || 'Unknown Author'}
+                    </h3>
 
-                    {/* Average rating + number of ratings + reviews */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
                         <StarRating rating={averageRating || 0} readOnly />
-                        <span><strong>{averageRating ? averageRating.toFixed(2) : '0'}</strong></span>
-                        <span style={{ marginLeft: '10px', color: '#555' }}>
-                            {reviews.filter(r => r.rating > 0).length} {reviews.filter(r => r.rating > 0).length === 1 ? 'rating' : 'ratings'}
+                        <strong>{averageRating ? averageRating.toFixed(2) : '0'}</strong>
+                        <span>
+                            {ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'}
                         </span>
-                        <span style={{ marginLeft: '10px', color: '#555' }}>
-                              {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
+                        <span>
+                            {writtenReviews.length} {writtenReviews.length === 1 ? 'review' : 'reviews'}
                         </span>
                     </div>
 
-                    {/* Description */}
                     <div>
                         {showFullDescription
                             ? formatDescription(book.volumeInfo?.description)
@@ -190,22 +225,18 @@ export function BookDetails() {
                         {book.volumeInfo?.description?.length > 300 && (
                             <button
                                 className="theme-custom"
-                                style={{ marginTop: '5px' }}
                                 onClick={() => setShowFullDescription(!showFullDescription)}
                             >
                                 {showFullDescription ? 'Show Less' : 'Read More'}
                             </button>
                         )}
-                        <p>
-                            <strong>Genres:</strong> {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories[0].split('/')[1] : 'Unknown'} {book.volumeInfo?.categories?.[0] ? book.volumeInfo.categories.map(c => c.split('/')[2]).filter(Boolean).join(', ') : ''}
-                        </p>
                     </div>
                 </div>
             </div>
 
             <hr />
 
-            <h2 className="title">Reviews</h2>
+            <h2 className="title">Write a Review</h2>
             <form onSubmit={saveReview}>
                 <textarea
                     className="auth-input"
@@ -220,20 +251,20 @@ export function BookDetails() {
                 </button>
             </form>
 
-            {error && <p className="error-text" style={{ marginTop: '10px' }}>{error}</p>}
+            {error && <p className="error-text">{error}</p>}
 
             <hr />
 
             <h2 className="title">Posted Reviews</h2>
             <div className="reviews-grid">
-                {reviews.length === 0 ? (
-                    <p className="empty-message">No reviews yet. Be the first to review!</p>
+                {writtenReviews.length === 0 ? (
+                    <p className="empty-message">No written reviews yet.</p>
                 ) : (
-                    reviews.map((review) => (
+                    writtenReviews.map((review) => (
                         <div className="review-card" key={review.book_review_id}>
                             <div className="review-header">
                                 <strong>{review.username}</strong>
-                                <span><StarRating rating={review.rating || 0} readOnly /></span>
+                                <StarRating rating={review.rating || 0} readOnly />
                             </div>
                             <p className="review-text">{review.written_review}</p>
                             <div className="review-date">

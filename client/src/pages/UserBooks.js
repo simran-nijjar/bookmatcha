@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from 'jwt-decode';
 import api from '../api/api';
+import StarRating from '../components/StarRating';
 
 // This page is the first page the user sees when they login or register
 // Here the user can see all of the books they have reviewed
@@ -107,8 +108,12 @@ export const UserBooks = () => {
                                             {review.bookAuthor}
                                         </div>
 
+                                        <div>
+                                            <span><StarRating rating={review.rating || 0} readOnly /></span>
+                                        </div>
+
                                         <div className="rating-badge">
-                                            ⭐ Your Rating: {review.rating}
+                                            Your Rating: {review.rating}/5
                                         </div>
 
                                         <div className="user-review">

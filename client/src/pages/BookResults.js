@@ -17,7 +17,14 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
   // When a book is selected, it will be inserted into the backend if it's not already inserted
   const insertBook = async (book) => {
-    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+    let userId = ''
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userId = payload.userId;
+      } catch {}
+    }
     if (!userId){
       return;
     }

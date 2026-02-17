@@ -14,7 +14,7 @@ exports.register = (req, res) => {
     }
 
     const checkUsernameQuery = 'SELECT * FROM users WHERE username = ?';
-    connection.query(checkUsernameQuery, [username], async (err, result) => {
+    connection.query(checkUsernameQuery, [username], (err, result) => {
         if (err) {
             return res.status(500).json({ message: "Error checking username" });
         }
@@ -22,45 +22,48 @@ exports.register = (req, res) => {
         if (result.length > 0) {
             return res.status(409).json({ message: "Username is not available to use" });
         }
-    });
 
-    const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
-    connection.query(checkEmailQuery, [email], async (err, result) => {
-        if (err) {
-            return res.status(500).json({ message: "Error checking email" });
-        }
-
-        if (result.length > 0) {
-            return res.status(409).json({ message: "Account with this email already exists" });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const insertQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?, ?, ?)';
-        connection.query(insertQuery, [username, email, hashedPassword], (err, insertResult) => {
+        // If username is available, check email
+        const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
+        connection.query(checkEmailQuery, [email], async (err, result) => {
             if (err) {
-                return res.status(500).json({ message: "Failed to register user" });
+                return res.status(500).json({ message: "Error checking email" });
             }
 
-            const userId = insertResult.insertId;
-            const accessToken = generateAccessToken({ userId });
-            const refreshToken = generateRefreshToken({ userId });
+            if (result.length > 0) {
+                return res.status(409).json({ message: "Account with this email already exists" });
+            }
 
-            res.cookie('token', accessToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict',
-                maxAge: 3600000
+            // If both are available, hash password and insert user
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            const insertQuery = 'INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)';
+            connection.query(insertQuery, [username, email, hashedPassword], (err, insertResult) => {
+                if (err) {
+                    console.error('Insert error:', err);
+                    return res.status(500).json({ message: "Failed to register user" });
+                }
+
+                const userId = insertResult.insertId;
+                const accessToken = generateAccessToken({ userId });
+                const refreshToken = generateRefreshToken({ userId });
+
+                res.cookie('token', accessToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'Strict',
+                    maxAge: 3600000
+                });
+
+                res.cookie('refreshToken', refreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'Strict',
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                });
+
+                return res.status(201).json({ token: accessToken });
             });
-
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            });
-
-            return res.status(201).json({ token: accessToken });
         });
     });
 };

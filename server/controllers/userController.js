@@ -227,6 +227,8 @@ exports.getUserInformation = (req, res) => {
             const formattedUser = {
                 userId: user.user_id,
                 username: user.username,
+                firstName: user.first_name,
+                lastName: user.last_name,
                 email: user.email,
                 profilePic: user.profile_pic,
                 createdAt: user.created_at,

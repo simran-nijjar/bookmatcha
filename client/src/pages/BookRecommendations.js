@@ -87,15 +87,27 @@ export const BookRecommendations = () => {
     }
   };
 
-  const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
-    const authorQuery = authors.map(author => `inauthor:${author}`).join(' OR ');
-    if (!authorQuery) return [];
-    try {
-      const res = await api.get('google-books/search', { params: { query: authorQuery, startIndex } });
-      return res.data.items || [];
-    } catch {
+   const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
+    if (!authors || authors.length === 0) {
       return [];
     }
+    const allResults = [];
+    for (const author of authors) {
+      try {
+        const res = await api.get('google-books/search', {
+          params: { query: author, startIndex }
+        });
+        if (res.data.items) allResults.push(...res.data.items);
+      } catch {}
+    }
+    // Remove duplicates
+    const seen = new Set();
+    const uniqueResults = allResults.filter(book => {
+      if (seen.has(book.id)) return false;
+      seen.add(book.id);
+      return true;
+    });
+    return uniqueResults;
   };
 
   const fetchAverageRatings = async (bookIds) => {

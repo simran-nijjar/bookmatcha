@@ -58,3 +58,46 @@ CREATE TABLE IF NOT EXISTS reviews (
     CONSTRAINT fk_reviews_book FOREIGN KEY (book_id) REFERENCES books (book_id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table: reading_sessions
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS reading_sessions (
+    session_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    start_date DATE DEFAULT NULL,
+    finished_date DATE DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_sessions_book 
+        FOREIGN KEY (book_id) REFERENCES books(book_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT fk_sessions_user 
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+-- Table: user_books
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_books (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id VARCHAR(50) NOT NULL,
+    status ENUM('want_to_read', 'reading', 'read') NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT NULL,
+
+    UNIQUE KEY unique_user_book (user_id, book_id),
+
+    CONSTRAINT fk_user_books_user 
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT fk_user_books_book 
+        FOREIGN KEY (book_id) REFERENCES books(book_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+

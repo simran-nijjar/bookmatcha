@@ -22,11 +22,11 @@ const pool = mysql.createPool(
 // Test the connection on startup
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('Database connection failed:', err);
-        process.exit(1);
+        console.error('Database connection failed:', err.code, err.message, err);
+    } else {
+        console.log('Connected to MySQL');
+        connection.release();
     }
-    console.log('Connected to MySQL');
-    connection.release();
 });
 
 module.exports = pool;

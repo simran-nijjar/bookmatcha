@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../styles.css';
 import { useNavigate } from "react-router-dom";
 import api from '../api/api';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // This file contains the form the user sees when they login and the login processes
 
@@ -9,6 +10,7 @@ export const Login = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const onChange = (event) => {
@@ -68,14 +70,23 @@ return (
           className="form-control mb-3"
         />
 
-        <input
-          type="password"
-          name="Password"
-          placeholder="Password"
-          value={password}
-          onChange={onChange}
-          className="form-control mb-3"
-        />
+      <div className="password-wrapper">
+      <input
+        type={showPassword ? "text" : "password"}
+        name="Password"
+        placeholder="Password"
+        value={password}
+        onChange={onChange}
+        className="form-control mb-3"
+      />
+      <button
+        type="button"
+        className="password-toggle"
+        onClick={() => setShowPassword(!showPassword)}
+      >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+      </button>
+    </div>
 
         <div className="auth-message">
           {error && <p>{error}</p>}

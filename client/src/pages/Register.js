@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import '../styles.css';
 import { useNavigate } from 'react-router-dom';
 import PasswordChecklist from "react-password-checklist";
-import api from '../api/api'; // your axios instance
+import api from '../api/api';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export const Register = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -10,6 +11,8 @@ export const Register = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const onChange = (event) => {
@@ -133,23 +136,41 @@ export const Register = ({ onLogin }) => {
           className="form-control mb-3"
         />
 
-        <input
-          type="password"
-          name="Password"
-          placeholder="Password"
-          value={password}
-          onChange={onChange}
-          className="form-control mb-3"
-        />
+        <div className="password-wrapper">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="Password"
+            placeholder="Password"
+            value={password}
+            onChange={onChange}
+            className="form-control mb-3"
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
 
-        <input
-          type="password"
-          name="ConfirmPassword"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={onChange}
-          className="form-control mb-3"
-        />
+        <div className="password-wrapper">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            name="ConfirmPassword"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={onChange}
+            className="form-control mb-3"
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
 
         <div className="password-checklist-wrapper">
           <PasswordChecklist
@@ -157,6 +178,7 @@ export const Register = ({ onLogin }) => {
             minLength={8}
             value={password}
             valueAgain={confirmPassword}
+            messages={{specialChar: "Password has a special character."}}
           />
         </div>
 

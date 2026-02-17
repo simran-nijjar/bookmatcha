@@ -14,7 +14,7 @@ export const Register = ({ onLogin }) => {
 
   const onChange = (event) => {
     const { name, value } = event.target;
-    if (username === 'Username') {
+    if (name === 'Username') {
       setUsername(value.toLowerCase());
     } else if (name === 'Email') {
       setEmail(value);
@@ -117,7 +117,7 @@ export const Register = ({ onLogin }) => {
 
         <input
           type="text"
-          name="UserName"
+          name="Username"
           placeholder="Username"
           value={username}
           onChange={onChange}

@@ -1,19 +1,32 @@
 const mysql = require('mysql');
 
-// Connect to database
-const connection = mysql.createConnection({
-    host: process.env.MYSQLHOST,
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT
-});
+const pool = mysql.createPool(
+    process.env.NODE_ENV === 'production'
+        ? {
+            host: process.env.MYSQLHOST,
+            user: process.env.MYSQLUSER,
+            password: process.env.MYSQLPASSWORD,
+            database: process.env.MYSQLDATABASE,
+            port: process.env.MYSQLPORT,
+            connectionLimit: 10,
+          }
+        : 
+        {
+            host: process.env.MYSQLHOST,
+            user: process.env.MYSQLUSER,
+            password: process.env.MYSQLPASSWORD,
+            database: process.env.MYSQLDATABASE
+        }
+);
 
-connection.connect((err) => {
+// Test the connection on startup
+pool.getConnection((err, connection) => {
     if (err) {
+        console.error('Database connection failed:', err);
         process.exit(1);
     }
-    console.log("Connected to MySQL");
+    console.log('Connected to MySQL');
+    connection.release();
 });
 
-module.exports = connection;
+module.exports = pool;

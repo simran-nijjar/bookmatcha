@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -63,7 +63,7 @@ export const BookRecommendations = () => {
   };
 
   // Fetch recommended books from Google Books
-  const getRecommendations = async () => {
+  const getRecommendations = useCallback (async () => {
     try {
       const { authors, savedBookIds } = extractAuthors();
       const startIndex = (currentPage - 1) * maxResults;
@@ -85,7 +85,7 @@ export const BookRecommendations = () => {
     } catch {
       setError('Error fetching recommendations.');
     }
-  };
+  }, [usersBooks, currentPage]);
 
    const fetchBooksFromGoogle = async (authors, startIndex = 0) => {
     if (!authors || authors.length === 0) {

@@ -14,12 +14,15 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-// Connect to port
-app.listen(process.env.PORT, () => {
-  console.log('Listening on port ' + process.env.PORT);
-});
-
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/google-books', require('./routes/googleBooksRoutes'));
+
+const PORT = process.env.PORT || 8080;
+
+console.log("PORT ENV VALUE:", process.env.PORT);
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});

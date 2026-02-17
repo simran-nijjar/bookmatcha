@@ -1,12 +1,4 @@
-const mysql = require('mysql');
-
-console.log('=== DB CONFIG DEBUG ===');
-console.log('MYSQLHOST:', process.env.MYSQLHOST);
-console.log('MYSQLPORT:', process.env.MYSQLPORT);
-console.log('MYSQLUSER:', process.env.MYSQLUSER);
-console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE);
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('======================');
+const mysql = require('mysql2');
 
 const pool = mysql.createPool(
     process.env.NODE_ENV === 'production'

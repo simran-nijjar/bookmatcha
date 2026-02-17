@@ -263,7 +263,7 @@ export function BookDetails() {
                     writtenReviews.map((review) => (
                         <div className="review-card" key={review.book_review_id}>
                             <div className="review-header">
-                                <strong>{review.username}</strong>
+                                <strong>{review.user_name}</strong>
                                 <StarRating rating={review.rating || 0} readOnly />
                             </div>
                             <p className="review-text">{review.written_review}</p>

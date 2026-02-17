@@ -13,7 +13,7 @@ exports.register = (req, res) => {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-    const checkUsernameQuery = 'SELECT * FROM users WHERE username = ?';
+    const checkUsernameQuery = 'SELECT * FROM users WHERE user_name = ?';
     connection.query(checkUsernameQuery, [username], (err, result) => {
         if (err) {
             console.error("Username check error:", err);
@@ -38,7 +38,7 @@ exports.register = (req, res) => {
             // If both are available, hash password and insert user
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-            const insertQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+            const insertQuery = 'INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)';
             connection.query(insertQuery, [username, email, hashedPassword], (err, insertResult) => {
                 if (err) {
                     console.error('Insert error:', err);
@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: "username and password are required" });
         }
 
-        const query = 'SELECT * FROM users WHERE username = ?';
+        const query = 'SELECT * FROM users WHERE user_name = ?';
         connection.query(query, [username], async (err, results) => {
             if (err) {
                 return res.status(500).json({ message: "Error checking for user" });
@@ -230,7 +230,7 @@ exports.getUserInformation = (req, res) => {
             const user = result[0];
             const formattedUser = {
                 userId: user.user_id,
-                username: user.username,
+                username: user.user_name,
                 firstName: user.first_name,
                 lastName: user.last_name,
                 email: user.email,

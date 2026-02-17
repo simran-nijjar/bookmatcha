@@ -96,8 +96,8 @@ export const Register = ({ onLogin }) => {
         navigate('/homepage');
       }
     } catch (err) {
-      if (err.response?.status === 400) {
-        setError('Email is already registered. Try a new email or login.');
+      if (err.response?.status === 409) {
+        setError('Username or email is already registered. Try a different username or email.');
       } else {
         setError('Registration failed. Please try again later.');
       }

@@ -5,6 +5,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
+api.interceptors.request.use(req => req, err => Promise.reject(err));
+
+// Response interceptor: refresh token if 401
 api.interceptors.response.use(
   response => response,
   async error => {
@@ -14,20 +17,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}refresh-token`,
-          {},
-          { withCredentials: true }
-        );
+        // call refresh token endpoint
+        await axios.post('http://localhost:8080/api/users/refresh-token', {}, {
+          withCredentials: true
+        });
 
-        const newToken = res.data.accessToken;
-        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-
+        // retry original request
         return api(originalRequest);
-      } catch (err) {
-        console.log('Session expired, redirecting to login...');
+      } catch (refreshError) {
+        // if refresh fails, redirect to login
         window.location.href = '/login';
-        return Promise.reject(err);
+        return Promise.reject(refreshError);
       }
     }
 

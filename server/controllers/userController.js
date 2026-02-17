@@ -37,7 +37,7 @@ exports.register = (req, res) => {
             // If both are available, hash password and insert user
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-            const insertQuery = 'INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)';
+            const insertQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
             connection.query(insertQuery, [username, email, hashedPassword], (err, insertResult) => {
                 if (err) {
                     console.error('Insert error:', err);

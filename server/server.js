@@ -19,7 +19,7 @@ app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/google-books', require('./routes/googleBooksRoutes'));
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 
 console.log("PORT ENV VALUE:", process.env.PORT);
 

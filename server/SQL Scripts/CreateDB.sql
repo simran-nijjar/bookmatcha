@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS books (
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     user_id INT(11) NOT NULL AUTO_INCREMENT,
-    user_name varchar(20) DEFAULT NOT NULL UNIQUE,
+    user_name varchar(20) NOT NULL UNIQUE,
     first_name VARCHAR(100) DEFAULT NULL,
     last_name VARCHAR(100) DEFAULT NULL,
     email VARCHAR(255) DEFAULT NULL,

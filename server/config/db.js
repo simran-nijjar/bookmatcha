@@ -29,4 +29,5 @@ pool.getConnection((err, connection) => {
     }
 });
 
-module.exports = pool;
+const connection = pool;
+module.exports = connection;

@@ -19,6 +19,11 @@ app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/google-books', require('./routes/googleBooksRoutes'));
 
+// Health check route for Railway
+app.get('/', (req, res) => {
+  res.send('Server is alive');
+});
+
 const PORT = process.env.PORT;
 
 console.log("PORT ENV VALUE:", process.env.PORT);

@@ -115,6 +115,44 @@ body {
     margin-bottom: 12px;
 }
 
+@media (max-width: 768px) {
+    .page-container > div:first-child {
+        flex-direction: column !important;
+        gap: 15px !important;
+        align-items: center;
+    }
+
+    .page-container img {
+        width: 150px !important;
+        height: auto;
+    }
+
+    .page-container h1.title {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .page-container h3.subtitle {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .reviews-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    textarea.auth-input {
+        width: 100%;
+    }
+
+    button.theme-custom {
+        width: 100%;
+        font-size: 1rem;
+    }
+}
+
 /* ===== Buttons ===== */
 
 .theme-custom {

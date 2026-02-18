@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import '../styles.css';
 import { useSearchParams } from 'react-router-dom';
 import api from '../api/api';
 
 export const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
-    const [status, setStatus] = useState('verifying');
+    const [status, setStatus] = useState('pending');
     const hasRun = useRef(false);
 
-    useEffect(() => {
+    const handleVerify = async () => {
         if (hasRun.current) return;
         hasRun.current = true;
 
@@ -18,15 +18,25 @@ export const VerifyEmail = () => {
             return;
         }
 
-        api.post(`users/verify-email`, {token})
+        setStatus('verifying');
+        api.post('users/verify-email', { token })
             .then(() => setStatus('success'))
             .catch(() => setStatus('error'));
-    }, []);
+    };
 
     return (
         <div className="page-container">
             <div className="auth-wrapper">
                 <div className="auth-card">
+                    {status === 'pending' && (
+                        <>
+                            <h1 className="title">Verify your email</h1>
+                            <p className="subtitle">Click the button below to verify your account.</p>
+                            <button className="theme-custom w-100" onClick={handleVerify}>
+                                Verify Email
+                            </button>
+                        </>
+                    )}
                     {status === 'verifying' && <p>Verifying your email...</p>}
                     {status === 'success' && (
                         <>

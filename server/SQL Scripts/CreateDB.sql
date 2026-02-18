@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS books (
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     user_id INT(11) NOT NULL AUTO_INCREMENT,
-    user_name varchar(20) NOT NULL UNIQUE,
+    user_name VARCHAR(20) NOT NULL UNIQUE,
     first_name VARCHAR(100) DEFAULT NULL,
     last_name VARCHAR(100) DEFAULT NULL,
     email VARCHAR(255) DEFAULT NULL,
@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at DATETIME DEFAULT NULL,
     reset_token VARCHAR(64) DEFAULT NULL,
     reset_token_expiry DATETIME DEFAULT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    verification_token VARCHAR(64) DEFAULT NULL,
+    verification_token_expiry DATETIME DEFAULT NULL,
     PRIMARY KEY (user_id),
     UNIQUE KEY Email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

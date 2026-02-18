@@ -8,6 +8,8 @@ import { Register } from "./pages/Register";
 import { UserAccount } from './pages/UserAccount';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
+import { VerifyEmailSent } from './pages/VerifyEmailSent';
+import { VerifyEmail } from './pages/VerifyEmail';
 import { LandingPage } from './pages/LandingPage';
 import { HomePage } from './pages/HomePage';
 import { BookResults } from './pages/BookResults';
@@ -15,122 +17,115 @@ import { BookDetails } from './pages/BookDetails';
 import { UserBooks } from './pages/UserBooks';
 import { BookRecommendations } from './pages/BookRecommendations';
 import SearchBar from './components/SearchBar';
-import './styles.css'
+import './styles.css';
+import api from './api/api';
 import { handleQueryChange, handleSearch, handleNextPage, handlePrevPage } from './components/SearchUtilities';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
+  // Check login status by hitting the backend, not localStorage
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
+  api.get('users/userid')
+    .then(() => setIsLoggedIn(true))
+    .catch(() => setIsLoggedIn(false))
+    .finally(() => setAuthLoading(false));
+}, []);
+
+if (authLoading) {
+  return null;
+}
 
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
 
   const handleLogout = async () => {
-  try {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      await fetch(`${process.env.REACT_APP_API_URL}users/logout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+    try {
+      await api.post('users/logout');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      setIsLoggedIn(false);
+      window.location.href = '/';
     }
-  } catch (error) {
-    console.error('Logout failed:', error);
-  } finally {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.setItem('isLoggedIn', 'false');
-    setIsLoggedIn(false);
-    window.location.href = '/';
-  }
-};
+  };
 
   return (
     <BrowserRouter>
-<nav className="navbar navbar-expand-lg cozy-navbar">
-  <div className="container-fluid navbar-inner">
+      <nav className="navbar navbar-expand-lg cozy-navbar">
+        <div className="container-fluid navbar-inner">
 
-    <Link className="navbar-brand brand-logo" to={isLoggedIn ? "/HomePage" : "/"}>
-      bookmatcha
-    </Link>
+          <Link className="navbar-brand brand-logo" to={isLoggedIn ? "/HomePage" : "/"}>
+            bookmatcha
+          </Link>
 
-    <button
-      className="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span className="navbar-toggler-icon"></span>
-    </button>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-    <div className="collapse navbar-collapse" id="navbarNav">
-      <ul className="navbar-nav nav-links">
-        {isLoggedIn && (
-          <>
-            <li className="nav-item">
-              <Link className="nav-link cozy-link" to="/BookRecommendations">
-                Recommendations
-              </Link>
-            </li>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav nav-links">
+              {isLoggedIn && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link cozy-link" to="/BookRecommendations">
+                      Recommendations
+                    </Link>
+                  </li>
 
-            <li className="nav-item">
-              <Link className="nav-link cozy-link" to="/UserBooks">
-                My Books
-              </Link>
-            </li>
+                  <li className="nav-item">
+                    <Link className="nav-link cozy-link" to="/UserBooks">
+                      My Books
+                    </Link>
+                  </li>
 
-            <li className="nav-item">
-              <Link className="nav-link cozy-link" to="/UserAccount">
-                My Account
-              </Link>
-            </li>
+                  <li className="nav-item">
+                    <Link className="nav-link cozy-link" to="/UserAccount">
+                      My Account
+                    </Link>
+                  </li>
 
-            <li className="nav-item">
-              <button
-                className="nav-link cozy-link logout-btn"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </li>
-          </>
-        )}
-      </ul>
+                  <li className="nav-item">
+                    <button
+                      className="nav-link cozy-link logout-btn"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              )}
+            </ul>
 
-      {isLoggedIn && (
-        <div className="ms-auto search-wrapper">
-          <SearchBar
-            query={query}
-            onQueryChange={(event) => handleQueryChange(event, setQuery)}
-            onSearch={(event) =>
-              handleSearch(event, query, setResults, setTotalPages, setCurrentPage)
-            }
-          />
+            {isLoggedIn && (
+              <div className="ms-auto search-wrapper">
+                <SearchBar
+                  query={query}
+                  onQueryChange={(event) => handleQueryChange(event, setQuery)}
+                  onSearch={(event) =>
+                    handleSearch(event, query, setResults, setTotalPages, setCurrentPage)
+                  }
+                />
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
-</nav>
+      </nav>
+
       <Routes>
         <Route path="/Login" element={<Login onLogin={handleLogin} />} />
         <Route path="/Register" element={<Register onLogin={handleLogin} />} />
@@ -138,18 +133,20 @@ function App() {
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/ResetPassword" element={<ResetPassword />} />
         <Route path="/" element={isLoggedIn ? <Navigate to="/HomePage" /> : <LandingPage />} />
-        <Route path="/BookResults" element={<BookResults 
-          results={results} 
-          currentPage={currentPage} 
-          totalPages={totalPages} 
-          onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)} 
-          onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)} 
+        <Route path="/BookResults" element={<BookResults
+          results={results}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)}
+          onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)}
         />} />
         <Route path="/UserBooks" element={<UserBooks />} />
         <Route path="/HomePage" element={<HomePage />} />
         <Route path="/BookRecommendations" element={<BookRecommendations />} />
         <Route path="/book/:id" element={<BookDetails />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

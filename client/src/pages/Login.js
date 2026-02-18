@@ -25,7 +25,7 @@ export const Login = ({ onLogin }) => {
     // Method to handle login
     const login = async (event) => {
         event.preventDefault();
-        
+
         if (!username || !password) {
             setError('Please enter both username and password.');
             return;
@@ -35,16 +35,13 @@ export const Login = ({ onLogin }) => {
             const res = await api.post('users/login', { username, password });
 
             if (res.status === 200) {
-                const token = res.data.token;
-                localStorage.setItem('token', token);
-                localStorage.setItem('isLoggedIn', 'true');
-
-                setError('Logged in successfully.');
                 onLogin?.();
                 navigate("/homepage");
             }
         } catch (err) {
-            if (err.response?.status === 400) {
+            if (err.response?.status === 403) {
+                setError('Please verify your email before logging in. Check your inbox.');
+            } else if (err.response?.status === 400) {
                 setError('The username and password you entered do not match our records.');
             } else {
                 setError('Login failed. Please try again later.');
@@ -52,66 +49,61 @@ export const Login = ({ onLogin }) => {
         }
     };
 
-return (
-  <div className="page-container">
+    return (
+        <div className="page-container">
 
-    <h1 className="title">Login</h1>
-    <p className="subtitle">Welcome back to bookmatcha</p>
+            <h1 className="title">Login</h1>
+            <p className="subtitle">Welcome back to bookmatcha</p>
 
-    <div className="auth-wrapper">
-      <div className="auth-card">
+            <div className="auth-wrapper">
+                <div className="auth-card">
 
-        <input
-          type="username"
-          name="Username"
-          placeholder="Username"
-          value={username}
-          onChange={onChange}
-          className="form-control mb-3"
-        />
+                    <input
+                        type="text"
+                        name="Username"
+                        placeholder="Username"
+                        value={username}
+                        onChange={onChange}
+                        className="form-control mb-3"
+                    />
 
-      <div className="password-wrapper">
-      <input
-        type={showPassword ? "text" : "password"}
-        name="Password"
-        placeholder="Password"
-        value={password}
-        onChange={onChange}
-        className="form-control mb-3"
-      />
-      <button
-        type="button"
-        className="password-toggle"
-        onClick={() => setShowPassword(!showPassword)}
-      >
-        {showPassword ? <FaEye /> : <FaEyeSlash />}
-      </button>
-    </div>
+                    <div className="password-wrapper">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="Password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={onChange}
+                            className="form-control mb-3"
+                        />
+                        <button
+                            type="button"
+                            className="password-toggle"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        </button>
+                    </div>
 
-        <div className="auth-message">
-          {error && <p>{error}</p>}
+                    <div className="auth-message">
+                        {error && <p>{error}</p>}
+                    </div>
+
+                    <button
+                        className="theme-custom w-100"
+                        onClick={login}
+                    >
+                        Login
+                    </button>
+
+                    <div className="auth-links">
+                        <p>Forgot password? <a href="/forgotpassword">Reset</a></p>
+                        <p>Don't have an account? <a href="/register">Register</a></p>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
-
-        <button
-          className="theme-custom w-100"
-          onClick={login}
-        >
-          Login
-        </button>
-
-        <div className="auth-links">
-          <p>
-            Forgot password? <a href="/forgotpassword">Reset</a>
-          </p>
-          <p>
-            Don’t have an account? <a href="/register">Register</a>
-          </p>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-);
-
+    );
 };

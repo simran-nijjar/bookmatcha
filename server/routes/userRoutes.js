@@ -13,6 +13,8 @@ router.put('/password', auth, userController.updatePassword);
 router.get('/userid', auth, userController.getUserInformation);
 router.put('/userid', auth, userController.updateUserInformation);
 router.post('/logout', auth, userController.logout);
+router.get('/verify-email', userController.verifyEmail);
+router.post('/resend-verification', userController.resendVerification);
 
 router.post('/refresh-token', userController.refreshToken);
 

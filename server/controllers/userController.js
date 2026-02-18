@@ -39,32 +39,125 @@ exports.register = (req, res) => {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
             const insertQuery = 'INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)';
-            connection.query(insertQuery, [username, email, hashedPassword], (err, insertResult) => {
+            connection.query(insertQuery, [username, email, hashedPassword], async (err, insertResult) => {
                 if (err) {
                     console.error('Insert error:', err);
                     return res.status(500).json({ message: "Failed to register user" });
                 }
 
                 const userId = insertResult.insertId;
-                const accessToken = generateAccessToken({ userId });
-                const refreshToken = generateRefreshToken({ userId });
 
-                res.cookie('token', accessToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'Strict',
-                    maxAge: 3600000
+                const verificationToken = crypto.randomBytes(32).toString('hex');
+                const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+                const saveTokenQuery = 'UPDATE users SET verification_token = ?, verification_token_expiry = ? WHERE user_id = ?';
+                connection.query(saveTokenQuery, [verificationToken, tokenExpiry, userId], async (err) => {
+                    if (err) {
+                        return res.status(500).json({ message: "Error saving verification token" });
+                    }
+
+                    const verifyUrl = `${process.env.FRONT_END_URL}/verify-email?token=${verificationToken}`;
+                    const emailContent = `
+                        <h2>Welcome to Bookmatcha!</h2>
+                        <p>Hi ${username},</p>
+                        <p>Thanks for signing up. Please verify your email address by clicking the button below:</p>
+                        <p style="text-align:center;">
+                            <a href="${verifyUrl}" style="
+                                background-color: #44624a;
+                                color: white;
+                                padding: 10px 20px;
+                                text-decoration: none;
+                                border-radius: 5px;
+                                font-weight: bold;
+                            ">Verify Email</a>
+                        </p>
+                        <p>This link will expire in 24 hours.</p>
+                        <p>If you did not create an account, please ignore this email.</p>
+                    `;
+
+                    try {
+                        await sendEmail({ to: email, subject: 'Verify your Bookmatcha email', html: emailContent });
+                        return res.status(201).json({ message: "Registration successful. Please check your email to verify your account." });
+                    } catch (error) {
+                        return res.status(500).json({ message: "Failed to send verification email" });
+                    }
                 });
-
-                res.cookie('refreshToken', refreshToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'Strict',
-                    maxAge: 7 * 24 * 60 * 60 * 1000
-                });
-
-                return res.status(201).json({ token: accessToken });
             });
+        });
+    });
+};
+
+// Verify email
+exports.verifyEmail = (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).json({ message: "Token is required" });
+    }
+
+    const query = 'SELECT * FROM users WHERE verification_token = ? AND verification_token_expiry > ?';
+    connection.query(query, [token, new Date()], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: "Database error" });
+        }
+
+        if (results.length === 0) {
+            return res.status(400).json({ message: "Invalid or expired verification link" });
+        }
+
+        const updateQuery = 'UPDATE users SET is_verified = TRUE, verification_token = NULL, verification_token_expiry = NULL WHERE user_id = ?';
+        connection.query(updateQuery, [results[0].user_id], (err) => {
+            if (err) {
+                return res.status(500).json({ message: "Error verifying email" });
+            }
+
+            return res.status(200).json({ message: "Email verified successfully. You can now log in." });
+        });
+    });
+};
+
+// Resend verification email
+exports.resendVerification = (req, res) => {
+    const { email } = req.body;
+
+    const query = 'SELECT * FROM users WHERE email = ?';
+    connection.query(query, [email], async (err, results) => {
+        if (err) return res.status(500).json({ message: "Database error" });
+
+        if (results.length === 0 || results[0].is_verified) {
+            return res.status(200).end();
+        }
+
+        const user = results[0];
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        const updateQuery = 'UPDATE users SET verification_token = ?, verification_token_expiry = ? WHERE user_id = ?';
+        connection.query(updateQuery, [verificationToken, tokenExpiry, user.user_id], async (err) => {
+            if (err) return res.status(500).json({ message: "Error updating token" });
+
+            const verifyUrl = `${process.env.FRONT_END_URL}/verify-email?token=${verificationToken}`;
+            const emailContent = `
+                <h2>Verify your Bookmatcha email</h2>
+                <p>Click the button below to verify your email address:</p>
+                <p style="text-align:center;">
+                    <a href="${verifyUrl}" style="
+                        background-color: #44624a;
+                        color: white;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-weight: bold;
+                    ">Verify Email</a>
+                </p>
+                <p>This link will expire in 24 hours.</p>
+            `;
+
+            try {
+                await sendEmail({ to: email, subject: 'Verify your Bookmatcha email', html: emailContent });
+            } catch (e) {}
+
+            return res.status(200).end();
         });
     });
 };
@@ -95,6 +188,10 @@ exports.login = async (req, res) => {
                 return res.status(400).json({ message: "Incorrect password" });
             }
 
+            if (!user.is_verified) {
+                return res.status(403).json({ message: "Please verify your email before logging in." });
+            }
+
             const accessToken = generateAccessToken({ userId: user.user_id });
             const refreshToken = generateRefreshToken({ userId: user.user_id });
 
@@ -112,7 +209,7 @@ exports.login = async (req, res) => {
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
 
-            return res.status(200).json({ token: accessToken });
+            return res.status(200).json({ message: "Logged in successfully" });
         });
     } catch (error) {
         return res.status(500).json({ message: "Server error" });
@@ -141,7 +238,7 @@ exports.refreshToken = (req, res) => {
             maxAge: 3600000
         });
 
-        return res.status(200).json({ token: newAccessToken });
+        return res.status(200).json({ message: "Token refreshed" });
     });
 };
 
@@ -315,7 +412,7 @@ exports.requestPasswordReset = (req, res) => {
                 <p>We received a request to reset the password for your Bookmatcha account. Click the button below to reset your password:</p>
                 <p style="text-align:center;">
                     <a href="${resetUrl}" style="
-                        background-color: #1a73e8;
+                        background-color: #44624a;
                         color: white;
                         padding: 10px 20px;
                         text-decoration: none;
@@ -325,7 +422,7 @@ exports.requestPasswordReset = (req, res) => {
                 </p>
                 <p>This link will expire in 1 hour.</p>
                 <p>If you did not request a password reset, please ignore this email.</p>
-                <p>Do not reply to this email. This email is not monitered.</p>
+                <p>Do not reply to this email. This email is not monitored.</p>
             `;
 
             try {

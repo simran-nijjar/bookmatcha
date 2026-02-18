@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const connection = require('./config/db');
 
 const corsOptions = {
     origin: process.env.FRONT_END_URL,
@@ -23,6 +24,15 @@ app.use('/api/google-books', require('./routes/googleBooksRoutes'));
 app.get('/', (req, res) => {
   res.send('Server is alive');
 });
+
+// Cleanup job - delete unverified accounts older than their verification token expiry date, runs once a day
+setInterval(() => {
+    const query = 'DELETE FROM users WHERE is_verified = FALSE AND verification_token_expiry < NOW()';
+    connection.query(query, (err) => {
+        if (err) console.error('Cleanup job failed:', err);
+        else console.log('Expired unverified accounts cleaned up');
+    });
+}, 24 * 60 * 60 * 1000);
 
 const PORT = process.env.PORT;
 

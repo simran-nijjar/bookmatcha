@@ -32,7 +32,18 @@ exports.register = (req, res) => {
             }
 
             if (result.length > 0) {
-                return res.status(409).json({ message: "Account with this email already exists" });
+                const existingUser = result[0];
+
+                if (!existingUser.is_verified && new Date(existingUser.verification_token_expiry) < new Date()) {
+                    const deleteQuery = 'DELETE FROM users WHERE user_id = ?';
+                    connection.query(deleteQuery, [existingUser.user_id], (err) => {
+                        if (err) {
+                            return res.status(500).json({ message: "Error clearing expired account" });
+                        }
+                    });
+                } else {
+                    return res.status(409).json({ message: "Account with this email already exists" });
+                }
             }
 
             // If both are available, hash password and insert user

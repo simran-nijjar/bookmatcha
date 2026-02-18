@@ -61,7 +61,6 @@ exports.getBookReviews = (req, res) => {
             b.name AS bookTitle,
             b.author AS bookAuthor,
             avg_ratings.average_rating,
-            r.user_id,
             u.user_name
         FROM reviews r
         INNER JOIN books b ON r.book_id = b.book_id

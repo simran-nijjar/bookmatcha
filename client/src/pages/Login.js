@@ -97,7 +97,7 @@ export const Login = ({ onLogin }) => {
                     </button>
 
                     <div className="auth-links">
-                        <p>Forgot password? <a href="/forgotpassword">Reset</a></p>
+                        <p>Forgot password? <a href="/forgot-password">Reset</a></p>
                         <p>Don't have an account? <a href="/register">Register</a></p>
                     </div>
 

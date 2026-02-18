@@ -61,7 +61,7 @@ if (authLoading) {
       <nav className="navbar navbar-expand-lg cozy-navbar">
         <div className="container-fluid navbar-inner">
 
-          <Link className="navbar-brand brand-logo" to={isLoggedIn ? "/HomePage" : "/"}>
+          <Link className="navbar-brand brand-logo" to={isLoggedIn ? "/home" : "/"}>
             bookmatcha
           </Link>
 
@@ -82,19 +82,19 @@ if (authLoading) {
               {isLoggedIn && (
                 <>
                   <li className="nav-item">
-                    <Link className="nav-link cozy-link" to="/BookRecommendations">
+                    <Link className="nav-link cozy-link" to="/recommendations">
                       Recommendations
                     </Link>
                   </li>
 
                   <li className="nav-item">
-                    <Link className="nav-link cozy-link" to="/UserBooks">
+                    <Link className="nav-link cozy-link" to="/shelf">
                       My Books
                     </Link>
                   </li>
 
                   <li className="nav-item">
-                    <Link className="nav-link cozy-link" to="/UserAccount">
+                    <Link className="nav-link cozy-link" to="/account">
                       My Account
                     </Link>
                   </li>
@@ -127,23 +127,23 @@ if (authLoading) {
       </nav>
 
       <Routes>
-        <Route path="/Login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/Register" element={<Register onLogin={handleLogin} />} />
-        <Route path="/UserAccount" element={<UserAccount onLogout={handleLogout} />} />
-        <Route path="/ForgotPassword" element={<ForgotPassword />} />
-        <Route path="/ResetPassword" element={<ResetPassword />} />
-        <Route path="/" element={isLoggedIn ? <Navigate to="/HomePage" /> : <LandingPage />} />
-        <Route path="/BookResults" element={<BookResults
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/register" element={<Register onLogin={handleLogin} />} />
+        <Route path="/account" element={<UserAccount onLogout={handleLogout} />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/" element={isLoggedIn ? <Navigate to="/home" /> : <LandingPage />} />
+        <Route path="/books/search" element={<BookResults
           results={results}
           currentPage={currentPage}
           totalPages={totalPages}
           onNextPage={() => handleNextPage(currentPage, query, setResults, setCurrentPage)}
           onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)}
         />} />
-        <Route path="/UserBooks" element={<UserBooks />} />
-        <Route path="/HomePage" element={<HomePage />} />
-        <Route path="/BookRecommendations" element={<BookRecommendations />} />
-        <Route path="/book/:id" element={<BookDetails />} />
+        <Route path="/shelf" element={<UserBooks />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/recommendations" element={<BookRecommendations />} />
+        <Route path="/books/:id" element={<BookDetails />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
         <Route path="/verify-email" element={<VerifyEmail />} />

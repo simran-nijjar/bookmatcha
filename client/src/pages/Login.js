@@ -47,8 +47,8 @@ export const Login = ({ onLogin }) => {
         } catch (err) {
             if (err.response?.status === 403) {
                 setError('Please verify your email before logging in. Check your inbox.');
-            } else if (err.response?.status === 404) {
-                setError('The username and password you entered do not match our records.');
+            } else if (err.response?.status === 401) {
+                setError('Invalid username/email or password please try again.');
             } else {
                 setError('Login failed. Please try again later.');
             }

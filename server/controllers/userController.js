@@ -3,6 +3,7 @@ const connection = require('../config/db');
 const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
+const { containsProfanity } = require('../utils/contentFilter');
 const saltRounds = 12;
 
 // Register user
@@ -22,6 +23,10 @@ exports.register = (req, res) => {
 
         if (result.length > 0) {
             return res.status(409).json({ message: "Username is not available to use" });
+        }
+
+        if (containsProfanity(username)) {
+            return res.status(400).json({ message: "Username contains inappropriate language"});
         }
 
         // If username is available, check email

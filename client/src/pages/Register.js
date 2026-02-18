@@ -94,7 +94,10 @@ export const Register = ({ onLogin }) => {
         } catch (err) {
             if (err.response?.status === 409) {
                 setError('Username or email is already registered. Try a different username or email.');
-            } else {
+            } else if (err.response?.status === 400 && err.response?.data?.message.includes('inappropriate')) {
+                setError('Username contains inappropriate language. Please choose a different username.');
+            }
+            else {
                 setError('Registration failed. Please try again later.');
             }
         }

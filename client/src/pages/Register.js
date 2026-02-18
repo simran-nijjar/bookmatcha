@@ -47,7 +47,7 @@ export const Register = ({ onLogin }) => {
             setError('Username must be between 3-20 characters');
             return false;
         }
-  const regex = /^[a-z0-9._]+$/; // only lowercase letters, numbers, . and _
+    const regex = /^[a-z0-9._]+$/;
         if (!regex.test(trimmed)) {
             setError('Username can only contain letters, numbers, dots, and underscores');
             return false;

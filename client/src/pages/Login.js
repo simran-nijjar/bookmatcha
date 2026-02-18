@@ -16,7 +16,7 @@ export const Login = ({ onLogin }) => {
     const onChange = (event) => {
         const { name, value } = event.target;
         if (name === 'Username') {
-            setUsername(value.toLowerCase());
+            setUsername(value.includes('@') ? value : value.toLowerCase());
         } else if (name === 'Password') {
             setPassword(value);
         }
@@ -27,21 +27,27 @@ export const Login = ({ onLogin }) => {
         event.preventDefault();
 
         if (!username || !password) {
-            setError('Please enter both username and password.');
+            setError('Please enter both username or email and password.');
             return;
         }
-
+        if (username.includes('@')) {
+            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+            if (!emailRegex.test(username)) {
+                setError('Please enter a valid email address.');
+                return;
+            }
+        }
         try {
             const res = await api.post('users/login', { username, password });
 
             if (res.status === 200) {
                 onLogin?.();
-                navigate("/homepage");
+                navigate("/home");
             }
         } catch (err) {
             if (err.response?.status === 403) {
                 setError('Please verify your email before logging in. Check your inbox.');
-            } else if (err.response?.status === 400) {
+            } else if (err.response?.status === 404) {
                 setError('The username and password you entered do not match our records.');
             } else {
                 setError('Login failed. Please try again later.');
@@ -61,7 +67,7 @@ export const Login = ({ onLogin }) => {
                     <input
                         type="text"
                         name="Username"
-                        placeholder="Username"
+                        placeholder="Username or Email"
                         value={username}
                         onChange={onChange}
                         className="form-control mb-3"

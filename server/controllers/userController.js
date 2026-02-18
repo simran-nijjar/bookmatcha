@@ -14,6 +14,25 @@ exports.register = (req, res) => {
         return res.status(400).json({ message: "All fields are required" });
     }
 
+    const usernameRegex = /^[a-z0-9._]{3,20}$/;
+    if (!usernameRegex.test(username)) {
+        return res.status(400).json({ message: "Invalid username format" });
+    }
+
+    if (username.includes('@')) {
+        return res.status(400).json({ message: "Username cannot be an email address" });
+    }
+
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,100}$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({ message: "Password does not meet requirements" });
+    }
+
     const checkUsernameQuery = 'SELECT * FROM users WHERE user_name = ?';
     connection.query(checkUsernameQuery, [username], (err, result) => {
         if (err) {
@@ -187,7 +206,12 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: "username and password are required" });
         }
 
-        const query = 'SELECT * FROM users WHERE user_name = ?';
+        const isEmail = username.includes('@');
+
+        const query = isEmail ?
+        'SELECT * FROM users WHERE email = ?':
+        'SELECT * FROM users WHERE user_name = ?';
+
         connection.query(query, [username], async (err, results) => {
             if (err) {
                 return res.status(500).json({ message: "Error checking for user" });

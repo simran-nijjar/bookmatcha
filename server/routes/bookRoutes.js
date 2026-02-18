@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/bookController');
+const auth = require('../middleware/auth');
 
-router.post('/insertbook', bookController.insertBook);
-router.get('/users', bookController.fetchUsersHighlyRatedBooks);
+router.post('/insertbook', auth, bookController.insertBook);
+router.get('/users', auth, bookController.fetchUsersHighlyRatedBooks);
 router.get('/users/recommended-books', bookController.getRecommendedBooks);
 router.get('/top-rated', bookController.getTopRatedBooks);
 router.get('/average-rating', bookController.getAverageRating);

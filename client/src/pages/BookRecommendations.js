@@ -18,18 +18,7 @@ export const BookRecommendations = () => {
 
   // Fetch user's books from backend
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    let userId = '';
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        userId = payload.userId;
-      } catch {}
-    }
-
-    if (userId) {
-      fetchUsersBooks(userId);
-    }
+    fetchUsersBooks();
   }, []);
 
   useEffect(() => {
@@ -38,9 +27,9 @@ export const BookRecommendations = () => {
     }
   }, [usersBooks, currentPage]);
 
-  const fetchUsersBooks = async (userId) => {
+  const fetchUsersBooks = async () => {
     try {
-      const response = await api.get('books/users', { params: { userId } });
+      const response = await api.get('books/users');
       setUsersBooks(response.data);
     } catch {
       setError('Error fetching user books.');
@@ -128,16 +117,6 @@ export const BookRecommendations = () => {
   };
 
   const insertBook = async (book) => {
-    const token = localStorage.getItem('token');
-    let userId = '';
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        userId = payload.userId;
-      } catch {}
-    }
-    if (!userId) return;
-
     try {
       const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
       const response = await api.post('books/insertbook', {
@@ -153,8 +132,7 @@ export const BookRecommendations = () => {
               .map(c => c.split('/')[2])
               .filter(Boolean)
               .join(',') || 'Unknown'
-          : 'Unknown',
-        userId
+          : 'Unknown'
       });
 
       if (response.status === 200 || response.status === 201) {

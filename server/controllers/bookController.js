@@ -26,7 +26,7 @@ exports.insertBook = (req, res) => {
 
 // Fetch books a user has rated 3 or higher
 exports.fetchUsersHighlyRatedBooks = (req, res) => {
-    const { userId } = req.query;
+    const userId = req.user.userId;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });

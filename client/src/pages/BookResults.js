@@ -104,7 +104,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
                     <div>
                       <span><StarRating rating={averageRatings[book.id] || 0} readOnly /></span>
                     <div>
-                     { averageRatings[book.id] >= 0 ? averageRatings[book.id] + '/5' : 'No ratings'}
+                      {Number(averageRatings[book.id] || 0) > 0 ? Number(averageRatings[book.id]).toFixed(2) + '/5' : 'No ratings'}
                     </div></div>
                   </div>
                 </div>

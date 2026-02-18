@@ -2,7 +2,8 @@ const connection = require('../config/db');
 
 // Add a review for a book
 exports.addReview = (req, res) => {
-    const { bookId, writtenReview, rating, userId } = req.body;
+    const userId = req.user.userId;
+    const { bookId, writtenReview, rating } = req.body;
 
     // Validate input
     if (!bookId || !rating || !userId) {
@@ -21,7 +22,8 @@ exports.addReview = (req, res) => {
 
 // Update an existing review
 exports.updateReview = (req, res) => {
-    const { bookId, writtenReview, rating, userId } = req.body;
+    const userId = req.user.userId;
+    const { bookId, writtenReview, rating } = req.body;
 
     if (!bookId || !rating || !userId) {
         return res.status(400).json({ message: "bookId, rating, and userId are required" });
@@ -121,7 +123,8 @@ exports.getUsersBookReviews = (req, res) => {
 
 // Get a specific review for a book by a user
 exports.getReviewForBookByUser = (req, res) => {
-    const { bookId, userId } = req.query;
+    const userId = req.user.userId;
+    const { bookId } = req.query;
 
     if (!bookId || !userId) {
         return res.status(400).json({ message: "bookId and userId are required" });

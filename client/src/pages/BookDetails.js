@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import '../styles.css';
 import { useParams } from 'react-router-dom';
 import api from '../api/api';
-import { jwtDecode } from 'jwt-decode';
 import StarRating from '../components/StarRating';
 
 export function BookDetails() {
@@ -11,24 +10,13 @@ export function BookDetails() {
     const [bookId, setBookId] = useState('');
     const [writtenReview, setWrittenReview] = useState('');
     const [rating, setRating] = useState(0);
-    const [userId, setUserId] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [error, setError] = useState('');
     const [reviews, setReviews] = useState([]);
     const [averageRating, setAverageRating] = useState(null);
     const [existingReview, setExistingReview] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
-
-    const getUserIdFromToken = () => {
-        const token = localStorage.getItem('token');
-        if (!token) return null;
-        try {
-            const decoded = jwtDecode(token);
-            return decoded.userId;
-        } catch {
-            return null;
-        }
-    };
 
     const fetchBookDetails = useCallback(async (bookId) => {
         try {
@@ -43,49 +31,44 @@ export function BookDetails() {
     }, []);
 
     const fetchReviews = async (bookId) => {
-    try {
-        const res = await api.get('reviews', { params: { bookId } });
-        setReviews(res.data);
-
-        const ratings = res.data
-            .map(r => Number(r.rating))
-            .filter(r => !isNaN(r) && r > 0);
-
-        const avg = ratings.length > 0
-            ? ratings.reduce((a, b) => a + b, 0) / ratings.length
-            : null;
-
-        setAverageRating(avg !== null ? parseFloat(avg.toFixed(2)) : 0);
-    } catch {
-        setError('Failed to fetch reviews. Please try again later.');
-    }
-};
-
-
-    const fetchExistingReview = async (bookId, userId) => {
-        if (!userId) return;
         try {
-            const res = await api.get('reviews/book/user', { params: { bookId, userId } });
+            const res = await api.get('reviews', { params: { bookId } });
+            setReviews(res.data);
+
+            const ratings = res.data
+                .map(r => Number(r.rating))
+                .filter(r => !isNaN(r) && r > 0);
+
+            const avg = ratings.length > 0
+                ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+                : null;
+
+            setAverageRating(avg !== null ? parseFloat(avg.toFixed(2)) : 0);
+        } catch {
+            setError('Failed to fetch reviews. Please try again later.');
+        }
+    };
+
+    const fetchExistingReview = async (bookId) => {
+        try {
+            const res = await api.get('reviews/book/user', { params: { bookId } });
+            setIsLoggedIn(true);
             if (res.data.length > 0) {
                 setExistingReview(res.data[0]);
                 setWrittenReview(res.data[0].written_review || '');
                 setRating(res.data[0].rating || 0);
             }
         } catch {
+            setIsLoggedIn(false);
             setError('Failed to get your review. Please try again later.');
         }
     };
 
     useEffect(() => {
-        const currentUserId = getUserIdFromToken();
-        setUserId(currentUserId);
-
-        if (id) {
-            fetchBookDetails(id);
-            if (currentUserId) {
-                fetchExistingReview(id, currentUserId);
-            }
-        }
+    if (id) {
+        fetchBookDetails(id);
+        fetchExistingReview(id);
+    }
     }, [id, fetchBookDetails]);
 
     const onChange = (e) => {
@@ -96,27 +79,27 @@ export function BookDetails() {
     };
 
     const saveRating = async (newRating) => {
-        if (!userId || submitting) return;
+        if (submitting) {
+            return;
+        }
         setSubmitting(true);
         try {
             if (existingReview) {
                 await api.put('reviews', {
                     bookId,
                     writtenReview: existingReview.written_review || '',
-                    rating: newRating,
-                    userId
+                    rating: newRating
                 });
             } else {
                 await api.post('reviews', {
                     bookId,
                     writtenReview: '',
-                    rating: newRating,
-                    userId
+                    rating: newRating
                 });
             }
             setRating(newRating);
             fetchReviews(bookId);
-            fetchExistingReview(bookId, userId);
+            fetchExistingReview(bookId);
         } catch {
             setError('Error saving rating. Please try again later.');
         } finally {
@@ -126,7 +109,7 @@ export function BookDetails() {
 
     const saveReview = async (e) => {
         e.preventDefault();
-        if (!userId || submitting) {
+        if (submitting) {
             return;
         }
 
@@ -134,12 +117,12 @@ export function BookDetails() {
         setError('');
         try {
             if (existingReview) {
-                await api.put('reviews', { bookId, writtenReview, rating, userId });
+                await api.put('reviews', { bookId, writtenReview, rating });
             } else {
-                await api.post('reviews', { bookId, writtenReview, rating, userId });
+                await api.post('reviews', { bookId, writtenReview, rating });
             }
             fetchReviews(bookId);
-            fetchExistingReview(bookId, userId);
+            fetchExistingReview(bookId);
         } catch {
             setError('Error saving review. Please try again later.');
         } finally {
@@ -191,7 +174,7 @@ export function BookDetails() {
                         <div style={{ width: '200px', height: '300px', backgroundColor: '#ccc', borderRadius: '4px' }} />
                     )}
 
-                    {userId && (
+                    {isLoggedIn && (
                         <div style={{ marginTop: '15px' }}>
                             <strong>Your Rating:</strong>
                             <StarRating rating={rating} setRating={saveRating} />

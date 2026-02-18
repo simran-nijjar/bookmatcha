@@ -20,7 +20,7 @@ export const UserBooks = () => {
         fetchUserReviews();
     }, []);
 
-    const fetchUserReviews = async (userId) => {
+    const fetchUserReviews = async () => {
         try {
             const response = await api.get('reviews/user');
             setReviews(response.data);
@@ -42,10 +42,7 @@ export const UserBooks = () => {
 
         try {
             await api.delete(`reviews/${reviewID}`);
-            const token = localStorage.getItem('token');
-            if (!token) return;
-            const decoded = jwtDecode(token);
-            fetchUserReviews(decoded.userId);
+            fetchUserReviews();
         } catch {
             setError('Error deleting review. Please try again later.');
         }

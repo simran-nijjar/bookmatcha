@@ -78,13 +78,14 @@ exports.getTopRatedBooks = (req, res) => {
             b.name AS Title,
             b.author AS Author,
             b.image_link AS ImageLink,
-            AVG(r.rating) AS AverageRating
+            AVG(r.rating) AS AverageRating,
+            COUNT(r.rating) AS RatingCount
         FROM books b
         INNER JOIN reviews r ON r.book_id = b.book_id
         GROUP BY b.book_id
         HAVING AVG(r.rating) >= 3
-        ORDER BY AverageRating DESC
-        LIMIT 5
+        ORDER BY AverageRating DESC, RatingCount DESC
+        LIMIT 9
     `;
 
     connection.query(query, (err, result) => {

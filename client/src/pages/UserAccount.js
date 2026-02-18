@@ -91,7 +91,7 @@ export const UserAccount = () => {
     return (
         <div className="page-container">
             <h1 className="title">Hello {username || 'Guest'}!</h1>
-            <p className="subtitle">Manage your BookMatcha account here.</p>
+            <p className="subtitle">Manage your bookmatcha account here.</p>
 
             <div className="account-grid">
                 {/* Name Section */}

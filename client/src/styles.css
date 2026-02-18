@@ -232,40 +232,44 @@ body {
     }
 }
 
+/* ===== User Account Page ===== */
+
+.account-grid {
+  display: grid;
+  gap: 30px;
+  margin-top: 40px;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .account-grid {
+    grid-template-columns: repeat(2, 420px); /* match auth-card width */
+  }
+}
+
 .account-card {
-    background-color: #f7f5ef; /* soft card matcha */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(68, 98, 74, 0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 12px;
+  background-color: #f7f5ef;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
 }
 
-.form-input {
-    width: 100%;
-    max-width: 300px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 16px;
+.account-card .form-control {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
 }
 
-.form-input:focus {
-    outline: none;
-    border-color: #6fbf8f;
-}
-
-.button-custom {
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    background-color: #44624a;
-    color: #f4f1ea;
-    border: none;
-    transition: 0.2s ease;
+.account-card .form-control:focus {
+  outline: none;
+  border-color: #6fbf8f;
 }
 
 .button-custom:hover {

@@ -150,7 +150,7 @@ export const Register = ({ onLogin }) => {
             className="password-toggle"
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
           </button>
         </div>
 
@@ -168,7 +168,7 @@ export const Register = ({ onLogin }) => {
             className="password-toggle"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
-            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
           </button>
         </div>
 

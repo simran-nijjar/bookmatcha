@@ -43,24 +43,24 @@ export function BookDetails() {
     }, []);
 
     const fetchReviews = async (bookId) => {
-        try {
-            const res = await api.get('reviews', { params: { bookId } });
-            setReviews(res.data);
+    try {
+        const res = await api.get('reviews', { params: { bookId } });
+        setReviews(res.data);
 
-            const ratings = res.data
-                .map(r => r.rating)
-                .filter(r => r > 0);
+        const ratings = res.data
+            .map(r => Number(r.rating))
+            .filter(r => !isNaN(r) && r > 0);
 
-            const avg =
-                ratings.length > 0
-                    ? ratings.reduce((a, b) => a + b, 0) / ratings.length
-                    : null;
+        const avg = ratings.length > 0
+            ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+            : null;
 
-            setAverageRating(avg);
-        } catch {
-            setError('Failed to fetch reviews. Please try again later.');
-        }
-    };
+        setAverageRating(avg !== null ? parseFloat(avg.toFixed(2)) : 0);
+    } catch {
+        setError('Failed to fetch reviews. Please try again later.');
+    }
+};
+
 
     const fetchExistingReview = async (bookId, userId) => {
         if (!userId) return;
@@ -208,7 +208,7 @@ export function BookDetails() {
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
                         <StarRating rating={averageRating || 0} readOnly />
-                        <strong>{averageRating ? averageRating.toFixed(2) : '0'}</strong>
+                        <strong>{averageRating !== null ? averageRating.toFixed(2) : '0.00'}</strong>
                         <span>
                             {ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'}
                         </span>

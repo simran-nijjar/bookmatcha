@@ -18,7 +18,7 @@ export const VerifyEmail = () => {
             return;
         }
 
-        api.post(`users/verify-email?token=${token}`)
+        api.post(`users/verify-email`, {token})
             .then(() => setStatus('success'))
             .catch(() => setStatus('error'));
     }, []);

@@ -100,7 +100,7 @@ exports.register = (req, res) => {
 
 // Verify email
 exports.verifyEmail = (req, res) => {
-    const { token } = req.query;
+    const { token } = req.body;
 
     if (!token) {
         return res.status(400).json({ message: "Token is required" });

@@ -83,10 +83,10 @@ exports.getBookReviews = (req, res) => {
 
 // Get all reviews written by a user
 exports.getUsersBookReviews = (req, res) => {
-    const { userId } = req.query;
+    const userId = req.user.userId;
 
     if (!userId) {
-        return res.status(400).json({ message: "userId is required" });
+        return res.status(401).json({ message: "userId is required" });
     }
 
     const query = `

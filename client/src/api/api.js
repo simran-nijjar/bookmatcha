@@ -10,19 +10,24 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
-    const skipRetry = ['users/userid', 'users/login', 'users/refresh-token'];
-    const shouldSkip = skipRetry.some(url => originalRequest.url.includes(url));
+    if (!error.response) {
+      return Promise.reject(error);
+    }
 
-    if (error.response?.status === 401 && !originalRequest._retry && !shouldSkip) {
+    const status = error.response.status;
+
+    const isAuthRoute =
+      originalRequest.url.includes('users/login') ||
+      originalRequest.url.includes('users/refresh-token') ||
+      originalRequest.url.includes('users/logout');
+
+    if (status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
 
       try {
-        await axios.post(`${process.env.REACT_APP_API_URL}users/refresh-token`, {}, {
-          withCredentials: true
-        });
+        await api.post('users/refresh-token');
         return api(originalRequest);
       } catch (refreshError) {
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

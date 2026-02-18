@@ -211,17 +211,19 @@ exports.login = async (req, res) => {
             const accessToken = generateAccessToken({ userId: user.user_id });
             const refreshToken = generateRefreshToken({ userId: user.user_id });
 
+            const isProduction = process.env.NODE_ENV === 'production';
+
             res.cookie('token', accessToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict',
+                secure: isProduction,
+                sameSite: isProduction ? 'Strict' : 'Lax',
                 maxAge: 3600000
             });
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict',
+                secure: isProduction,
+                sameSite: isProduction ? 'Strict' : 'Lax',
                 maxAge: 7 * 24 * 60 * 60 * 1000
             });
 
@@ -241,16 +243,18 @@ exports.refreshToken = (req, res) => {
     }
 
     const jwt = require('jsonwebtoken');
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ message: "Invalid refresh token" });
         }
 
+        const isProduction = process.env.NODE_ENV === 'production';
+
         const newAccessToken = generateAccessToken({ userId: user.userId });
         res.cookie('token', newAccessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict',
+            secure: isProduction,
+            sameSite: isProduction ? 'Strict' : 'Lax',
             maxAge: 3600000
         });
 

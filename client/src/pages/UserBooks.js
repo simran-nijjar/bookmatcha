@@ -17,30 +17,20 @@ export const UserBooks = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError('User not logged in. Please login to view your books.');
-            return;
-        }
-
-        try {
-            const decoded = jwtDecode(token);
-            console.log('Decoded token:', decoded);
-            fetchUserReviews(decoded.userId);
-        } catch {
-            setError('Invalid session. Please login again.');
-        }
+        fetchUserReviews();
     }, []);
 
     const fetchUserReviews = async (userId) => {
         try {
-            const response = await api.get('reviews/user', {
-                params: { userId }
-            });
+            const response = await api.get('reviews/user');
             setReviews(response.data);
             setError('');
-        } catch {
-            setError('Error fetching your reviews. Please try again later.');
+        } catch (err) {
+            if (err.response?.status === 401){
+                setError('User not logged in. Please login to view your books');
+            } else {
+                setError('Error fetching your reviews. Please try again later.');
+            }
         }
     };
 

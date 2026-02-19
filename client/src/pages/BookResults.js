@@ -70,7 +70,7 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
           {/* Display book thumbnail, title, and author */}
           <div className="recommendations-grid">
             {results.map((book, index) => (
-              <div key={index} className="book-card">
+              <div key={index} className="book-card" onClick={() => insertBook(book)} style={{ cursor: 'pointer'}}>
 
                 {book.volumeInfo.imageLinks?.thumbnail ? (
                   <img
@@ -84,20 +84,11 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
 
                 <div className="book-content">
                   <div>
-                    <div
-                      className="book-title"
-                      onClick={() => insertBook(book)}
-                    >
-                      {book.volumeInfo.title}
+                    <div className="book-title">{book.volumeInfo.title}</div>
+                    <div className="book-author">By: {book.volumeInfo.authors?.join(', ') || 'Unknown'}</div>
+                    <div><span><StarRating rating={averageRatings[book.id] || 0} readOnly /></span>
+                      <div>{Number(averageRatings[book.id] || 0) > 0 ? Number(averageRatings[book.id]).toFixed(2) + '/5' : 'No ratings'}</div>
                     </div>
-                    <div className="book-author">
-                      By: {book.volumeInfo.authors?.join(', ') || 'Unknown'}
-                    </div>
-                    <div>
-                      <span><StarRating rating={averageRatings[book.id] || 0} readOnly /></span>
-                    <div>
-                      {Number(averageRatings[book.id] || 0) > 0 ? Number(averageRatings[book.id]).toFixed(2) + '/5' : 'No ratings'}
-                    </div></div>
                   </div>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles.css';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import StarRating from '../components/StarRating';
 
 // This file contains the details the user sees when they first login/register into bookmatcha
@@ -9,6 +9,7 @@ import StarRating from '../components/StarRating';
 
 export const HomePage = () => {
     const [topBooks, setTopBooks] = useState([]);
+    const navigate = useNavigate();
 
     const fetchTopBooks = async () => {
         try {
@@ -37,7 +38,7 @@ export const HomePage = () => {
 
             <div className="recommendations-grid">
                 {topBooks.map(book => (
-                    <div key={book.BookID} className="book-card">
+                    <div key={book.BookID} className="book-card" onClick={() => navigate(`/books/${book.BookID}`)} style={{ cursor: 'pointer'}}>
 
                         {book.ImageLink ? (
                             <img
@@ -50,28 +51,15 @@ export const HomePage = () => {
                         )}
 
                         <div className="book-content">
-
                             <div>
-                                <Link
-                                    to={`/books/${book.BookID}`}
-                                    className="book-title"
-                                >
-                                    {book.Title}
-                                </Link>
-
-                                <div className="book-author">
-                                    {book.Author}
-                                </div>
-
-                                <div>
-                                    <span><StarRating rating={book.AverageRating || 0} readOnly /></span>
-                                </div>
+                                <div className="book-title">{book.Title}</div>
+                                <div className="book-author"> {book.Author}</div>
+                                <div><span><StarRating rating={book.AverageRating || 0} readOnly /></span></div>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
-
         </div>
     );
 };

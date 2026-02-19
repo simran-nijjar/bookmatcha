@@ -7,7 +7,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 // On this page the user can update their informations
 
 export const UserAccount = () => {
-    const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -26,15 +25,11 @@ export const UserAccount = () => {
             .then((response) => {
                 if (response.data) {
                     const user = response.data;
-                    setUserInfo(user);
                     setUsername(user.username);
                     setFirstName(user.firstName);
                     setLastName(user.lastName);
-                } else {
-                    setUserInfo(null);
-                }
+                } 
             })
-            .catch(() => setUserInfo(null))
             .finally(() => setLoading(false));
     }, []);
 

@@ -13,6 +13,7 @@ export const BookRecommendations = () => {
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [averageRatings, setAverageRatings] = useState({});
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Fetch user's books from backend
@@ -52,6 +53,7 @@ export const BookRecommendations = () => {
 
   // Fetch recommended books from Google Books
   const getRecommendations = useCallback (async () => {
+    setLoading(true);
     try {
       const { authors, savedBookIds } = extractAuthors();
       const startIndex = (currentPage - 1) * maxResults;
@@ -77,6 +79,8 @@ export const BookRecommendations = () => {
       setRecommendedBooks(filteredBooks);
     } catch {
       setError('Error fetching recommendations.');
+    } finally {
+      setLoading(false);
     }
   }, [usersBooks, currentPage]);
 
@@ -145,6 +149,11 @@ export const BookRecommendations = () => {
 
       {error ? (
         <p className="subtitle">{error}</p>
+      ) : loading? (
+          <div className="loading-container">
+                <div className="loading-spinner" />
+                <p className="subtitle">Finding your recommendations...</p>
+            </div>
       ) : recommendedBooks.length === 0 ? (
         <p className="empty-message">
           Search and add more books to your library to get recommendations.
@@ -155,7 +164,7 @@ export const BookRecommendations = () => {
 
           <div className="recommendations-grid">
             {recommendedBooks.map(book => (
-              <div key={book.book_id} className="book-card">
+              <div key={book.book_id} className="book-card" onClick={() => insertBook(book)} style={{ cursor: 'pointer'}}>
 
                 {book.image_link ? (
                   <img
@@ -169,24 +178,10 @@ export const BookRecommendations = () => {
 
                 <div className="book-content">
                   <div>
-                    <div
-                      className="book-title"
-                      onClick={() => insertBook(book)}
-                    >
-                      {book.title}
-                    </div>
-
-                    <div className="book-author">
-                      {book.author}
-                    </div>
-
-                    <div>
-                      <span><StarRating rating={averageRatings[book.book_id] || 0} readOnly /></span>
-                    </div>
-
-                    <div>
-                     { averageRatings[book.bookId] >= 0 ? averageRatings[book.book_id] + '/5' : 'No ratings'}
-                    </div>
+                    <div className="book-title">{book.title}</div>
+                    <div className="book-author">{book.author}</div>
+                    <div><span><StarRating rating={averageRatings[book.book_id] || 0} readOnly /></span></div>
+                    <div> { averageRatings[book.bookId] >= 0 ? averageRatings[book.book_id] + '/5' : 'No ratings'}</div>
                   </div>
                 </div>
               </div>

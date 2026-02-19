@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { jwtDecode } from 'jwt-decode';
 import api from '../api/api';
 import StarRating from '../components/StarRating';
 

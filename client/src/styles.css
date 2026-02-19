@@ -1,16 +1,41 @@
-/* ===== Global ===== */
+/* ============================================================
+   BOOKMATCHA STYLES
+   Sections:
+   1. Global
+   2. Typography
+   3. Layout
+   4. Navbar
+   5. Buttons
+   6. Cards & Grid
+   7. Book Details
+   8. Reviews
+   9. Auth & Landing Pages
+   10. Account Page
+   11. Loading
+   12. Pagination
+   13. Utilities
+   14. Responsive
+   ============================================================ */
+
+
+/* ============================================================
+   1. GLOBAL
+   ============================================================ */
 
 body {
     font-family: 'Barlow', sans-serif;
     font-weight: 400;
     font-size: 18px;
     color: #2f3e32;
-    background-color: #e8efe6; /* soft matcha */
+    background-color: #e8efe6;
     margin: 0;
     padding: 0;
 }
 
-/* ===== Typography ===== */
+
+/* ============================================================
+   2. TYPOGRAPHY
+   ============================================================ */
 
 .title {
     font-weight: 700;
@@ -28,7 +53,25 @@ body {
     margin-bottom: 30px;
 }
 
-/* ===== Layout Containers ===== */
+.empty-message {
+    text-align: center;
+    font-size: 18px;
+    color: #6b7d6d;
+    margin-top: 40px;
+}
+
+.error-text {
+    color: #44624a;
+}
+
+.success-text {
+    color: #66bb6a;
+}
+
+
+/* ============================================================
+   3. LAYOUT
+   ============================================================ */
 
 .page-container {
     max-width: 1100px;
@@ -36,7 +79,96 @@ body {
     padding: 20px;
 }
 
-/* ===== Card Layout ===== */
+
+/* ============================================================
+   4. NAVBAR
+   ============================================================ */
+
+.cozy-navbar {
+    background-color: #44624a;
+    padding: 14px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.navbar-inner {
+    max-width: 1200px;
+}
+
+.brand-logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #f4f1ea !important;
+    text-transform: lowercase;
+}
+
+.brand-logo:hover {
+    opacity: 0.85;
+}
+
+.nav-links {
+    gap: 10px;
+    margin-left: 30px;
+}
+
+.cozy-link {
+    color: #f4f1ea !important;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: 0.2s ease;
+}
+
+.cozy-link:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.search-wrapper {
+    margin-left: auto;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+
+/* ============================================================
+   5. BUTTONS
+   ============================================================ */
+
+.theme-custom {
+    background-color: #44624a;
+    color: #f4f1ea;
+    font-weight: 600;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.theme-custom:hover {
+    background-color: #364d3a;
+}
+
+.button-custom:hover {
+    background-color: #364d3a;
+}
+
+
+/* ============================================================
+   6. CARDS & GRID
+   ============================================================ */
 
 .recommendations-grid {
     display: grid;
@@ -56,11 +188,7 @@ body {
 }
 
 .book-card {
-    background: linear-gradient(
-        180deg,
-        #f7f5ef 0%,
-        #f3f1ea 100%
-    );
+    background: linear-gradient(180deg, #f7f5ef 0%, #f3f1ea 100%);
     border-radius: 14px;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(68, 98, 74, 0.08);
@@ -78,7 +206,7 @@ body {
     height: 150px;
     object-fit: cover;
     border-radius: 8px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 .book-content {
@@ -93,10 +221,6 @@ body {
     margin-bottom: 6px;
     cursor: pointer;
     color: #44624a;
-}
-
-.book-title:hover {
-    text-decoration: underline;
 }
 
 .book-author {
@@ -115,288 +239,49 @@ body {
     margin-bottom: 12px;
 }
 
-@media (max-width: 768px) {
-    .page-container > div:first-child {
-        flex-direction: column !important;
-        gap: 15px !important;
-        align-items: center;
-    }
 
-    .page-container img {
-        width: 150px !important;
-        height: auto;
-    }
+/* ============================================================
+   7. BOOK DETAILS
+   ============================================================ */
 
-    .page-container h1.title {
-        font-size: 1.5rem;
-        text-align: center;
-    }
-
-    .page-container h3.subtitle {
-        font-size: 1rem;
-        text-align: center;
-    }
-
-    .reviews-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    textarea.auth-input {
-        width: 100%;
-    }
-
-    button.theme-custom {
-        width: 100%;
-        font-size: 1rem;
-    }
+.user-review {
+    font-size: 15px;
+    color: #2f3e32;
+    margin-top: 8px;
 }
 
-/* ===== Buttons ===== */
-
-.theme-custom {
-    background-color: #44624a;
-    color: #f4f1ea;
-    font-weight: 600;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.theme-custom:hover {
-    background-color: #364d3a;
-}
-
-.pagination {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-/* ===== Empty State ===== */
-
-.empty-message {
-    text-align: center;
-    font-size: 18px;
+.review-date {
+    font-size: 13px;
     color: #6b7d6d;
-    margin-top: 40px;
+    text-align: right;
+    margin-top: 6px;
 }
 
-/* ===== Navbar ===== */
-
-.cozy-navbar {
-    background-color: #44624a;
-    padding: 14px 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.navbar-inner {
-    max-width: 1200px;
-}
-
-/* Brand */
-
-.brand-logo {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: #f4f1ea !important;
-    text-transform: lowercase;
-}
-
-.brand-logo:hover {
-    opacity: 0.85;
-}
-
-/* Links */
-
-.nav-links {
+.review-actions {
+    display: flex;
     gap: 10px;
-    margin-left: 30px;
+    justify-content: flex-end;
+    margin-top: 10px;
 }
 
-.cozy-link {
-    color: #f4f1ea !important;
-    font-weight: 500;
-    padding: 8px 14px;
-    border-radius: 8px;
+.icon-button {
+    cursor: pointer;
+    color: #44624a;
     transition: 0.2s ease;
 }
 
-.cozy-link:hover {
-    background-color: rgba(255, 255, 255, 0.12);
+.icon-button:hover {
+    color: #364d3a;
 }
 
-/* Logout button reset */
-
-.logout-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
+.icon-button.delete:hover {
+    color: #c0392b;
 }
 
-/* Search Bar Wrapper */
 
-.search-wrapper {
-    margin-left: auto;
-}
-
-/* Make toggler icon white */
-
-.navbar-toggler {
-    border: none;
-}
-
-.navbar-toggler-icon {
-    filter: invert(1);
-}
-
-/* ===== User Account Page ===== */
-
-.account-grid {
-    display: grid;
-    gap: 24px;
-    grid-template-columns: 1fr; /* stacked on mobile */
-    margin-top: 30px;
-}
-
-@media (min-width: 768px) {
-    .account-grid {
-        grid-template-columns: 1fr 1fr; /* side by side on desktop */
-    }
-}
-
-/* ===== User Account Page ===== */
-
-.account-grid {
-  display: grid;
-  gap: 30px;
-  margin-top: 40px;
-  justify-content: center;
-}
-
-@media (min-width: 900px) {
-  .account-grid {
-    grid-template-columns: repeat(2, 420px); /* match auth-card width */
-  }
-}
-
-.account-card {
-  width: 100%;
-  max-width: 420px;
-  padding: 30px;
-  border-radius: 12px;
-  background-color: #f7f5ef;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-}
-
-.account-card .form-control {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-}
-
-.account-card .form-control:focus {
-  outline: none;
-  border-color: #6fbf8f;
-}
-
-.button-custom:hover {
-    background-color: #364d3a;
-}
-
-/* ===== Auth / Landing Pages ===== */
-
-.auth-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  padding: 30px;
-  border-radius: 12px;
-  background-color: white;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-.auth-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-}
-
-.auth-input:focus {
-  outline: none;
-  border-color: #6fbf8f;
-}
-
-.auth-button {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.auth-message {
-  min-height: 24px;
-  color: #d9534f;
-  font-size: 14px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.error-text {
-  color: #d9534f;
-}
-
-.success-text {
-  color: #66bb6a;
-}
-
-.auth-links {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.auth-links a {
-  text-decoration: none;
-}
-
-.auth-links a:hover {
-  text-decoration: underline;
-}
-
-.landing-content {
-  text-align: center;
-  margin-top: 60px;
-}
-
-.landing-buttons {
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.landing-buttons button {
-  min-width: 140px;
-}
-
-/* ===== Book Reviews ===== */
+/* ============================================================
+   8. REVIEWS
+   ============================================================ */
 
 .reviews-grid {
     display: flex;
@@ -442,32 +327,240 @@ body {
     color: #2f3e32;
 }
 
-.review-date {
-    font-size: 13px;
-    color: #6b7d6d;
-    text-align: right;
+
+/* ============================================================
+   9. AUTH & LANDING PAGES
+   ============================================================ */
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #6fbf8f;
+}
+
+.auth-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.auth-message {
+    min-height: 24px;
+    color: #44624a;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.auth-links a {
+    text-decoration: none;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.landing-content {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.landing-buttons {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.landing-buttons button {
+    min-width: 140px;
 }
 
 .password-wrapper {
-  position: relative;
+    position: relative;
 }
 
 .password-wrapper input {
-  padding-right: 45px;
+    padding-right: 45px;
 }
 
 .password-toggle {
-  position: absolute;
-  right: 12px;
-  top: 45%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #666;
+    position: absolute;
+    right: 12px;
+    top: 45%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #666;
 }
 
 .password-toggle:hover {
-  color: #000;
+    color: #000;
+}
+
+.password-checklist-wrapper {
+    margin-bottom: 15px;
+}
+
+
+/* ============================================================
+   10. ACCOUNT PAGE
+   ============================================================ */
+
+.account-grid {
+    display: grid;
+    gap: 30px;
+    margin-top: 40px;
+    justify-content: center;
+}
+
+@media (min-width: 900px) {
+    .account-grid {
+        grid-template-columns: repeat(2, 420px);
+    }
+}
+
+.account-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    border-radius: 12px;
+    background-color: #f7f5ef;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.account-card .form-control {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+}
+
+.account-card .form-control:focus {
+    outline: none;
+    border-color: #6fbf8f;
+}
+
+
+/* ============================================================
+   11. LOADING
+   ============================================================ */
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #e0e0e0;
+    border-top-color: #44624a;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+/* ============================================================
+   12. PAGINATION
+   ============================================================ */
+
+.pagination {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+/* ============================================================
+   13. UTILITIES
+   ============================================================ */
+
+.password-checklist-wrapper {
+    margin-bottom: 15px;
+}
+
+
+/* ============================================================
+   14. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .page-container > div:first-child {
+        flex-direction: column !important;
+        gap: 15px !important;
+        align-items: center;
+    }
+
+    .page-container img {
+        width: 150px !important;
+        height: auto;
+    }
+
+    .page-container h1.title {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .page-container h3.subtitle {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .reviews-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    textarea.auth-input {
+        width: 100%;
+    }
+
+    button.theme-custom {
+        width: 100%;
+        font-size: 1rem;
+    }
 }

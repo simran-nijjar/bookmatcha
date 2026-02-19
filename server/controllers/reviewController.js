@@ -1,4 +1,4 @@
-const connection = require('../config/db');\
+const connection = require('../config/db');
 const xss = require('xss');
 
 // Add a review for a book

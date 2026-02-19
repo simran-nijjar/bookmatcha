@@ -157,6 +157,12 @@ body {
     transition: 0.2s ease;
 }
 
+.theme-custom:disabled {
+    background-color: #a8bfaa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .theme-custom:hover {
     background-color: #364d3a;
 }

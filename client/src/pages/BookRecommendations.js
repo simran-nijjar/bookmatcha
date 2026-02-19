@@ -37,18 +37,26 @@ export const BookRecommendations = () => {
   };
 
   // Extract authors and saved book IDs from user's library
+  // Get the highest rated book for each author and then sort the authors set from highest to lowest rating
   const extractAuthors = () => {
-    const authors = new Set();
+    const authorRatings = {};
     const savedBookIds = new Set();
 
     usersBooks.forEach(book => {
-      if (book.Author) {
-        authors.add(book.Author.trim());
-      }
-      savedBookIds.add(book.bookId);
+        savedBookIds.add(book.bookId);
+        if (book.Author) {
+            const author = book.Author.trim();
+            if (!authorRatings[author] || book.Rating > authorRatings[author]) {
+                authorRatings[author] = book.Rating;
+            }
+        }
     });
 
-    return { authors: Array.from(authors), savedBookIds: Array.from(savedBookIds) };
+    // Sort authors by their highest rated book
+    const authors = Object.entries(authorRatings)
+        .sort((a, b) => b[1] - a[1])
+        .map(([author]) => author);
+    return { authors, savedBookIds: Array.from(savedBookIds) };
   };
 
   // Fetch recommended books from Google Books
@@ -56,11 +64,13 @@ export const BookRecommendations = () => {
     setLoading(true);
     try {
       const { authors, savedBookIds } = extractAuthors();
+      const topAuthors = authors.slice(0, 5);
       const startIndex = (currentPage - 1) * maxResults;
-      const googleBooks = await fetchBooksFromGoogle(authors, startIndex);
+      const googleBooks = await fetchBooksFromGoogle(topAuthors, startIndex);
 
       const filteredBooks = googleBooks
       .filter(book => !savedBookIds.includes(book.id))
+      .slice(0, 30)
       .map(book => ({
           book_id: book.id,
           title: book.volumeInfo.title || 'Untitled',
@@ -88,15 +98,18 @@ export const BookRecommendations = () => {
     if (!authors || authors.length === 0) {
       return [];
     }
+
+    const results = await Promise.allSettled(
+      authors.map(author => api.get('google-books/search', { params: { query: author, startIndex }}))
+    );
+
     const allResults = [];
-    for (const author of authors) {
-      try {
-        const res = await api.get('google-books/search', {
-          params: { query: author, startIndex }
-        });
-        if (res.data.items) allResults.push(...res.data.items);
-      } catch {}
-    }
+    results.forEach(result => {
+      if (result.status === 'fulfilled' && result.value.data.items) {
+        allResults.push(...result.value.data.items);
+      }
+    });
+
     // Remove duplicates
     const seen = new Set();
     const uniqueResults = allResults.filter(book => {

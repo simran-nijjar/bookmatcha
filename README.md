@@ -12,7 +12,9 @@
 - **Personal Library** — Books are automatically added to your library when you rate or review them
 - **Ratings & Reviews** — Submit, edit, and browse ratings and reviews from other users
 - **Live Average Ratings** — Average ratings update in real time as users add or change their scores
-- **Recommendations** — Get book suggestions based on the highest-rated books in your library
+- **Recommendations** — Get book suggestions based on authors from your highest-rated books
+- **Email Verification** — Account verification via email before login is permitted
+- **Password Reset** — Secure password reset flow via email link
 - **Responsive Design** — Optimized for both desktop and mobile
 
 ---
@@ -25,7 +27,21 @@
 | Backend | Node.js, Express.js |
 | Database | MySQL |
 | External API | Google Books API |
-| Auth | JWT |
+| Auth | JWT (httpOnly cookies) |
+| Email | SendGrid |
+| Hosting | Vercel (frontend), Railway (backend) |
+
+---
+
+## Security
+
+- JWT access and refresh tokens stored in httpOnly cookies
+- Password hashing with bcrypt (12 salt rounds)
+- Email verification required before login
+- Backend input validation on all endpoints
+- Parameterized SQL queries to prevent SQL injection
+- XSS sanitization on all user-generated content (reviews, names)
+- Vague authentication error messages to prevent user enumeration
 
 ---
 
@@ -36,6 +52,7 @@
 - Node.js and npm installed
 - MySQL database set up
 - A [Google Books API key](https://developers.google.com/books/docs/v1/using#APIKey)
+- A [SendGrid account](https://sendgrid.com/) with a verified sender domain
 
 ### 1. Clone the repository
 
@@ -75,15 +92,12 @@ EMAIL_API_KEY=
 GOOGLE_BOOKS_API_KEY=
 ACCESS_SECRET=
 REFRESH_SECRET=
+NODE_ENV=development
 ```
 
 ### 4. Set up the database
 
-Run the provided SQL script to initialize your database schema:
-
-```bash
-mysql -u <your_user> -p <your_database> < server/SQL\ Scripts/CreateDB.sql
-```
+Run the provided CreateDB.sql script to initialize your database schema
 
 ### 5. Start the application
 

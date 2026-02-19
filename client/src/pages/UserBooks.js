@@ -85,7 +85,7 @@ export const UserBooks = () => {
                                     <div>
 
                                         <Link
-                                            to={`/book/${review.book_id}`}
+                                            to={`/books/${review.book_id}`}
                                             className="book-title"
                                         >
                                             {review.bookTitle}

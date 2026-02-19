@@ -53,7 +53,7 @@ export const HomePage = () => {
 
                             <div>
                                 <Link
-                                    to={`/book/${book.BookID}`}
+                                    to={`/books/${book.BookID}`}
                                     className="book-title"
                                 >
                                     {book.Title}

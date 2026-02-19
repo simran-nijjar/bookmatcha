@@ -1,13 +1,19 @@
-const connection = require('../config/db');
+const connection = require('../config/db');\
+const xss = require('xss');
 
 // Add a review for a book
 exports.addReview = (req, res) => {
     const userId = req.user.userId;
-    const { bookId, writtenReview, rating } = req.body;
+    const writtenReview = xss(req.body.writtenReview || '');
+    const { bookId, rating } = req.body;
 
     // Validate input
     if (!bookId || !rating || !userId) {
         return res.status(400).json({ message: "bookId, rating, and userId are required" });
+    }
+
+    if (writtenReview.length > 2000){
+        return res.status(400).json({ message: "Review cannot exceed 2000 characters"});
     }
 
     const query = 'INSERT INTO reviews (book_id, written_review, rating, user_id) VALUES (?, ?, ?, ?)';
@@ -23,7 +29,8 @@ exports.addReview = (req, res) => {
 // Update an existing review
 exports.updateReview = (req, res) => {
     const userId = req.user.userId;
-    const { bookId, writtenReview, rating } = req.body;
+    const writtenReview = xss(req.body.writtenReview || '');
+    const { bookId, rating } = req.body;
 
     if (!bookId || !rating || !userId) {
         return res.status(400).json({ message: "bookId, rating, and userId are required" });

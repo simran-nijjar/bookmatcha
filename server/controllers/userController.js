@@ -4,6 +4,7 @@ const { generateAccessToken, generateRefreshToken } = require('../utils/generate
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 const { containsProfanity } = require('../utils/contentFilter');
+const xss = require('xss');
 const saltRounds = 12;
 
 // Register user
@@ -389,7 +390,9 @@ exports.getUserInformation = (req, res) => {
 // Update first or last name
 exports.updateUserInformation = (req, res) => {
     const userId = req.user.userId;
-    const { firstName, lastName, profilePic } = req.body;
+    const firstName = xss(req.body.firstName || '');
+    const lastName = xss(req.body.lastName || '');
+    const { profilePic } = req.body;
 
     if (!userId) {
         return res.status(400).json({ message: "userId is required" });

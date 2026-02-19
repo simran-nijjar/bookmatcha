@@ -227,6 +227,7 @@ export function BookDetails() {
                     value={writtenReview}
                     onChange={onChange}
                     rows="6"
+                    maxLength={2000}
                     placeholder="Write a review (optional)"
                 />
                 <button className="theme-custom" type="submit" style={{ marginTop: '10px' }}>

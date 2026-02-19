@@ -20,11 +20,10 @@ export function BookDetails() {
 
     const fetchBookDetails = useCallback(async (bookId) => {
         try {
-            const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
-            const data = await response.json();
-            setBook(data);
-            setBookId(data.id);
-            fetchReviews(data.id);
+            const response = await api.get(`google-books/books/${bookId}`);
+            setBook(response.data);
+            setBookId(response.data.id);
+            fetchReviews(response.data.id);
         } catch {
             setError('Failed to load book details.');
         }
@@ -51,7 +50,7 @@ export function BookDetails() {
 
     const fetchExistingReview = async (bookId) => {
         try {
-            const res = await api.get('reviews/book/user', { params: { bookId } });
+            const res = await api.get('reviews/books/user', { params: { bookId } });
             setIsLoggedIn(true);
             if (res.data.length > 0) {
                 setExistingReview(res.data[0]);

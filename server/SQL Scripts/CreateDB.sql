@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS books (
     genre VARCHAR(100) DEFAULT NULL,
     sub_genre VARCHAR(100) DEFAULT NULL,
     average_rating DECIMAL(2,1) DEFAULT NULL,
+    isbn VARCHAR(20) DEFAULT NULL
     PRIMARY KEY (book_id),
     UNIQUE KEY BookID (book_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

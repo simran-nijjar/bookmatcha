@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import '../styles.css'
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/api';
 import StarRating from '../components/StarRating';
@@ -19,26 +18,31 @@ export function BookResults({ results, onNextPage, onPrevPage, currentPage }) {
   // When a book is selected, it will be inserted into the backend if it's not already inserted
   const insertBook = async (book) => {
     try {
-      const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.id}`);
-      const response = await api.post('books/insertbook', {
-        title: book.volumeInfo.title,
-        bookId: book.id,
-        author: book.volumeInfo.authors?.join(', ') || 'Unknown',
-        imageLink: book.volumeInfo.imageLinks?.thumbnail || '',
-        genre: bookDetails.data.volumeInfo?.categories?.[0]
-          ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
-          : 'Unknown',
-        subGenre: bookDetails.data.volumeInfo?.categories?.[0]
-          ? bookDetails.data.volumeInfo.categories
-              .map(category => category.split('/')[2])
-              .filter(Boolean)
-              .join(',') || 'Unknown'
-          : 'Unknown'
-      });
-      
+      const isbn = book.volumeInfo.industryIdentifiers?.find(
+            id => id.type === 'ISBN_13'
+        )?.identifier || book.volumeInfo.industryIdentifiers?.find(
+            id => id.type === 'ISBN_10'
+        )?.identifier || null;
+
+        const response = await api.post('books/insertbook', {
+            title: book.volumeInfo.title,
+            bookId: book.id,
+            author: book.volumeInfo.authors?.join(', ') || 'Unknown',
+            imageLink: book.volumeInfo.imageLinks?.thumbnail || '',
+            isbn,
+            genre: book.volumeInfo.categories?.[0]
+              ? book.volumeInfo.categories[0].split('/')[1]?.trim() || 'Unknown'
+              : 'Unknown',
+            subGenre: book.volumeInfo.categories?.[0]
+              ? book.volumeInfo.categories
+                  .map(c => c.split('/')[2]?.trim())
+                  .filter(Boolean)
+                  .join(',') || 'Unknown'
+            : 'Unknown'
+        });
       // Successful book insertion will navigate to the book details page
       if (response.status === 200 || response.status === 201) {
-        navigate(`/book/${book.id}`, { state: { book } });
+        navigate(`/books/${book.id}`, { state: { book } });
       }
     } catch { }
   };

@@ -10,7 +10,7 @@ export default function SearchBar({ query, onQueryChange, onSearch }) {
     // Navigates to book results page
     const handleSearch = async (event) => {
         await onSearch(event);
-        navigate('/BookResults');
+        navigate('/books/search');
     };
 
     return (

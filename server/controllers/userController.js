@@ -37,7 +37,6 @@ exports.register = (req, res) => {
     const checkUsernameQuery = 'SELECT * FROM users WHERE user_name = ?';
     connection.query(checkUsernameQuery, [username], (err, result) => {
         if (err) {
-            console.error("Username check error:", err);
             return res.status(500).json({ message: "Error checking username" });
         }
 

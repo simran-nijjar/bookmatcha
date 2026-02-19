@@ -8,6 +8,6 @@ router.put('/', auth, reviewController.updateReview);
 router.get('/', reviewController.getBookReviews);
 router.delete('/:id', auth, reviewController.deleteReview);
 router.get('/user', auth, reviewController.getUsersBookReviews);
-router.get('/book/user', auth, reviewController.getReviewForBookByUser);
+router.get('/books/user', auth, reviewController.getReviewForBookByUser);
 
 module.exports = router;

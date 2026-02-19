@@ -49,7 +49,7 @@ export const UserBooks = () => {
     };
 
     const handleEdit = (bookID) => {
-        navigate(`/book/${bookID}`);
+        navigate(`/books/${bookID}`);
     };
 
     const formatDate = (dateString) => {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../styles.css';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/api';
 import StarRating from '../components/StarRating';
@@ -59,13 +58,18 @@ export const BookRecommendations = () => {
       const googleBooks = await fetchBooksFromGoogle(authors, startIndex);
 
       const filteredBooks = googleBooks
-        .filter(book => !savedBookIds.includes(book.id))
-        .map(book => ({
+      .filter(book => !savedBookIds.includes(book.id))
+      .map(book => ({
           book_id: book.id,
           title: book.volumeInfo.title || 'Untitled',
           author: book.volumeInfo.authors?.join(', ') || 'Unknown',
-          image_link: book.volumeInfo.imageLinks?.smallThumbnail || ''
-        }));
+          image_link: book.volumeInfo.imageLinks?.smallThumbnail || '',
+          isbn: book.volumeInfo.industryIdentifiers?.find(
+              id => id.type === 'ISBN_13'
+          )?.identifier || book.volumeInfo.industryIdentifiers?.find(
+              id => id.type === 'ISBN_10'
+          )?.identifier || null
+      }));
 
       const bookIDs = filteredBooks.map(book => book.book_id);
       await fetchAverageRatings(bookIDs);
@@ -118,29 +122,18 @@ export const BookRecommendations = () => {
 
   const insertBook = async (book) => {
     try {
-      const bookDetails = await axios.get(`https://www.googleapis.com/books/v1/volumes/${book.book_id}`);
-      const response = await api.post('books/insertbook', {
-        title: book.title,
-        bookId: book.book_id,
-        author: book.author || 'Unknown',
-        imageLink: book.image_link || '',
-        genre: bookDetails.data.volumeInfo?.categories?.[0]
-          ? bookDetails.data.volumeInfo.categories[0].split('/')[1] || 'Unknown'
-          : 'Unknown',
-        subGenre: bookDetails.data.volumeInfo?.categories?.[0]
-          ? bookDetails.data.volumeInfo.categories
-              .map(c => c.split('/')[2])
-              .filter(Boolean)
-              .join(',') || 'Unknown'
-          : 'Unknown'
-      });
+     const response = await api.post('books/insertbook', {
+            title: book.title,
+            bookId: book.book_id,
+            author: book.author || 'Unknown',
+            imageLink: book.image_link || '',
+            isbn: book.isbn || null
+        });
 
       if (response.status === 200 || response.status === 201) {
-        navigate(`/book/${book.book_id}`, { state: { book } });
+        navigate(`/books/${book.book_id}`, { state: { book } });
       }
-    } catch (error) {
-      console.error('Error inserting book:', error);
-    }
+    } catch { }
   };
 
   const handleNextPage = () => setCurrentPage(prev => prev + 1);

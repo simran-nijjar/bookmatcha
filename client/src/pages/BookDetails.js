@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import api from '../api/api';
 import StarRating from '../components/StarRating';
 import { ShelfSelector } from '../components/ShelfSelector';
+import { REVIEW_SORT_OPTIONS } from '../constants/sortConstants';
 
 export function BookDetails() {
     const { id } = useParams();
@@ -19,6 +20,7 @@ export function BookDetails() {
     const [submitting, setSubmitting] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
     const [shelfEntry, setShelfEntry] = useState(null);
+    const [sortBy, setSortBy] = useState('newest');
 
     const fetchBookDetails = useCallback(async (bookId) => {
         try {
@@ -166,6 +168,21 @@ export function BookDetails() {
     const writtenReviews = reviews.filter(r => r.written_review && r.written_review.trim() !== '');
     const ratingCount = reviews.filter(r => r.rating > 0).length;
 
+    const sortedReviews = [...writtenReviews].sort((a, b) => {
+        switch (sortBy) {
+            case 'newest':  
+                return new Date(b.created_at) - new Date(a.created_at);
+            case 'oldest':  
+                return new Date(a.created_at) - new Date(b.created_at);
+            case 'highest': 
+                return b.rating - a.rating;
+            case 'lowest':  
+                return a.rating - b.rating;
+            default:        
+                return 0;
+        }
+    });
+
    return (
     <div className="page-container">
 
@@ -299,10 +316,12 @@ export function BookDetails() {
                         marginTop: '4px'
                     }}>
                         {writtenReview.length}/2000
+                    </div> 
+                    <div style={{textAlign: 'center'}}>
+                        <button className="theme-custom" type="submit" style={{ marginTop: '10px' }}>
+                            {existingReview ? 'Update Review' : 'Save Review'}
+                        </button>
                     </div>
-                    <button className="theme-custom" type="submit" style={{ marginTop: '10px' }}>
-                        {existingReview ? 'Update Review' : 'Save Review'}
-                    </button>
                 </form>
                 {error && <p className="error-text">{error}</p>}
                 <hr />
@@ -311,11 +330,37 @@ export function BookDetails() {
 
         {/* POSTED REVIEWS */}
         <h2 className="title">Posted Reviews</h2>
+            {sortedReviews.length > 0 && (
+            <select
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value)}
+                    style={{
+                        backgroundColor: '#dfe8dc',
+                        color: '#2f3e32',
+                        border: 'solid',
+                        borderWidth: 'thin',
+                        padding: '7px 16px',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        appearance: 'auto',
+                    }}
+                >
+                    <option value="" disabled>Sort by</option>
+                    {REVIEW_SORT_OPTIONS.map(option => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            )}
         <div className="reviews-grid">
-            {writtenReviews.length === 0 ? (
+            {sortedReviews.length === 0 ? (
                 <p className="empty-message">No written reviews yet.</p>
             ) : (
-                writtenReviews.map((review) => (
+                sortedReviews.map((review) => (
                     <div className="review-card" key={review.book_review_id}>
                         <div className="review-header">
                             <strong>{review.user_name}</strong>

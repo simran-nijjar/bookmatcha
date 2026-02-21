@@ -9,7 +9,7 @@
 ## Features
 
 - **Book Search** — Search for books by title or author using the Google Books API
-- **Personal Library** — Books are automatically added to your library when you rate or review them
+- **Personal Bookshelves** — Organize books into shelves: Want to Read, Reading, Read, and Did Not Finish
 - **Ratings & Reviews** — Submit, edit, and browse ratings and reviews from other users
 - **Live Average Ratings** — Average ratings update in real time as users add or change their scores
 - **Recommendations** — Get book suggestions based on authors from your highest-rated books

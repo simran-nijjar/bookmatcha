@@ -19,6 +19,9 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/books', require('./routes/bookRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/google-books', require('./routes/googleBooksRoutes'));
+app.use('/api/shelves', require('./routes/shelfRoutes'));
+app.use('/api/user-books', require('./routes/userBookRoutes'));
+app.use('/api/reading-sessions', require('./routes/readingSessionRoutes'));
 
 // Health check route for Railway
 app.get('/', (req, res) => {

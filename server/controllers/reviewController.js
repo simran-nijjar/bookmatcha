@@ -1,6 +1,33 @@
 const connection = require('../config/db');
 const xss = require('xss');
 
+// Helper to sync a reviewed book to the read shelf
+const syncToReadShelf = (userId, bookId) => {
+    const getShelfQuery = `SELECT shelf_id FROM shelves WHERE user_id = ? AND slug = 'read'`;
+
+    connection.query(getShelfQuery, [userId], (err, result) => {
+        if (err || result.length === 0) {
+            return;
+        }
+
+        const shelfId = result[0].shelf_id;
+
+        const upsertQuery = `
+            INSERT INTO user_books (user_id, book_id, shelf_id, updated_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            ON DUPLICATE KEY UPDATE
+                shelf_id = IF(shelf_id = VALUES(shelf_id), shelf_id, shelf_id),
+                updated_at = CURRENT_TIMESTAMP
+        `;
+
+        connection.query(upsertQuery, [userId, bookId, shelfId], (err) => {
+            if (err) {
+                // Do nothing
+            }
+        });
+    });
+};
+
 // Add a review for a book
 exports.addReview = (req, res) => {
     const userId = req.user.userId;
@@ -8,8 +35,12 @@ exports.addReview = (req, res) => {
     const { bookId, rating } = req.body;
 
     // Validate input
-    if (!bookId || !rating || !userId) {
-        return res.status(400).json({ message: "bookId, rating, and userId are required" });
+    if (!bookId || !userId) {
+        return res.status(400).json({ message: "bookId, and userId are required" });
+    }
+
+    if (!rating) {
+        return res.status(400).json({ message: "rating is required"});
     }
 
     if (writtenReview.length > 2000){
@@ -22,6 +53,8 @@ exports.addReview = (req, res) => {
         if (err) {
             return res.status(500).json({ message: "Error saving review" });
         }
+        syncToReadShelf(userId, bookId);
+
         return res.status(201).json({ message: "Review saved successfully" });
     });
 };
@@ -46,6 +79,8 @@ exports.updateReview = (req, res) => {
         if (err) {
             return res.status(500).json({ message: "Error updating review" });
         }
+        syncToReadShelf(userId, bookId);
+
         return res.status(200).json({ message: "Review updated successfully" });
     });
 };

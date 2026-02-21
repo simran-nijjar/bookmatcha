@@ -3,6 +3,7 @@ import '../styles.css';
 import { useParams } from 'react-router-dom';
 import api from '../api/api';
 import StarRating from '../components/StarRating';
+import { ShelfSelector } from '../components/ShelfSelector';
 
 export function BookDetails() {
     const { id } = useParams();
@@ -17,6 +18,7 @@ export function BookDetails() {
     const [existingReview, setExistingReview] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [shelfEntry, setShelfEntry] = useState(null);
 
     const fetchBookDetails = useCallback(async (bookId) => {
         try {
@@ -33,15 +35,8 @@ export function BookDetails() {
         try {
             const res = await api.get('reviews', { params: { bookId } });
             setReviews(res.data);
-
-            const ratings = res.data
-                .map(r => Number(r.rating))
-                .filter(r => !isNaN(r) && r > 0);
-
-            const avg = ratings.length > 0
-                ? ratings.reduce((a, b) => a + b, 0) / ratings.length
-                : null;
-
+            const ratings = res.data.map(r => Number(r.rating)).filter(r => !isNaN(r) && r > 0);
+            const avg = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
             setAverageRating(avg !== null ? parseFloat(avg.toFixed(2)) : 0);
         } catch {
             setError('Failed to fetch reviews. Please try again later.');
@@ -59,22 +54,29 @@ export function BookDetails() {
             }
         } catch {
             setIsLoggedIn(false);
-            setError('Failed to get your review. Please try again later.');
         }
     };
 
+    const fetchShelfEntry = useCallback(async (bookId) => {
+        try {
+            const res = await api.get(`user-books/${bookId}`);
+            setShelfEntry(res.data);
+        } catch {
+            setShelfEntry(null);
+        }
+    }, []);
+
     useEffect(() => {
-    if (id) {
-        fetchBookDetails(id);
-        fetchExistingReview(id);
-    }
-    }, [id, fetchBookDetails]);
+        if (id) {
+            fetchBookDetails(id);
+            fetchExistingReview(id);
+            fetchShelfEntry(id);
+        }
+    }, [id, fetchBookDetails, fetchShelfEntry]);
 
     const onChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'WrittenReview') {
-            setWrittenReview(value);
-        }
+        if (name === 'WrittenReview') setWrittenReview(value);
     };
 
     const saveRating = async (newRating) => {
@@ -82,25 +84,32 @@ export function BookDetails() {
             return;
         }
         setSubmitting(true);
+        setError('');
         try {
             if (existingReview) {
                 await api.put('reviews', {
                     bookId,
-                    writtenReview: existingReview.written_review || '',
+                    writtenReview: writtenReview|| '',
                     rating: newRating
                 });
             } else {
                 await api.post('reviews', {
                     bookId,
-                    writtenReview: '',
+                    writtenReview: writtenReview,
                     rating: newRating
                 });
             }
             setRating(newRating);
             fetchReviews(bookId);
             fetchExistingReview(bookId);
-        } catch {
-            setError('Error saving rating. Please try again later.');
+            fetchShelfEntry(bookId);
+        } catch (err) {
+            var message = err.response?.data?.message;
+            if (message.includes('rating')) {
+                setError('You must give the book a rating');
+            } else {
+                setError('Error saving rating. Please try again later.');
+            }
         } finally {
             setSubmitting(false);
         }
@@ -122,8 +131,16 @@ export function BookDetails() {
             }
             fetchReviews(bookId);
             fetchExistingReview(bookId);
-        } catch {
-            setError('Error saving review. Please try again later.');
+            fetchShelfEntry(bookId);
+        } catch (err) {
+            var message = err.response?.data?.message;
+            if (message.includes('rating')) {
+                setError('You must give the book a rating.');
+            } else if (message.includes('cannot exceed')) {
+                setError('Review cannot exceed 2000 characters');
+            } else {
+                setError('Error saving rating. Please try again later.');
+            }
         } finally {
             setSubmitting(false);
         }
@@ -131,132 +148,187 @@ export function BookDetails() {
 
     const formatDescription = (raw) => {
         if (!raw) return <p>No description available.</p>;
-
-        const paragraphs = raw
-            .split(/<br\s*\/?>/i)
-            .filter(p => p.trim() !== '');
-
+        const paragraphs = raw.split(/<br\s*\/?>/i).filter(p => p.trim() !== '');
         return paragraphs.map((p, idx) => (
-            <p
-                key={idx}
-                style={{ marginBottom: '12px', lineHeight: '1.6' }}
-                dangerouslySetInnerHTML={{ __html: p }}
-            />
+            <p key={idx} style={{ marginBottom: '12px', lineHeight: '1.6' }}
+                dangerouslySetInnerHTML={{ __html: p }} />
         ));
     };
 
-    if (!book) return <p className="empty-message">Loading book details...</p>;
+    if (!book) { 
+        return <p className="empty-message">Loading book details...</p>;
+    }
 
     const shortDescription =
         book.volumeInfo?.description?.slice(0, 300) +
         (book.volumeInfo?.description?.length > 300 ? '...' : '');
 
-    const writtenReviews = reviews.filter(
-        r => r.written_review && r.written_review.trim() !== ''
-    );
-
+    const writtenReviews = reviews.filter(r => r.written_review && r.written_review.trim() !== '');
     const ratingCount = reviews.filter(r => r.rating > 0).length;
 
-    return (
-        <div className="page-container">
-            <div style={{ display: 'flex', gap: '25px', alignItems: 'flex-start', marginBottom: '20px' }}>
-                
-                {/* LEFT COLUMN */}
-                <div style={{ minWidth: '200px' }}>
-                    {book.volumeInfo?.imageLinks?.thumbnail ? (
-                        <img
-                            src={book.volumeInfo.imageLinks.thumbnail}
-                            alt={book.volumeInfo.title}
-                            style={{ width: '200px', borderRadius: '4px' }}
-                        />
-                    ) : (
-                        <div style={{ width: '200px', height: '300px', backgroundColor: '#ccc', borderRadius: '4px' }} />
-                    )}
+   return (
+    <div className="page-container">
 
-                    {isLoggedIn && (
-                        <div style={{ marginTop: '15px' }}>
-                            <strong>Your Rating:</strong>
-                            <StarRating rating={rating} setRating={saveRating} />
-                        </div>
-                    )}
-                </div>
+        {/* TOP SECTION */}
+        <div style={{ display: 'flex', gap: '25px', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap',}}>
 
-                {/* RIGHT COLUMN */}
-                <div style={{ flex: 1 }}>
-                    <h1 className="title">{book.volumeInfo?.title || 'No Title Available'}</h1>
-                    <h3 className="subtitle">
-                        {book.volumeInfo?.authors?.join(', ') || 'Unknown Author'}
-                    </h3>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                        <StarRating rating={averageRating || 0} readOnly />
-                        <strong>{averageRating !== null ? averageRating.toFixed(2) : '0.00'}</strong>
-                        <span>
-                            {ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'}
-                        </span>
-                        <span>
-                            {writtenReviews.length} {writtenReviews.length === 1 ? 'review' : 'reviews'}
-                        </span>
-                    </div>
-
-                    <div>
-                        {showFullDescription
-                            ? formatDescription(book.volumeInfo?.description)
-                            : formatDescription(shortDescription)
-                        }
-                        {book.volumeInfo?.description?.length > 300 && (
-                            <button
-                                className="theme-custom"
-                                onClick={() => setShowFullDescription(!showFullDescription)}
-                            >
-                                {showFullDescription ? 'Show Less' : 'Read More'}
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <hr />
-
-            <h2 className="title">Write a Review</h2>
-            <form onSubmit={saveReview}>
-                <textarea
-                    className="auth-input"
-                    name="WrittenReview"
-                    value={writtenReview}
-                    onChange={onChange}
-                    rows="6"
-                    maxLength={2000}
-                    placeholder="Write a review (optional)"
-                />
-                <button className="theme-custom" type="submit" style={{ marginTop: '10px' }}>
-                    {existingReview ? 'Update Review' : 'Save Review'}
-                </button>
-            </form>
-
-            {error && <p className="error-text">{error}</p>}
-
-            <hr />
-
-            <h2 className="title">Posted Reviews</h2>
-            <div className="reviews-grid">
-                {writtenReviews.length === 0 ? (
-                    <p className="empty-message">No written reviews yet.</p>
+            {/* LEFT COLUMN — cover, shelf selector, rating */}
+            <div style={{ width: '200px', flex: '0 0 200px',}}>
+                {book.volumeInfo?.imageLinks?.thumbnail ? (
+                    <img
+                        src={book.volumeInfo.imageLinks.thumbnail}
+                        alt={book.volumeInfo.title}
+                        style={{ width: '200px', borderRadius: '4px', display: 'block' }}
+                    />
                 ) : (
-                    writtenReviews.map((review) => (
-                        <div className="review-card" key={review.book_review_id}>
-                            <div className="review-header">
-                                <strong>{review.user_name}</strong>
-                                <StarRating rating={review.rating || 0} readOnly />
-                            </div>
-                            <p className="review-text">{review.written_review}</p>
-                            <div className="review-date">
-                                {new Date(review.created_at).toDateString()}
-                            </div>
-                        </div>
-                    ))
+                    <div style={{ width: '200px', height: '300px', backgroundColor: '#ccc', borderRadius: '4px' }} />
+                )}
+
+                {/* Shelf selector — desktop only, hidden on mobile */}
+                {isLoggedIn && (
+                    <div className="desktop-only" style={{ marginTop: '12px', textAlign: 'center' }}>
+                        <ShelfSelector
+                            bookId={bookId}
+                            initialEntry={shelfEntry}
+                            onUpdate={() => fetchShelfEntry(bookId)}
+                        />
+                    </div>
+                )}
+
+                {/* Rating */}
+                {isLoggedIn && (
+                    <div className="desktop-only" style={{ marginTop: '12px', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
+                        <strong>{rating > 0 ? 'Your rating:' : 'Rate this book'}</strong>
+                        <StarRating rating={rating} setRating={saveRating} />
+                    </div>
                 )}
             </div>
+
+            {/* RIGHT COLUMN */}
+            <div style={{ flex: 1, minWidth: '250px' }}>
+                <h1 className="title" style={{ textAlign: 'center', marginTop: '0' }}>
+                    {book.volumeInfo?.title || 'No Title Available'}
+                </h1>
+                <h3 className="subtitle" style={{ textAlign: 'center', marginBottom: '10px' }}>
+                    {book.volumeInfo?.authors?.join(', ') || 'Unknown Author'}
+                </h3>
+
+                {/* Community rating */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', justifyContent: 'center' }}>
+                    <StarRating rating={averageRating || 0} readOnly />
+                    <strong>{averageRating !== null ? averageRating.toFixed(2) : '0.00'}</strong>
+                    <span style={{ color: '#6b7d6d', fontSize: '15px' }}>
+                        {ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'} &bull; {writtenReviews.length} {writtenReviews.length === 1 ? 'review' : 'reviews'}
+                    </span>
+                </div>
+
+                {/* Shelf selector — mobile only, shown in right column flow */}
+                {isLoggedIn && (
+                    <div className="mobile-only" style={{ marginBottom: '12px', textAlign: 'center' }}>
+                        <ShelfSelector
+                            bookId={bookId}
+                            initialEntry={shelfEntry}
+                            onUpdate={() => fetchShelfEntry(bookId)}
+                        />
+                    </div>
+                )}
+
+                {/* Description */}
+                <div style={{
+                    backgroundColor: '#fffdf7',
+                    borderRadius: '10px',
+                    padding: '16px',
+                    marginBottom: '10px',
+                }}>
+                    {showFullDescription
+                        ? formatDescription(book.volumeInfo?.description)
+                        : formatDescription(shortDescription)
+                    }
+                    {book.volumeInfo?.description?.length > 300 && (
+                    <div style ={{ textAlign: 'center', marginTop: '4px'}}>
+                        <button
+                            className="theme-custom"
+                            onClick={() => setShowFullDescription(!showFullDescription)}
+                            style={{
+                                    background: '#dfe8dc',
+                                    border: 'none',
+                                    color: '#2f3e32',
+                                    fontWeight: 600,
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    padding: '5px 14px',
+                                    borderRadius: '20px',
+                                    fontFamily: 'inherit',
+                                    transition: '0.2s',
+                                    marginTop: '4px',
+                                }}                        >
+                            {showFullDescription ? 'Show Less' : 'Read More'}
+                        </button>
+                    </div>
+                    )}
+                </div>
+            </div>
         </div>
-    );
+
+        <hr />
+
+        {/* REVIEW SECTION */}
+        {isLoggedIn && (
+            <>
+                <h2 className="title">Write a Review</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', justifyContent: 'center' }}>
+                    <span style={{ fontWeight: 600, fontSize: '15px', color: '#44624a' }}>
+                        {rating > 0 ? 'Your rating:' : 'Rate this book:'}
+                    </span>
+                    <StarRating rating={rating} setRating={saveRating} />
+                </div>
+                <form onSubmit={saveReview}>
+                    <textarea
+                        className="auth-input"
+                        name="WrittenReview"
+                        value={writtenReview}
+                        onChange={onChange}
+                        rows="6"
+                        maxLength={2000}
+                        placeholder="Write a review (optional)"
+                    />
+                    <div style={{
+                        textAlign: 'right',
+                        fontSize: '13px',
+                        color: writtenReview.length > 1800 ? '#c0392b' : '#6b7d6d',
+                        marginTop: '4px'
+                    }}>
+                        {writtenReview.length}/2000
+                    </div>
+                    <button className="theme-custom" type="submit" style={{ marginTop: '10px' }}>
+                        {existingReview ? 'Update Review' : 'Save Review'}
+                    </button>
+                </form>
+                {error && <p className="error-text">{error}</p>}
+                <hr />
+            </>
+        )}
+
+        {/* POSTED REVIEWS */}
+        <h2 className="title">Posted Reviews</h2>
+        <div className="reviews-grid">
+            {writtenReviews.length === 0 ? (
+                <p className="empty-message">No written reviews yet.</p>
+            ) : (
+                writtenReviews.map((review) => (
+                    <div className="review-card" key={review.book_review_id}>
+                        <div className="review-header">
+                            <strong>{review.user_name}</strong>
+                            <StarRating rating={review.rating || 0} readOnly />
+                        </div>
+                        <p className="review-text">{review.written_review}</p>
+                        <div className="review-date">
+                            {new Date(review.created_at).toDateString()}
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
+    </div>
+);
 }

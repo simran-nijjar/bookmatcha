@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 const { containsProfanity } = require('../utils/contentFilter');
 const xss = require('xss');
+const { createSystemShelves } = require('./shelfController');
 const saltRounds = 12;
 
 // Register user
@@ -76,11 +77,16 @@ exports.register = (req, res) => {
             const insertQuery = 'INSERT INTO users (user_name, email, password) VALUES (?, ?, ?)';
             connection.query(insertQuery, [username, email, hashedPassword], async (err, insertResult) => {
                 if (err) {
-                    console.error('Insert error:', err);
                     return res.status(500).json({ message: "Failed to register user" });
                 }
 
                 const userId = insertResult.insertId;
+
+                createSystemShelves(userId, (err) => {
+                    if (err) {
+                        // Do nothing
+                    }  
+                });
 
                 const verificationToken = crypto.randomBytes(32).toString('hex');
                 const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);

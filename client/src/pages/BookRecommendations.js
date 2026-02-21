@@ -128,7 +128,7 @@ export const BookRecommendations = () => {
     try {
       const response = await api.get('books/average-rating', { params: { bookIds: bookIds.join(',') } });
       const ratingsMap = response.data.reduce((acc, item) => {
-        acc[item.book_id] = item.average_rating;
+        acc[item.BookID] = item.AverageRating;
         return acc;
       }, {});
       setAverageRatings(ratingsMap);
@@ -194,7 +194,7 @@ export const BookRecommendations = () => {
                     <div className="book-title">{book.title}</div>
                     <div className="book-author">{book.author}</div>
                     <div><span><StarRating rating={averageRatings[book.book_id] || 0} readOnly /></span></div>
-                    <div> { averageRatings[book.bookId] >= 0 ? averageRatings[book.book_id] + '/5' : 'No ratings'}</div>
+                      <div>{Number(averageRatings[book.book_id] || 0) > 0 ? Number(averageRatings[book.book_id]).toFixed(2) + '/5' : 'No ratings'}</div>
                   </div>
                 </div>
               </div>

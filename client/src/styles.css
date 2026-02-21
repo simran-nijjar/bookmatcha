@@ -570,3 +570,22 @@ body {
         font-size: 1rem;
     }
 }
+
+/* Show/hide helpers for responsive layout */
+.mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: block;
+}
+
+@media (max-width: 750px) {
+    .mobile-only {
+        display: block;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+}

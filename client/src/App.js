@@ -15,6 +15,8 @@ import { HomePage } from './pages/HomePage';
 import { BookResults } from './pages/BookResults';
 import { BookDetails } from './pages/BookDetails';
 import { UserBooks } from './pages/UserBooks';
+import { ShelfDetail } from './pages/ShelfDetail';
+import { UserReview } from './pages/UserReview';
 import { BookRecommendations } from './pages/BookRecommendations';
 import SearchBar from './components/SearchBar';
 import './styles.css';
@@ -89,7 +91,7 @@ if (authLoading) {
 
                   <li className="nav-item">
                     <Link className="nav-link cozy-link" to="/shelf">
-                      My Books
+                      My Bookshelf
                     </Link>
                   </li>
 
@@ -141,6 +143,8 @@ if (authLoading) {
           onPrevPage={() => handlePrevPage(currentPage, query, setResults, setCurrentPage)}
         />} />
         <Route path="/shelf" element={<UserBooks />} />
+        <Route path="/shelf/:shelfSlug" element={<ShelfDetail />} />
+        <Route path="/review/:bookId" element={<UserReview />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/recommendations" element={<BookRecommendations />} />
         <Route path="/books/:id" element={<BookDetails />} />
